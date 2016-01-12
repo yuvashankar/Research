@@ -88,13 +88,19 @@ int main(int argc, char const *argv[])
         readFlag = edfread_physical_samples(handle, i, samplesToRead, tempBuffer);
         assert(readFlag != -1);
         
-        memcpy(&buffer[samplesToRead*i], &tempBuffer, samplesToRead * sizeof(double));
+        memcpy(&buffer[samplesToRead*i], tempBuffer, samplesToRead * sizeof(double));
     }
     
     
     printf("\nread %i samples, started at %f seconds from start of file: and ended at %f\n\n",
            samplesToRead, seekStartTime, seekEndTime);
-    printf("\n");
+    printf("\n\n");
+    
+//    //check if the buffer is populated
+//    for(int i=0; i<200; i++)
+//    {
+//        printf("%.0f  \n", buffer[i]);
+//    }
     
     //Close file and clean up.
     edfclose_file(handle);
