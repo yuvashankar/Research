@@ -1,0 +1,188 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"seek",
+				"seekStartTime"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 209.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/vinay/Google Drive/Research/Source/src/AllocateMemory.c",
+		"/Users/vinay/Google Drive/Research/Source/src/OpenFile.c",
+		"/Users/vinay/Google Drive/Research/Source/src/edflib.c",
+		"/Users/vinay/Google Drive/Research/Source/include/edflib.h",
+		"/Users/vinay/Desktop/edflib_111/main.c",
+		"/Users/vinay/Google Drive/Research/Source/src/main.c",
+		"/Users/vinay/Google Drive/Research/Source/src/openfile.c",
+		"/Users/vinay/Google Drive/Research/Source/src/makefile",
+		"/Users/vinay/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
+		"/Users/vinay/Google Drive/Research/Source/main.c",
+		"/Users/vinay/Google Drive/Research/Source/makefile",
+		"/Users/vinay/Desktop/edflib_111/sine.c",
+		"/Users/vinay/Desktop/edflib_111/edflib.h",
+		"/Users/vinay/Desktop/edflib_111/sweep.c",
+		"/Users/vinay/Downloads/biosig4c++-1.7.3/biosig.h",
+		"/Users/vinay/Downloads/biosig4c++-1.7.3/test0/gztest.c",
+		"/Users/vinay/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"edfseek",
+			"10",
+			"x=",
+			"edf_hdr_struct",
+			"event",
+			"exp",
+			"sopen",
+			"biosig_data_type",
+			"sopen",
+			"FileFormat",
+			"HDRTYPE",
+			"sopen",
+			"HDRTYPE",
+			"HDR",
+			"HDRTYPE",
+			"C",
+			"AS.Header",
+			"AS",
+			"Header"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 43.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 70.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"open",
+				"src/openfile.c"
+			],
+			[
+				"edflib.c",
+				"src/edflib.c"
+			],
+			[
+				"openf",
+				"src/openfile.c"
+			],
+			[
+				"openfile",
+				"src/openfile.c"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
