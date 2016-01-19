@@ -13,13 +13,9 @@
 #define PRE_EVENT_TIME 1.0
 #define POST_EVENT_TIME 2.0
 
-int OpenFile(const char* fileName, struct edf_hdr_struct *header);
+ #define MAXIMUM_TRIGGERS 1000
 
-unsigned int_to_int(int k) {
-    if (k == 0) return 0;
-    if (k == 1) return 1;                       /* optional */
-    return (k % 2) + 10 * int_to_int(k / 2);
-}
+int OpenFile(const char* fileName, struct edf_edfHeader_struct *header);
 
 int main(int argc, char const *argv[])
 {
@@ -27,51 +23,96 @@ int main(int argc, char const *argv[])
     int handle,
         numberOfChannels,
         openFlag,
+        bufferSize,
+        jump_to_file,
+        counterVariable,
+        channel,
         readFlag;
 
-    int* rawStatus;
+    char* rawStatus;
 
-    double sampleFrequency, 
-        triggerTime;
+    double* triggerTime;
 
-    long long numberOfRecords;
+    double sampleFrequency;
+
+    int edgeDetected = 0;
+
+    long long numberOfRecords,
+        status_sample_duration,
+        offset;
     
-    struct edf_hdr_struct edfHeader;
+    struct edf_edfHeader_struct edfHeader;
 
-    //Opening and reading the file into the hdr input the first argument is the input file.
+    struct edf_annotation_struct *annotation;
+
+    //Opening and reading the file into the edfHeader input the first argument is the input file.
     openFlag = OpenFile(argv[1], &edfHeader);
     assert( openFlag == 0 );
+    edfclose_file(handle);
 
     //Values that I'll need for getting the EDF information.
     handle = edfHeader.handle;
     sampleFrequency = ((double)edfHeader.signalparam[1].smp_in_datarecord /
                        (double)edfHeader.datarecord_duration) * EDFLIB_TIME_DIMENSION;
     numberOfChannels = edfHeader.edfsignals;
-    numberOfRecords = edfHeader.signalparam[numberOfChannels - 2].smp_in_file;
+    numberOfRecords = edfHeader.signalparam[numberOfChannels - 1].smp_in_file;
+    channel = numberOfChannels - 1;
 
     //Allocate Necessary Memory
-    rawStatus = (int*) malloc(numberOfRecords*sizeof(int));
+    jump_to_file = (numberOfChannels - 1) * sampleFrequency * 3;
+    status_sample_duration = EDFLIB_TIME_DIMENSION / (long long)sampleFrequency;
+    rawStatus = (char*) calloc(1, bufferSize);
+    triggerTime = (double*) malloc( MAXIMUM_TRIGGERS * sizeof(double) );
     assert(rawStatus);
+    assert(triggerTime);
+    // printf("bufferSize: %d, numberOfRecords: %lld\n", bufferSize, numberOfRecords);
 
     //Read the File
-    readFlag = edfread_digital_samples(handle, numberOfChannels - 1, numberOfRecords, rawStatus);
-    assert (readFlag != -1);
-    for (int i = 0; i < numberOfRecords; ++i)
-    {
-        printf("%u\n", int_to_int(rawStatus[i]));
+    offset = edfHeader->edfHeadersize;
+    offset += (edfHeader->edfparam[channel].sample_pntr / edfHeader->edfparam[channel].smp_per_record) * edfHeader->recordsize;
+    offset += edfHeader->edfparam[channel].buf_offset;
+    offset += ((edfHeader->edfparam[channel].sample_pntr % edfHeader->edfparam[channel].smp_per_record) * bytes_per_smpl);
+    smp_per_record = hdr->edfparam[channel].smp_per_record;
+    jump = edfHeader->recordsize - (smp_per_record * bytes_per_smpl);
 
-        // if ( (rawStatus[i] & 1) != (rawStatus[i-1] & 1) )
-        // {
-        //    triggerTime = ( ((double)i * 
-        //                     (double)edfHeader.file_duration) /
-        //                     ((double)EDFLIB_TIME_DIMENSION * 
-        //                     (double)edfHeader.signalparam[numberOfChannels - 1].smp_in_file));
-        //     printf("Trigger found at %d, at %f, rawStatus[i] = %u \n",i, triggerTime, int_to_int(rawStatus[i]));
-        // }
+    FILE *file = fopen(argv[1], "r");
+    assert(file);
+
+    fseeko(file, offset, SEEK_SET);
+
+    for (long long i = 0; i < numberOfRecords; ++i)
+    {
+        counterVariable = 0;
+        // fseeko(file, (long long)jump_to_file, SEEK_CUR);
+
+        readFlag = fread(rawStatus, bufferSize, 1, file);
+        assert(readFlag == 1);
+
+        for (int j = 0; i < bufferSize; i+=3)
+        {
+            if(rawStatus[j + 2] & 1)
+            {
+                if (!edgeDetected) //Discovered a new edge
+                {
+                    annotation = (struct edf_annotation_struct *) calloc (1, sizeof(struct edf_annotation_struct));
+                    assert(annotation);
+                    triggerTime[counterVariable] = (double)(i * EDFLIB_TIME_DIMENSION) + ((i / 3) * status_sample_duration);
+                    counterVariable++;
+                    edgeDetected = 1;
+                } 
+                else
+                {
+                    edgeDetected = 0;
+                }
+            }
+
+        }
     }
 
     //clean up and close up
-    edfclose_file(handle);
+    // edfclose_file(handle);
+    fclose(file);
     free(rawStatus);
+    free(triggerTime);
     return 0;
 }
