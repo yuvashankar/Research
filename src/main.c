@@ -6,6 +6,7 @@
 #include "edflib.h"
 #include <assert.h>
 #include <string.h>
+#include <math.h>
 
 #define PRE_EVENT_TIME 1.0
 #define POST_EVENT_TIME 2.0
@@ -27,12 +28,16 @@ int main(int argc, char const *argv[])
         seekStartTime,
         seekEndTime,
         seekDuration,
+        triggerTime,
+        offset2sec,
         eventTime;
     
     long long offset;
     
     double *buffer,
             *tempBuffer;
+
+    int *rawStatus;
     
     struct edf_hdr_struct edfHeader;
     
@@ -42,7 +47,7 @@ int main(int argc, char const *argv[])
     assert( openFlag == 0 );
     
     handle = edfHeader.handle;
-    
+
     //Get the event time, this is not needed, but I'm implementing it because A10_C1 has no events.
     eventTime = atof(argv[2]);
     assert(eventTime > 0);
@@ -52,6 +57,9 @@ int main(int argc, char const *argv[])
                        (double)edfHeader.datarecord_duration) * EDFLIB_TIME_DIMENSION;
     
     numberOfChannels = edfHeader.edfsignals;
+    printf("The number of channels is: %d\n", numberOfChannels);
+
+
     
     seekStartTime = eventTime - PRE_EVENT_TIME;
     //This is needed to deal with the poossibility of negative time.
@@ -76,12 +84,13 @@ int main(int argc, char const *argv[])
     
 
     
-    offset = ((((double)seekStartTime) /
-               ((double)edfHeader.file_duration /
-                (double)EDFLIB_TIME_DIMENSION)) * ((double)edfHeader.signalparam[channel].smp_in_file));
-    
 
-    
+    offset = ( ((double)seekStartTime * 
+                (double)EDFLIB_TIME_DIMENSION * 
+                (double)edfHeader.signalparam[channel].smp_in_file) / //Numerator
+                (double)edfHeader.file_duration ); //Denominator
+
+    //Copy the contents from the file into the buffer. 
     for (int i = 0; i <= (numberOfChannels-1) ; i++)
     {
         edfseek(handle, i, offset, EDFSEEK_SET);
@@ -91,21 +100,33 @@ int main(int argc, char const *argv[])
         memcpy(&buffer[samplesToRead*i], tempBuffer, samplesToRead * sizeof(double));
     }
     
+    rawStatus = (int*) malloc(samplesToRead*sizeof(int));
+    edfread_digital_samples(handle, 143, samplesToRead, rawStatus);
+
+    for (int i = 0; i < samplesToRead; ++i)
+    {
+        if ( (rawStatus[i] & 1) != (rawStatus[i-1] & 1) )
+        {
+            offset2sec = ( ((double)i * 
+                            (double)edfHeader.file_duration) /
+                            ((double)EDFLIB_TIME_DIMENSION * 
+                            (double)edfHeader.signalparam[channel].smp_in_file));
+            triggerTime = seekStartTime + offset2sec;
+            
+            printf("\nTrigger Toggled at: %d, at %f seconds\n", i, triggerTime);
+        }
+        printf("%d", (rawStatus[i] & 1) );
+    }
     
     printf("\nread %i samples, started at %f seconds from start of file: and ended at %f\n\n",
            samplesToRead, seekStartTime, seekEndTime);
     printf("\n\n");
     
-//    //check if the buffer is populated
-//    for(int i=0; i<200; i++)
-//    {
-//        printf("%.0f  \n", buffer[i]);
-//    }
-    
     //Close file and clean up.
     edfclose_file(handle);
     free(buffer);
     free(tempBuffer);
+    free(rawStatus);
     
     
     return 0;

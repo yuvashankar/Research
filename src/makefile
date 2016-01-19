@@ -8,9 +8,8 @@ LDIR =../lib
 _DEPS = edflib.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o edflib.o OpenFile.o AllocateMemory.o
+_OBJ = main.o edflib.o OpenFile.o FindTriggers.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
-
 
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
