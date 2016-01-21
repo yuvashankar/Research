@@ -27,7 +27,8 @@ int main(int argc, char const *argv[])
 
     int32_t* rawStatus;
 
-    double sampleFrequency;
+    double sampleFrequency,
+        offset2sec;
 
     long long numberOfRecords,
         status_sample_duration,
@@ -65,7 +66,7 @@ int main(int argc, char const *argv[])
 
         if ( ((rawStatus[i] & 0x0000FFFF) > 0) && (edge == 0) && (rawStatus[i-1] != rawStatus[i]) ) //Rising Edge Detected.
         {
-            printf("%f,\t %x, \t %x\n", offset2sec, rawStatus[i], (rawStatus[i] & 0x0000FFFF));
+            printf("%f,\t %x, \t %x\n", offset2sec, rawStatus[i], (rawStatus[i] >> 16));
             edge = 1;
         }
 
