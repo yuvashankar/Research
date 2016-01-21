@@ -999,6 +999,178 @@ int edfread_physical_samples(int handle, int edfsignal, int n, double *buf)
   return(n);
 }
 
+int edfread_raw_samples(int handle, int edfsignal, int n, int *buf)
+{
+  int bytes_per_smpl=2,
+      tmp,
+      i,
+      channel;
+
+  long long smp_in_file,
+            offset,
+            sample_pntr,
+            smp_per_record,
+            jump;
+
+  struct edfhdrblock *hdr;
+
+  union {
+          unsigned int one;
+          signed int one_signed;
+          unsigned short two[2]; 
+          signed short two_signed[2];
+          unsigned char four[4];
+        } var;
+
+  FILE *file;
+
+
+  if(handle<0)
+  {
+    return(-1);
+  }
+
+  if(handle>=EDFLIB_MAXFILES)
+  {
+    return(-1);
+  }
+
+  if(hdrlist[handle]==NULL)
+  {
+    return(-1);
+  }
+
+  if(edfsignal<0)
+  {
+    return(-1);
+  }
+
+  if(hdrlist[handle]->writemode)
+  {
+    return(-1);
+  }
+
+  if(edfsignal>=(hdrlist[handle]->edfsignals - hdrlist[handle]->nr_annot_chns))
+  {
+    return(-1);
+  }
+
+  channel = hdrlist[handle]->mapped_signals[edfsignal];
+
+  if(n<0LL)
+  {
+    return(-1);
+  }
+
+  if(n==0LL)
+  {
+    return(0LL);
+  }
+
+  hdr = hdrlist[handle];
+
+  if(hdr->edf)
+  {
+    bytes_per_smpl = 2;
+  }
+
+  if(hdr->bdf)
+  {
+    bytes_per_smpl = 3;
+  }
+
+  smp_in_file = hdr->edfparam[channel].smp_per_record * hdr->datarecords;
+
+  if((hdr->edfparam[channel].sample_pntr + n) > smp_in_file)
+  {
+    n = smp_in_file - hdr->edfparam[channel].sample_pntr;
+
+    if(n==0)
+    {
+      return(0LL);
+    }
+
+    if(n<0)
+    {
+      return(-1);
+    }
+  }
+
+  file = hdr->file_hdl;
+
+  offset = hdr->hdrsize;
+  offset += (hdr->edfparam[channel].sample_pntr / hdr->edfparam[channel].smp_per_record) * hdr->recordsize;
+  offset += hdr->edfparam[channel].buf_offset;
+  offset += ((hdr->edfparam[channel].sample_pntr % hdr->edfparam[channel].smp_per_record) * bytes_per_smpl);
+
+  fseeko(file, offset, SEEK_SET);
+
+  sample_pntr = hdr->edfparam[channel].sample_pntr;
+
+  smp_per_record = hdr->edfparam[channel].smp_per_record;
+
+  jump = hdr->recordsize - (smp_per_record * bytes_per_smpl);
+
+  if(hdr->edf)
+  {
+    for(i=0; i<n; i++)
+    {
+      if(!(sample_pntr%smp_per_record))
+      {
+        if(i)
+        {
+          fseeko(file, jump, SEEK_CUR);
+        }
+      }
+
+      var.four[0] = fgetc(file);
+      tmp = fgetc(file);
+      if(tmp==EOF)
+      {
+        return(-1);
+      }
+      var.four[1] = tmp;
+
+      buf[i] = var.two_signed[0];
+
+      sample_pntr++;
+    }
+  }
+
+  if(hdr->bdf)
+  {
+    for(i=0; i<n; i++)
+    {
+      if(!(sample_pntr%smp_per_record))
+      {
+        if(i)
+        {
+          fseeko(file, jump, SEEK_CUR);
+        }
+      }
+      var.four[0] = fgetc(file);
+      var.four[1] = fgetc(file);
+      var.four[2] = fgetc(file);
+      // var.four[3] = fgetc(file);
+      // var.four[0] = fgetc(file);
+      // var.four[1] = fgetc(file);
+      tmp = fgetc(file);
+      if(tmp==EOF)
+      {
+        return(-1);
+      }
+      var.four[3] = tmp;
+
+      buf[i] = var.one;
+
+      sample_pntr++;
+    }
+  }
+
+  hdr->edfparam[channel].sample_pntr = sample_pntr;
+
+  return(n);
+}
 
 int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
 {
@@ -1169,6 +1341,7 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
       }
 
       buf[i] = var.one_signed;
+      // buf[i] = var.one;
 
       sample_pntr++;
     }

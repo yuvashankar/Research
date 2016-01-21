@@ -8,14 +8,12 @@
 #include <string.h>
 #include <math.h>
 
-#include <limits.h>
-
 #define PRE_EVENT_TIME 1.0
 #define POST_EVENT_TIME 2.0
 
- #define MAXIMUM_TRIGGERS 1000
+#define MAXIMUM_TRIGGERS 1000
 
-int OpenFile(const char* fileName, struct edf_edfHeader_struct *header);
+int OpenFile(const char* fileName, struct edf_hdr_struct *header);
 
 int main(int argc, char const *argv[])
 {
@@ -23,32 +21,23 @@ int main(int argc, char const *argv[])
     int handle,
         numberOfChannels,
         openFlag,
-        bufferSize,
-        jump_to_file,
-        counterVariable,
         channel,
+        edge,
         readFlag;
 
-    char* rawStatus;
-
-    double* triggerTime;
+    int32_t* rawStatus;
 
     double sampleFrequency;
-
-    int edgeDetected = 0;
 
     long long numberOfRecords,
         status_sample_duration,
         offset;
     
-    struct edf_edfHeader_struct edfHeader;
-
-    struct edf_annotation_struct *annotation;
+    struct edf_hdr_struct edfHeader;
 
     //Opening and reading the file into the edfHeader input the first argument is the input file.
     openFlag = OpenFile(argv[1], &edfHeader);
     assert( openFlag == 0 );
-    edfclose_file(handle);
 
     //Values that I'll need for getting the EDF information.
     handle = edfHeader.handle;
@@ -59,60 +48,37 @@ int main(int argc, char const *argv[])
     channel = numberOfChannels - 1;
 
     //Allocate Necessary Memory
-    jump_to_file = (numberOfChannels - 1) * sampleFrequency * 3;
-    status_sample_duration = EDFLIB_TIME_DIMENSION / (long long)sampleFrequency;
-    rawStatus = (char*) calloc(1, bufferSize);
-    triggerTime = (double*) malloc( MAXIMUM_TRIGGERS * sizeof(double) );
+    rawStatus = (int*) malloc(numberOfRecords*sizeof(int));
     assert(rawStatus);
-    assert(triggerTime);
-    // printf("bufferSize: %d, numberOfRecords: %lld\n", bufferSize, numberOfRecords);
 
-    //Read the File
-    offset = edfHeader->edfHeadersize;
-    offset += (edfHeader->edfparam[channel].sample_pntr / edfHeader->edfparam[channel].smp_per_record) * edfHeader->recordsize;
-    offset += edfHeader->edfparam[channel].buf_offset;
-    offset += ((edfHeader->edfparam[channel].sample_pntr % edfHeader->edfparam[channel].smp_per_record) * bytes_per_smpl);
-    smp_per_record = hdr->edfparam[channel].smp_per_record;
-    jump = edfHeader->recordsize - (smp_per_record * bytes_per_smpl);
+    //Read the status Signal
+    readFlag = edfread_digital_samples(handle, channel, numberOfRecords, rawStatus);
+    assert (readFlag != 1);
 
-    FILE *file = fopen(argv[1], "r");
-    assert(file);
-
-    fseeko(file, offset, SEEK_SET);
-
-    for (long long i = 0; i < numberOfRecords; ++i)
+    edge = 0; 
+    for (int i = 0; i < numberOfRecords; ++i)
     {
-        counterVariable = 0;
-        // fseeko(file, (long long)jump_to_file, SEEK_CUR);
+        offset2sec = ( ((double)i * 
+            (double)edfHeader.file_duration) /
+            ((double)EDFLIB_TIME_DIMENSION * 
+            (double)edfHeader.signalparam[channel].smp_in_file));
 
-        readFlag = fread(rawStatus, bufferSize, 1, file);
-        assert(readFlag == 1);
-
-        for (int j = 0; i < bufferSize; i+=3)
+        if ( ((rawStatus[i] & 0x0000FFFF) > 0) && (edge == 0) && (rawStatus[i-1] != rawStatus[i]) ) //Rising Edge Detected.
         {
-            if(rawStatus[j + 2] & 1)
-            {
-                if (!edgeDetected) //Discovered a new edge
-                {
-                    annotation = (struct edf_annotation_struct *) calloc (1, sizeof(struct edf_annotation_struct));
-                    assert(annotation);
-                    triggerTime[counterVariable] = (double)(i * EDFLIB_TIME_DIMENSION) + ((i / 3) * status_sample_duration);
-                    counterVariable++;
-                    edgeDetected = 1;
-                } 
-                else
-                {
-                    edgeDetected = 0;
-                }
-            }
+            printf("%f,\t %x, \t %x\n", offset2sec, rawStatus[i], (rawStatus[i] & 0x0000FFFF));
+            edge = 1;
+        }
 
+        if (rawStatus[i-1] != rawStatus[i] && edge == 1) //Falling Edge Detected.
+        {
+            edge = 0;
         }
     }
 
     //clean up and close up
-    // edfclose_file(handle);
-    fclose(file);
+    edfclose_file(handle);
+
     free(rawStatus);
-    free(triggerTime);
+
     return 0;
 }
