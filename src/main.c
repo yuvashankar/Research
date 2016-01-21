@@ -11,9 +11,10 @@
 #define PRE_EVENT_TIME 1.0
 #define POST_EVENT_TIME 2.0
 
-#define MAXIMUM_TRIGGERS 1000
+#define MAXIMUM_TRIGGERS 1000000
 
 int OpenFile(const char* fileName, struct edf_hdr_struct *header);
+long long FindTriggers(const int * statusInput, const long long numberOfElements, long long * outputBuffer);
 
 int main(int argc, char const *argv[])
 {
@@ -22,17 +23,22 @@ int main(int argc, char const *argv[])
         numberOfChannels,
         openFlag,
         channel,
-        edge,
         readFlag;
 
     int32_t* rawStatus;
 
     double sampleFrequency,
+        samplesToRead,
         offset2sec;
 
     long long numberOfRecords,
-        status_sample_duration,
+        numberofTriggers,
         offset;
+
+    double * data,
+        *tempBuffer;
+
+    long long * triggerList;
     
     struct edf_hdr_struct edfHeader;
 
@@ -47,39 +53,59 @@ int main(int argc, char const *argv[])
     numberOfChannels = edfHeader.edfsignals;
     numberOfRecords = edfHeader.signalparam[numberOfChannels - 1].smp_in_file;
     channel = numberOfChannels - 1;
+    samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
     //Allocate Necessary Memory
     rawStatus = (int*) malloc(numberOfRecords*sizeof(int));
+    triggerList = (long long*) malloc(MAXIMUM_TRIGGERS * sizeof(long long));
+    tempBuffer = (double*) malloc(samplesToRead * sizeof(double));
     assert(rawStatus);
+    assert(triggerList);
+    assert(tempBuffer);
 
     //Read the status Signal
     readFlag = edfread_digital_samples(handle, channel, numberOfRecords, rawStatus);
     assert (readFlag != 1);
 
-    edge = 0; 
-    for (int i = 0; i < numberOfRecords; ++i)
+    //Find Parse the file and find the triggers.
+    numberofTriggers = FindTriggers(rawStatus, numberOfRecords, triggerList);
+    assert (numberofTriggers != -1);
+
+    //Allocate the necessary memory to copy all of the data into a contigious directory. 
+    printf(" Will allocate %f Mbs of Memory\n", numberofTriggers*samplesToRead*numberOfChannels*sizeof(double)/1048576);
+    data = (double*) malloc (numberofTriggers*samplesToRead*numberOfChannels*sizeof(double));
+    assert(data);
+
+    //Load Data from Buffer onto the Data File.
+    int dataOffset = 0;
+    for (long long i = 0; i < numberofTriggers; ++i)
     {
-        offset2sec = ( ((double)i * 
-            (double)edfHeader.file_duration) /
-            ((double)EDFLIB_TIME_DIMENSION * 
-            (double)edfHeader.signalparam[channel].smp_in_file));
-
-        if ( ((rawStatus[i] & 0x0000FFFF) > 0) && (edge == 0) && (rawStatus[i-1] != rawStatus[i]) ) //Rising Edge Detected.
+        for (int j = 0; j <= (numberOfChannels-1) ; j++)
         {
-            printf("%f,\t %x, \t %x\n", offset2sec, rawStatus[i], (rawStatus[i] >> 16));
-            edge = 1;
-        }
+            edfseek(handle, j, triggerList[i], EDFSEEK_SET);
+            readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
+            assert(readFlag != -1);
 
-        if (rawStatus[i-1] != rawStatus[i] && edge == 1) //Falling Edge Detected.
-        {
-            edge = 0;
+            dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
+            memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
         }
     }
-
+    //check the contents of the Data file. 
+    edfseek(handle, 13, triggerList[1], EDFSEEK_SET);
+    readFlag = edfread_physical_samples(handle, 13, samplesToRead, tempBuffer);
+    assert(readFlag != -1);
+    dataOffset = (int) ((numberOfChannels-1)*1 + (1+13) ) * samplesToRead;
+    for (int i = 0; i < 200; ++i)
+    {
+        printf("%f \t %f \t %f\n", data[i], tempBuffer[i], data[dataOffset + i] - tempBuffer[i]);
+    }
     //clean up and close up
     edfclose_file(handle);
 
     free(rawStatus);
+    free(triggerList);
+    free(data);
+    free(tempBuffer);
 
     return 0;
 }
