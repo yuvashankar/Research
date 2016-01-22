@@ -192,6 +192,13 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf);
 /* or -1 in case of an error */
 
 
+int edfread_raw_samples(int handle, int edfsignal, int n, int *buf);
+
+/* Custom File made by Vinay, give me just characters, no processing. 
+
+*/
+
+
 long long edfseek(int handle, int edfsignal, long long offset, int whence);
 
 /* The edfseek() function sets the sample position indicator for the edfsignal pointed to by edfsignal. */
