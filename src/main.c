@@ -71,34 +71,33 @@ int main(int argc, char const *argv[])
     numberofTriggers = FindTriggers(rawStatus, numberOfRecords, triggerList);
     assert (numberofTriggers != -1);
 
+    // for (int i = 0; i < numberofTriggers; ++i)
+    // {
+    //     edfseek(handle, channel, triggerList[i], EDFSEEK_SET);
+    //     edfread_digital_samples(handle, channel, 1, )
+    // }
+
     //Allocate the necessary memory to copy all of the data into a contigious directory. 
     printf(" Will allocate %f Mbs of Memory\n", numberofTriggers*samplesToRead*numberOfChannels*sizeof(double)/1048576);
     data = (double*) malloc (numberofTriggers*samplesToRead*numberOfChannels*sizeof(double));
     assert(data);
 
-    //Load Data from Buffer onto the Data File.
-    int dataOffset = 0;
-    for (long long i = 0; i < numberofTriggers; ++i)
-    {
-        for (int j = 0; j <= (numberOfChannels-1) ; j++)
-        {
-            edfseek(handle, j, triggerList[i], EDFSEEK_SET);
-            readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
-            assert(readFlag != -1);
+    // //Load Data from Buffer onto the Data File.
+    // int dataOffset = 0;
+    // for (long long i = 0; i < numberofTriggers; ++i)
+    // {
+    //     for (int j = 0; j <= (numberOfChannels-1) ; j++)
+    //     {
+    //         edfseek(handle, j, triggerList[i], EDFSEEK_SET);
+    //         readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
+    //         assert(readFlag != -1);
 
-            dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
-            memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
-        }
-    }
-    //check the contents of the Data file. 
-    edfseek(handle, 13, triggerList[1], EDFSEEK_SET);
-    readFlag = edfread_physical_samples(handle, 13, samplesToRead, tempBuffer);
-    assert(readFlag != -1);
-    dataOffset = (int) ((numberOfChannels-1)*1 + (1+13) ) * samplesToRead;
-    for (int i = 0; i < 200; ++i)
-    {
-        printf("%f \t %f \t %f\n", data[i], tempBuffer[i], data[dataOffset + i] - tempBuffer[i]);
-    }
+    //         dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
+    //         memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
+    //     }
+    // }
+
+
     //clean up and close up
     edfclose_file(handle);
 

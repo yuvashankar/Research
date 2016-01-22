@@ -36,12 +36,10 @@ int read_trigger(FILE* in_file)
 {
 	int ret_code;
 	ret_code=fscanf(in_file,"%f",&time);
-	ret_code=fscanf(in_file,"%d",&val1);
-	ret_code=fscanf(in_file,"%d",&val2);
+	ret_code=fscanf(in_file,"%ld",&val1);
+	ret_code=fscanf(in_file,"%ld",&val2);
 	return(ret_code);
 }
-
-
 
 int process_file(FILE* in_file, FILE* out_file)
 {
