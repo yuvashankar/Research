@@ -15,6 +15,12 @@
 
 int OpenFile(const char* fileName, struct edf_hdr_struct *header);
 long long FindTriggers(const int * statusInput, const long long numberOfElements, long long * outputBuffer);
+int FilterTriggers(const int code, 
+    const int button, 
+    const int numberOfRecords, 
+    const int * triggerList,
+    const int * readBuffer, 
+    int * outputBuffer);
 
 int main(int argc, char const *argv[])
 {
@@ -23,6 +29,7 @@ int main(int argc, char const *argv[])
         numberOfChannels,
         openFlag,
         channel,
+        filteredTriggerNumber,
         readFlag;
 
     int32_t* rawStatus;
@@ -71,36 +78,41 @@ int main(int argc, char const *argv[])
     numberofTriggers = FindTriggers(rawStatus, numberOfRecords, triggerList);
     assert (numberofTriggers != -1);
 
-    // for (int i = 0; i < numberofTriggers; ++i)
-    // {
-    //     edfseek(handle, channel, triggerList[i], EDFSEEK_SET);
-    //     edfread_digital_samples(handle, channel, 1, )
-    // }
+    int * buffer = (int *) malloc(numberofTriggers * sizeof(int));
+    int * filteredBuffer = (int *) malloc(numberofTriggers * sizeof(int));
+    int counterVariable = 0;
 
+    for (int i = 0; i < numberOfRecords; ++i)
+    {
+        edfseek(handle, channel, triggerList[i], EDFSEEK_SET);
+        edfread_digital_samples(handle, channel, 1, &buffer[i]);
+    }
+    // filteredTriggerNumber = FilterTriggers(1, 1, )
     //Allocate the necessary memory to copy all of the data into a contigious directory. 
-    printf(" Will allocate %f Mbs of Memory\n", numberofTriggers*samplesToRead*numberOfChannels*sizeof(double)/1048576);
-    data = (double*) malloc (numberofTriggers*samplesToRead*numberOfChannels*sizeof(double));
+    printf(" Will allocate %f Mbs of Memory\n", counterVariable*samplesToRead*numberOfChannels*sizeof(double)/1048576);
+    data = (double*) malloc (counterVariable*samplesToRead*numberOfChannels*sizeof(double));
     assert(data);
 
-    // //Load Data from Buffer onto the Data File.
-    // int dataOffset = 0;
-    // for (long long i = 0; i < numberofTriggers; ++i)
-    // {
-    //     for (int j = 0; j <= (numberOfChannels-1) ; j++)
-    //     {
-    //         edfseek(handle, j, triggerList[i], EDFSEEK_SET);
-    //         readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
-    //         assert(readFlag != -1);
+    //Load Data from Buffer onto the Data File.
+    int dataOffset = 0;
+    for (long long i = 0; i < counterVariable; ++i)
+    {
+        for (int j = 0; j <= (numberOfChannels-1) ; j++)
+        {
+            edfseek(handle, j, triggerList[i], EDFSEEK_SET);
+            readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
+            assert(readFlag != -1);
 
-    //         dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
-    //         memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
-    //     }
-    // }
+            dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
+            memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
+        }
+    }
 
 
     //clean up and close up
     edfclose_file(handle);
 
+    free(filteredBuffer);
     free(rawStatus);
     free(triggerList);
     free(data);
