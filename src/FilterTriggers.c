@@ -18,10 +18,8 @@ Outputs:
 
 */
 
-int FilterTriggers(const int code, 
-    const int button, 
-    const int numberOfRecords, 
-    const int * triggerList,
+int FilterTriggers(const int code, const int button, const int numberOfRecords, 
+    const long long * triggerList,
     const int * readBuffer, 
     int * outputBuffer)
 {
@@ -30,9 +28,6 @@ int FilterTriggers(const int code,
     int counterVariable = 0;
 	for (int i = 0; i < numberOfRecords; ++i)
     {
-        // edfseek(handle, channel, triggerList[i], EDFSEEK_SET);
-        // edfread_digital_samples(handle, channel, 1, &buffer);
-
         readCode = readBuffer[i] & 255;
         buttonCode = (readBuffer[i] >> 8) & 3;
 
@@ -41,7 +36,6 @@ int FilterTriggers(const int code,
             outputBuffer[counterVariable] = triggerList[i];
             counterVariable++;
         }
-        // printf("Code? %d, Button? %d\n", code, button);
     }
     return counterVariable;
 }
