@@ -5,6 +5,7 @@ signal = amplitude * cos( (1:samples) * streach + phase);
 if noise > 0
     signal = awgn(signal,noise);
 end
-
-csvwrite('signal.csv', signal);
+signal = signal';
+% csvwrite('signal.csv', signal);
+save ( 'signal.txt', 'signal', '-ascii');
 end
