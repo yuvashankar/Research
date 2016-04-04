@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
 
 #define quadRootPi 0.7511255444649425 //Precalculated to machine precision
+#define samplingFrequency 500
+
+double Morlet(double t, double w0, double a);
 
 int main(int argc, char const *argv[])
 {
@@ -13,6 +17,8 @@ int main(int argc, char const *argv[])
 	char * buffer;
 	char *token;
 	size_t result;
+
+	double normal; 
 
 	double signal[500];
 
@@ -45,11 +51,25 @@ int main(int argc, char const *argv[])
         token = strtok (NULL, "\n");
     }
 
+    // for (int tau = 0; i < 500; ++tau) //from the beginning of the signa till the end
+    // {
+    // 	for (int s = 0; i < count; ++s)
+    // 	{
+    // 		normal = 1.0/sqrt(s);
+    // 		// double value = signal[tau] * Morlet()
+    // 	}
+    // }
+
 	fclose(signalFile);
 	return 0;
 }
 
 double Morlet(double t, double w0, double a)
 {
+	double innerBracket = cos(w0 * t) - exp(-0.5 * w0 * w0);
+	double outerExp = exp(-0.5 * t * t);
+	double powerNormal = 1.0/pow(a, -0.5);
 
+	double morletWave = powerNormal * quadRootPi * outerExp * innerBracket;
+	return(morletWave);
 }
