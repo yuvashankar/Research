@@ -5,24 +5,29 @@
 #include <math.h>
 
 #define quadRootPi 0.7511255444649425 //Precalculated to machine precision
-#define samplingFrequency 500
+#define samplingFrequency 1000
+#define SIGNAL_SIZE 4001
+#define SCALE_SIZE 50
 
 double Morlet(double t, double w0, double a);
 
 int main(int argc, char const *argv[])
 {
 	FILE * signalFile;
+	FILE * outputFile;
 
 	long lSize;
 	char * buffer;
 	char *token;
 	size_t result;
 
+	double * output;
+
 	double normal; 
 
-	double signal[500];
+	double signal[SIGNAL_SIZE];
 
-	signalFile = fopen("signal.txt", "r");
+	signalFile = fopen("bic.txt", "r");
 	assert(signalFile != NULL);
 
 	// obtain file size:
@@ -50,17 +55,47 @@ int main(int argc, char const *argv[])
     	counterVariable++;
         token = strtok (NULL, "\n");
     }
+    
+    double dt = 1.0/SIGNAL_SIZE;
+    double w0 = samplingFrequency;
+    double t = 0.0;
 
-    // for (int tau = 0; i < 500; ++tau) //from the beginning of the signa till the end
-    // {
-    // 	for (int s = 0; i < count; ++s)
-    // 	{
-    // 		normal = 1.0/sqrt(s);
-    // 		// double value = signal[tau] * Morlet()
-    // 	}
-    // }
+    output = malloc( SIGNAL_SIZE * SCALE_SIZE * sizeof(double));
+    assert (output != NULL);
 
+    for (int tau = 0; tau < SIGNAL_SIZE; ++tau) //from the beginning of the signa till the end
+    {
+    	for (int j = 0; j < SCALE_SIZE; ++j)
+    	{
+    		//Using a Dydatic Scale for the scales. 
+    		double s = pow(2, -j);
+    		// double multiplier = pow(2, -j/2);
+    		// double mor = Morlet(s*t, w0, )	
+
+    		// double psi = 
+    		double value = signal[tau] * Morlet(t, w0, s);
+    		output[tau*j + j] = value;
+    	}
+    	//Increment t
+    	t += dt;
+    }
+
+    outputFile = fopen("output.txt", "w");
+    assert (outputFile != NULL);
+
+    for (int i = 0; i < SIGNAL_SIZE; ++i)
+    {
+    	for (int j = 0; j < SCALE_SIZE; ++j)
+    	{
+    		fprintf(outputFile, "%f\t", output[i*j + j]);
+    	}
+    	fprintf(outputFile, "\n");
+    }
+
+    free(buffer);
+    free(output);
 	fclose(signalFile);
+	fclose(outputFile);
 	return 0;
 }
 
