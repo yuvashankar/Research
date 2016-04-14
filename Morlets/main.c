@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
 
 	token = strtok(buffer, "\n");
 	
-
+    //Get input from txt.
 	int counterVariable = 0;
 	while (token !=NULL)
     {
@@ -63,29 +63,29 @@ int main(int argc, char const *argv[])
     output = malloc( SIGNAL_SIZE * SCALE_SIZE * sizeof(double));
     assert (output != NULL);
 
-    for (int tau = 0; tau < SIGNAL_SIZE; ++tau) //from the beginning of the signa till the end
+    //Preform Morlet transform
+    for (int i = 0; i < SCALE_SIZE; ++i)
     {
-    	for (int j = 0; j < SCALE_SIZE; ++j)
-    	{
-    		//Using a Dydatic Scale for the scales. 
-    		double s = pow(2, -j);
-    		// double multiplier = pow(2, -j/2);
-    		// double mor = Morlet(s*t, w0, )	
+        //Using a Dydatic Scale for the scales. 
+        double s = pow(2, -i);
 
-    		// double psi = 
+        for (int tau = 0; tau < SIGNAL_SIZE; ++tau) //from the beginning of the signal till the end
+        {	
     		double value = signal[tau] * Morlet(t, w0, s);
-    		output[tau*j + j] = value;
+    		output[tau*i + tau] = value;
+            t += dt;
     	}
-    	//Increment t
-    	t += dt;
+        //reset time.
+        t = 0;
     }
 
+    //Print to file
     outputFile = fopen("output.txt", "w");
     assert (outputFile != NULL);
 
-    for (int i = 0; i < SIGNAL_SIZE; ++i)
+    for (int i = 0; i < SCALE_SIZE; ++i)
     {
-    	for (int j = 0; j < SCALE_SIZE; ++j)
+    	for (int j = 0; j < SIGNAL_SIZE; ++j)
     	{
     		fprintf(outputFile, "%f\t", output[i*j + j]);
     	}
@@ -101,6 +101,7 @@ int main(int argc, char const *argv[])
 
 double Morlet(double t, double w0, double a)
 {
+    double x = t/a;
 	double innerBracket = cos(w0 * t) - exp(-0.5 * w0 * w0);
 	double outerExp = exp(-0.5 * t * t);
 	double powerNormal = 1.0/pow(a, -0.5);

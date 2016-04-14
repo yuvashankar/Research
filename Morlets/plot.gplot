@@ -1,0 +1,4 @@
+#Plot Output.txt as a spectrograph
+
+set pm3d map
+splot "output.txt" matrix with pm3d
