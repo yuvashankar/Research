@@ -64,10 +64,11 @@ int main(int argc, char const *argv[])
     assert (output != NULL);
 
     //Preform Morlet transform
-    for (int i = 0; i < SCALE_SIZE; ++i)
+    for (int i = 0; i < (SCALE_SIZE + 1); ++i)
     {
         //Using a Dydatic Scale for the scales. 
-        double s = pow(2, -i);
+        // double s = pow(2, i);
+        double s = 1;
 
         for (int tau = 0; tau < SIGNAL_SIZE; ++tau) //from the beginning of the signal till the end
         {	
@@ -99,13 +100,28 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-double Morlet(double t, double w0, double a)
+double Morlet(double x, double w0, double scale)
 {
-    double x = t/a;
-	double innerBracket = cos(w0 * t) - exp(-0.5 * w0 * w0);
-	double outerExp = exp(-0.5 * t * t);
-	double powerNormal = 1.0/pow(a, -0.5);
+    const double w02=w0*w0;
+    //const double c= sqrt(1+exp(-w02)-2*exp(-.75*w02));
+    const double sqPi = pow(M_PI,-.25);
+    const double k=exp(-.5*w02);
 
-	double morletWave = powerNormal * quadRootPi * outerExp * innerBracket;
-	return(morletWave);
+    double normal = 1./sqrt(scale);
+
+    x=x*scale;
+
+    //double more =  sqPi*exp(-.5*x*x) * (exp( I * w0 * x) -k);
+    // Now we take the real part of it only !!
+    double more =  sqPi*exp(-.5*x*x) * (cos(  w0 * x) -k)*normal;
+    
+    return(more);
+
+ //    double x = t/a;
+	// double innerBracket = cos(w0 * t) - exp(-0.5 * w0 * w0);
+	// double outerExp = exp(-0.5 * t * t);
+	// double powerNormal = 1.0/pow(a, -0.5);
+
+	// double morletWave = powerNormal * quadRootPi * outerExp * innerBracket;
+	// return(morletWave);
 }
