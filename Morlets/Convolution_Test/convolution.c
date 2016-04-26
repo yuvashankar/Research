@@ -13,14 +13,17 @@
 #define MAX_CONV_SIZE 512
 
 double data[DATA_SIZE];
+
 double result[DATA_SIZE];
+double complexResult[DATA_SIZE];
 
 int conSize; // THE SIZE OF THE FILTER THAT WE SLIDE
+
 double conWindow[MAX_CONV_SIZE];
+double complexWindow[MAX_CONV_SIZE];
 
 void fillData(void)
 {
-
 	// Fit a FREQ signal at two points
 	double dt = 1./FS;
 	double fsig = FREQ/FS;
@@ -28,7 +31,7 @@ void fillData(void)
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
-	double t=0;
+	double t = 0;
 
 	for (int i = 0; i < DATA_SIZE; i++)
 	{
@@ -41,6 +44,8 @@ void fillData(void)
 
 		if((i>2000)&(i<2000+3*one_peri))
 			data[i]=cos( (i-2000)*dw+w0);
+
+		// printf("Data[%d]: %f\n", i, data[i]);
 	}
 }
 
@@ -59,6 +64,22 @@ double Morlet(double x, double w0, double scale)
     return(more);
 }
 
+double ComplexMorlet(double x, double w0, double scale)
+{
+	const double w02 = w0 * w0;
+    const double sqPi = pow( M_PI, -.25 );
+    const double k=exp( -.5 * w02 );
+
+    double normal = 1./sqrt(scale);
+
+    x = x * scale;
+
+    // Now we take the complex part.
+    double more =  sqPi * exp(-.5 * x * x) * (sin( w0 * x ) -k ) * normal;
+    
+    return(more);
+}
+
 void createFilter(double frequency)
 {
 	double signalFrequency = frequency/FS;
@@ -66,22 +87,19 @@ void createFilter(double frequency)
 
 	conSize = (int) 1./signalFrequency;
 
-	// double start = 0;
+	// double dt = 4.0/conSize;
+	double dt = 1.0/FS;
 
-	double dt = 4.0/conSize;
-	// double t = -start;
-	// double value;
-	// conSize = (int) 512;
-	// printf("dt = %f\n", dt);
 	double t = 0;
 
 	for (int i = 0; i < conSize; ++i)
 	{
+		double scale = 22.0;
 		// //Use Scale of 0.5
-		conWindow[i] = Morlet( t, 5 , 0.5);
+		conWindow[i] = Morlet (t, 5.0 , scale);
+		complexWindow[i] = ComplexMorlet (t, 5.0, scale);
 		// conWindow[i] = value;
 		t += dt;
-
 	}
 	// printf("time after loop: %f\n", t);
 }
@@ -96,9 +114,18 @@ void convolute(void)
 			if ( (i - j) > 0)
 			{
 				if (j >= 0)
+				{
 					result[i] += data[i - j] * conWindow[j];
+					complexResult[i] += data[i - j] * complexWindow[j];
+				}
+					
+
 				if (j < 0)
+				{
 					result[i] += data[i - j] * conWindow[-j];
+					complexResult[i] -= data[i - j] * complexWindow[-j];
+				}
+					
 			}
 		}
 	}
@@ -114,14 +141,21 @@ int main(void)
 	// FOR THE VALUE IS JUST USE THE ABS
 	FILE* out_file=fopen("DATA","w");
 	
-	
+	// double value;
     for (int i = 0;i < DATA_SIZE;i++)
     {
+    	// printf("Data[%d]: %f\n", i, data[i]);
+    	//a^2 + b^2 = c^2... you should have tried this hours ago.
+    	const double value = sqrt(result[i] * result[i] + complexResult[i] * complexResult[i]);
+
 		if(i<conSize)
-			fprintf(out_file,"%d\t%f\t%f\t%f\n",i,data[i], fabs(result[i]),conWindow[i]);
+			fprintf (out_file, "%d\t%f\t%f\t%f\t%f\t%f\n", i, data[i], result[i],
+				complexResult[i], value, conWindow[i]);
 		else
-			fprintf(out_file,"%d\t%f\t%f\t%f\n",i,data[i], fabs(result[i]),0.);
+			fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\n", i, data[i], result[i],
+				complexResult[i], value, 0.0);
 	}
+
 	fclose(out_file);
 
 	return 0;
