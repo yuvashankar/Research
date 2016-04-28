@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 //Sample Rate
 #define FS 1000.0
@@ -13,21 +14,7 @@
 
 #define MAX_CONV_SIZE 512
 
-double data[DATA_SIZE];
-
-double result[DATA_SIZE * MAX_SCALES];
-double complexResult[DATA_SIZE * MAX_SCALES];
-
-
-
-int conSize; // THE SIZE OF THE FILTER THAT WE SLIDE
-
-double conWindow[MAX_CONV_SIZE * MAX_SCALES];
-double complexWindow[MAX_CONV_SIZE * MAX_SCALES];
-
-double test[MAX_CONV_SIZE];
-
-void fillData(void)
+void fillData(double * data)
 {
 	// Fit a FREQ signal at two points
 	double dt = 1./FS;
@@ -86,18 +73,18 @@ double Magnitude (double x, double y)
 	return (output);
 }
 
-void createFilter(double frequency)
+int createFilter(double* conWindow, double* complexWindow, double frequency)
 {
 	double signalFrequency = frequency/FS;
 	double dw = 2 * M_PI * signalFrequency;
 
-	conSize = (int) 1./signalFrequency;
+	int conSize = (int) 1./signalFrequency;
 	conSize *=4;
 	
 	double dt = 1.0/FS;
 
-	// double scales[MAX_SCALES] = {5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560};
-	double scales[MAX_SCALES];
+	double scales[MAX_SCALES] = {5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560};
+	// double scales[MAX_SCALES];
 
 	double t = 0.0;
 	double temp;
@@ -107,21 +94,19 @@ void createFilter(double frequency)
 
 		for (int j = 0; j < conSize; ++j)
 		{
-			temp = Morlet (t, 5.0 , 22.0);
-			conWindow[i*j + j] = temp;
-			test[i] = temp;
+			temp = Morlet (t, 5.0 , scales[i]);
+			conWindow[i * conSize + j] = temp;
 
-			temp = ComplexMorlet (t, 5.0, 22.0);
-			complexWindow[i*j + j] = temp;
-			// conWindow[i*j + j] = Morlet (t, 5.0 , 22.0);
-			// complexWindow[i*j + j] = ComplexMorlet (t, 5.0, 22.0);
+			temp = ComplexMorlet (t, 5.0, scales[i]);
+			complexWindow[i * conSize + j] = temp;
 
 			t += dt;
 		}
 	}
+	return(conSize);
 }
 
-void convolute(void)
+void convolute(double* data, int conSize, double* conWindow, double* complexWindow, double* result, double* complexResult)
 {
 
 	for (int i = 0; i < MAX_SCALES; ++i)
@@ -137,15 +122,15 @@ void convolute(void)
 				{
 					if (k >= 0)
 					{
-						result[i*j + j] += data[j - k] * conWindow[i*k + k];
-						complexResult[i*j + j] += data[j - k] * complexWindow[i*k + k];
+						result[i * DATA_SIZE + j] += data[j - k] * conWindow[i * MAX_CONV_SIZE + k];
+						complexResult[i * DATA_SIZE + j] += data[j - k] * complexWindow[i * MAX_CONV_SIZE + k];
 					}
 						
 
 					if (j < 0)
 					{
-						result[i*j + j] += data[j - k] * conWindow[-(i*k + k)];
-						complexResult[i*j + j] -= data[j - k] * complexWindow[-(i*k + k)];
+						result[i * DATA_SIZE + j] += data[j - k] * conWindow[-(i * MAX_CONV_SIZE + k)];
+						complexResult[i * DATA_SIZE + j] -= data[j - k] * complexWindow[-(i * MAX_CONV_SIZE + k)];
 					}
 						
 				}
@@ -157,9 +142,30 @@ void convolute(void)
 
 int main(void)
 {
-	fillData();
-	createFilter(FREQ);
-	convolute();
+	//Allocate Memory for the necessary arrays.
+	double *data = malloc(DATA_SIZE * sizeof(double));
+	assert(data != NULL);
+	
+	double *result = malloc(DATA_SIZE * MAX_SCALES * sizeof(double));
+	double *complexResult = malloc (DATA_SIZE*MAX_SCALES * sizeof(double));
+	assert(result != NULL);
+	assert(complexResult != NULL);
+
+	double *conWindow = malloc(MAX_CONV_SIZE * MAX_SCALES * sizeof(double));
+	double *complexWindow = malloc(MAX_CONV_SIZE * MAX_SCALES * sizeof(double));
+	assert(conWindow != NULL);
+	assert(complexWindow!= NULL);
+
+	double * test = malloc(MAX_CONV_SIZE* sizeof(double));
+	assert (test != NULL);
+
+	int conSize;
+
+	fillData(data);
+	
+	conSize = createFilter(conWindow, complexWindow, FREQ);
+
+	convolute(data, conSize, conWindow, complexWindow, result, complexResult);
 
 	// PLOT ALL INTO ONE FILE, EVEN THE FILTER WHICH IS SHORTER
 	FILE* out_file=fopen("DATA.log","w");
@@ -180,28 +186,26 @@ int main(void)
 	// 		fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\n", i, data[i], result[i],
 	// 			complexResult[i], value, 0.0);
 	// }
-	//Find the magnitude. 
-	for (int i = 0; i < MAX_SCALES; ++i)
-	{
-		for (int j = 0; j < DATA_SIZE; ++j)
-		{
-			value = Magnitude(result[i*j + j], complexResult[i*j + j]);
-			result[i*j + j] = value;
-		}
-	}
+
 	//Print into a file. 
-	for (int i = 0; i < MAX_CONV_SIZE; ++i)
+	for (int i = 0; i < DATA_SIZE; ++i)
 	{
-		value = (conWindow[i] - test[i]);
-		fprintf(out_file, "%d\t%f\t%f\n", i, conWindow[i],
-			value);
-		// fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
-		// 	result[0*i + i] + 0., result[1*i + i] + 5., result[2*i + i] + 10, result[3*i + i] + 15,
-		// 	result[4*i + i] + 20, result[5*i + i] + 25, result[6*i + i] + 30, result[7*i + i] + 35,
-		// 	result[8*i + i] + 40, result[9*i + i] + 45);
+		// fprintf(out_file, "%d\t%f\t%f\n", i, conWindow[i],
+		// 	test[i]);
+		fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
+			result[0*i + i] + 0., result[1*i + i] + 5., result[2*i + i] + 10, result[3*i + i] + 15,
+			result[4*i + i] + 20, result[5*i + i] + 25, result[6*i + i] + 30, result[7*i + i] + 35,
+			result[8*i + i] + 40, result[9*i + i] + 45);
 	}
 
 	fclose(out_file);
+
+	//Sanitation Engineering
+	free(data);
+	free(result);
+	free(complexResult);
+	free(conWindow);
+	free(complexWindow);
 
 	return 0;
 }
