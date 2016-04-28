@@ -31,22 +31,16 @@ void fillData(void)
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
-	double t = 0;
-
-	for (int i = 0; i < DATA_SIZE; i++)
-	{
+	double t=0;
+	int i;
+	for(i=0;i<DATA_SIZE;i++){
 		data[i]=0.;
-		if((i>200)&(i<200+one_peri)) 
-			data[i]=cos( (i-200)*dw+w0);
-
-		if((i>1000)&(i<1000+2*one_peri))
-			data[i]=cos( (i-1000)*dw+w0);
-
-		if((i>2000)&(i<2000+3*one_peri))
-			data[i]=cos( (i-2000)*dw+w0);
-
-		// printf("Data[%d]: %f\n", i, data[i]);
+		if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
+		//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
 	}
+
 }
 
 double Morlet(double x, double w0, double scale)
@@ -86,12 +80,13 @@ void createFilter(double frequency)
 	double dw = 2 * M_PI * signalFrequency;
 
 	conSize = (int) 1./signalFrequency;
+	conSize *=4;
 
 	// double dt = 4.0/conSize;
 	double dt = 1.0/FS;
 
-	double t = 0;
 
+	double t = 0;
 	for (int i = 0; i < conSize; ++i)
 	{
 		double scale = 22.0;

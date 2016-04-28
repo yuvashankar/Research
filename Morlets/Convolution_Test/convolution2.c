@@ -9,7 +9,7 @@
 //Measuring Frequency
 #define FREQ 19.
 
-#define MAX_SCALE 50
+#define MAX_SCALE 10
 
 #define DATA_SIZE 3000
 
@@ -23,7 +23,9 @@ double data[DATA_SIZE];
 
 double result[DATA_SIZE * MAX_SCALE];
 double complexResult[DATA_SIZE * MAX_SCALE];
+
 double oldResult[DATA_SIZE];
+double oldComplex[DATA_SIZE];
 
 int conSize;
 double conWindow[MAX_CONV_SIZE];
@@ -122,25 +124,37 @@ void createFilter(double frequency, double scale)
 	double dw = 2 * M_PI * signalFrequency;
 
 	conSize = (int) 1./signalFrequency;
+	conSize *=4;
 
-	double dt = 4.0/conSize;
+	// double dt = 4.0/conSize;
+	double dt = 1.0/FS;
+
 
 	double t = 0;
-
 	for (int i = 0; i < conSize; ++i)
 	{
-		double scale = 0.25;
+		// double scale = 22.0;
 		// //Use Scale of 0.5
-		conWindow[i] = Morlet (t, 5 , scale);
-		complexWindow[i] = ComplexMorlet (t, 5, scale);
+		conWindow[i] = Morlet (t, 5.0 , scale);
+		complexWindow[i] = ComplexMorlet (t, 5.0, scale);
 		// conWindow[i] = value;
 		t += dt;
 	}
 	// printf("time after loop: %f\n", t);
 }
 
+double magnitude (double x, double y)
+{
+	double value = x * x +
+		y * y;
+	value = sqrt (value);
+
+	return (value);
+}
+
 void convolute(void)
 {
+	double scales[MAX_SCALE] = {5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560};
 
 	double lowerScale = MORLET_CENT_FREQ / (LOWER_FREQ_BOUND * FS);
 	double upperScale = MORLET_CENT_FREQ / (UPPER_FREQ_BOUND * FS);
@@ -151,7 +165,7 @@ void convolute(void)
 	for (int i = 0; i < MAX_SCALE; ++i)
 	{
 		// double scale = pow(2, i);
-		createFilter(FREQ, scale);
+		createFilter(FREQ, scales[i]);
 		scale += step;
 		for (int j = 0; j < DATA_SIZE; ++j) //For every element in the data file
 		{
@@ -188,9 +202,18 @@ void oldConvolute(void)
 			if ( (i - j) > 0)
 			{
 				if (j >= 0)
+				{
 					oldResult[i] += data[i - j] * conWindow[j];
+					oldComplex[i] += data[i - j] * complexWindow[j];
+				}
+					
+
 				if (j < 0)
+				{
 					oldResult[i] += data[i - j] * conWindow[-j];
+					oldComplex[i] -= data[i - j] * complexWindow[i];
+				}
+					
 			}
 		}
 	}
@@ -208,29 +231,55 @@ int main(void)
 	FILE* out_file=fopen("DATA.log","w");
 	
 	double value;
+
+
 	for (int i = 0; i < MAX_SCALE; ++i)
-    {
-    	for (int j = 0; j < DATA_SIZE; ++j)
-    	{
-    		value = result[i*j + j] * result[i*j + j] + 
-    			complexResult[i*j + j] * complexResult[i*j + j];
-    		value = fabs(sqrt(value));
-    		fprintf(out_file, "%f\t", value);
-    	}
-    	fprintf(out_file, "\n");
-    }
+	{
+		for (int j = 0; j < DATA_SIZE; ++j)
+		{
+			value = magnitude(result[i*j + j], result[i*j + j]);
+
+			result[i*j + j] = value;
+		}
+	}
+
+	// for (int i = 0; i < MAX_SCALE; ++i)
+ //    {
+ //    	for (int j = 0; j < DATA_SIZE; ++j)
+ //    	{
+ //    		// value = result[i*j + j] * result[i*j + j] + 
+ //    		// 	complexResult[i*j + j] * complexResult[i*j + j];
+ //    		// value = sqrt(value);
+ //    		value = result[i*j + j];
+
+ //    		fprintf(out_file, "%f\t", value);
+ //    	}
+    	
+ //    	fprintf(out_file, "\n");
+ //    }
+
+	for (int i = 0; i < DATA_SIZE; ++i)
+	{
+		fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
+			result[0*i + i] + 0., result[1*i + i] + 5., result[2*i + i] + 10, result[3*i + i] + 15,
+			result[4*i + i] + 20, result[5*i + i] + 25, result[6*i + i] + 30, result[7*i + i] + 35,
+			result[8*i + i] + 40, result[9*i + i] + 45);
+	}
+
     fclose(out_file);
 
-    createFilter(FREQ, 0.5);
+    createFilter(FREQ, 22.);
     oldConvolute();
 
     FILE* data_output = fopen("Output.log", "w");
     for(int i=0;i<DATA_SIZE;i++)
     {
+
+    	value = magnitude (oldResult[i], oldComplex[i]);
 		if(i<conSize)
-			fprintf(data_output,"%d\t%f\t%f\t%f\n",i,data[i], fabs(oldResult[i]),conWindow[i]);
+			fprintf(data_output,"%d\t%f\t%f\t%f\t%f\t%f\n",i,data[i], fabs(oldResult[i]),conWindow[i], complexWindow[i], value);
 		else
-			fprintf(data_output,"%d\t%f\t%f\t%f\n",i,data[i], fabs(oldResult[i]),0.);
+			fprintf(data_output,"%d\t%f\t%f\t%f\t%f\t%f\n",i,data[i], fabs(oldResult[i]),0. , 0., value);
 	}
 
 	return 0;
