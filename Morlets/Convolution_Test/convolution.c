@@ -95,10 +95,10 @@ int createFilter(double* conWindow, double* complexWindow, double frequency)
 		for (int j = 0; j < conSize; ++j)
 		{
 			temp = Morlet (t, 5.0 , scales[i]);
-			conWindow[i * conSize + j] = temp;
+			conWindow[i * MAX_CONV_SIZE + j] = temp;
 
 			temp = ComplexMorlet (t, 5.0, scales[i]);
-			complexWindow[i * conSize + j] = temp;
+			complexWindow[i * MAX_CONV_SIZE + j] = temp;
 
 			t += dt;
 		}
@@ -188,14 +188,19 @@ int main(void)
 	// }
 
 	//Print into a file. 
-	for (int i = 0; i < DATA_SIZE; ++i)
+	for (int i = 0; i < MAX_CONV_SIZE; ++i)
 	{
 		// fprintf(out_file, "%d\t%f\t%f\n", i, conWindow[i],
 		// 	test[i]);
+		// fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
+		// 	result[0*i + i] + 0., result[1*i + i] + 5., result[2*i + i] + 10, result[3*i + i] + 15,
+		// 	result[4*i + i] + 20, result[5*i + i] + 25, result[6*i + i] + 30, result[7*i + i] + 35,
+		// 	result[8*i + i] + 40, result[9*i + i] + 45);
+
 		fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
-			result[0*i + i] + 0., result[1*i + i] + 5., result[2*i + i] + 10, result[3*i + i] + 15,
-			result[4*i + i] + 20, result[5*i + i] + 25, result[6*i + i] + 30, result[7*i + i] + 35,
-			result[8*i + i] + 40, result[9*i + i] + 45);
+			conWindow[0*conSize + i] + 0., conWindow[1*conSize + i] + 5., conWindow[2*conSize + i] + 10, conWindow[3*conSize + i] + 15,
+			conWindow[4*conSize + i] + 20, conWindow[5*conSize + i] + 25, conWindow[6*conSize + i] + 30, conWindow[7*conSize + i] + 35,
+			conWindow[8*conSize + i] + 40, conWindow[9*conSize + i] + 45);
 	}
 
 	fclose(out_file);
