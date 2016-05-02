@@ -137,7 +137,7 @@ int main(void)
 	FILE* out_file=fopen("DATA.log","w");
 	
 	// double value;
-    for (int i = 0;i < DATA_SIZE;i++)
+    for (int i = 0; i < DATA_SIZE; i++)
     {
     	// printf("Data[%d]: %f\n", i, data[i]);
     	//a^2 + b^2 = c^2... you should have tried this hours ago.
