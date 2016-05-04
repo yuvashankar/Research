@@ -24,6 +24,19 @@ int main(void)
 
     FILE* out_file=fopen("DATA.log","w");
 
+    double lowerWavelet = 0;
+    double upperWavelet = 10;
+    double step = (upperWavelet - lowerWavelet) / DATA_SIZE;
+    double value;
+    double w = lowerWavelet;
+
+    for (int i = 0; i < DATA_SIZE; ++i)
+    {
+        value = FourierMorlet(w, 5.0, 22.0);
+        w +=step;
+        fprintf(out_file, "%f\t%f\n", w, value);
+    }
+
     //This used to be the convolution stuff commented out to test out the Fourier Convolution stuff. 
     // int conSize;
     // fillData(data);
