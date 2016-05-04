@@ -10,7 +10,7 @@
 #define FREQ 19.0
 
 #define DATA_SIZE 3000
-#define MAX_SCALES 10
+#define MAX_SCALES 11
 
 #define MORLET_CENT_FREQ 0.8125 //This was taken from the matlab centfreq command not sure if it still pertains to our situation
 #define LOWER_FREQ_BOUND 5.0
@@ -95,10 +95,12 @@ int createFilter(double* conWindow, double* complexWindow, double frequency)
 	// double step = (upperScale - lowerScale) / MAX_SCALES;
 	// double scale = lowerScale;
 
-	double step = -10.0;
-	double scale = 100.0;
+	// double step = -10.0;
+	// double scale = 100.0;
 
 	double t = 0.0;
+	double scale = 2 * dt; 
+
 	for (int i = 0; i < MAX_SCALES; ++i) //Run ten times.
 	{
 		t = 0.0; //Gotta reset the time to zero for every scale. 
@@ -110,13 +112,13 @@ int createFilter(double* conWindow, double* complexWindow, double frequency)
 			t += dt;
 
 		}
-		
-		scale += step;
+		scale = (2 * dt) * pow(2, i + 1);
+		// scale += step;
 		
 		double w0 = (MORLET_CENT_FREQ * FS) / scale;
 		printf("Scale: %f, w0 at scale: %f\n", scale, w0);
 	}
-	printf("Lower Scale: %f, Upper Scale: %f, Scale Step: %f\n", lowerScale, upperScale, step);
+	// printf("Lower Scale: %f, Upper Scale: %f, Scale Step: %f\n", lowerScale, upperScale, step);
 	return(conSize);
 }
 
@@ -191,22 +193,25 @@ int main(void)
 		{
 			value = Magnitude(result[i * DATA_SIZE + j], complexResult[i * DATA_SIZE + j]);
 			result[i * DATA_SIZE + j] = value;
-		}	
+
+			fprintf(out_file, "%f\t", result[i*DATA_SIZE + j]);
+		}
+		fprintf(out_file,"\n");
 	}
 
 	//Print into a file. 
-	for (int i = 0; i < DATA_SIZE; ++i)
-	{
-		fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
-			result[0*DATA_SIZE + i] + 0., result[1*DATA_SIZE + i] + 5., result[2*DATA_SIZE + i] + 10, result[3*DATA_SIZE + i] + 15,
-			result[4*DATA_SIZE + i] + 20, result[5*DATA_SIZE + i] + 25, result[6*DATA_SIZE + i] + 30, result[7*DATA_SIZE + i] + 35,
-			result[8*DATA_SIZE + i] + 40, result[9*DATA_SIZE + i] + 45);
+	// for (int i = 0; i < DATA_SIZE; ++i)
+	// {
+	// 	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
+	// 		result[0*DATA_SIZE + i] + 0., result[1*DATA_SIZE + i] + 5., result[2*DATA_SIZE + i] + 10, result[3*DATA_SIZE + i] + 15,
+	// 		result[4*DATA_SIZE + i] + 20, result[5*DATA_SIZE + i] + 25, result[6*DATA_SIZE + i] + 30, result[7*DATA_SIZE + i] + 35,
+	// 		result[8*DATA_SIZE + i] + 40, result[9*DATA_SIZE + i] + 45);
 
-		// fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
-		// 	conWindow[0*MAX_CONV_SIZE + i], conWindow[1*MAX_CONV_SIZE + i], conWindow[2*MAX_CONV_SIZE + i], conWindow[3*MAX_CONV_SIZE + i],
-		// 	conWindow[4*MAX_CONV_SIZE + i], conWindow[5*MAX_CONV_SIZE + i], conWindow[6*MAX_CONV_SIZE + i], conWindow[7*MAX_CONV_SIZE + i],
-		// 	conWindow[8*MAX_CONV_SIZE + i], conWindow[9*MAX_CONV_SIZE + i]);
-	}
+	// 	// fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
+	// 	// 	conWindow[0*MAX_CONV_SIZE + i], conWindow[1*MAX_CONV_SIZE + i], conWindow[2*MAX_CONV_SIZE + i], conWindow[3*MAX_CONV_SIZE + i],
+	// 	// 	conWindow[4*MAX_CONV_SIZE + i], conWindow[5*MAX_CONV_SIZE + i], conWindow[6*MAX_CONV_SIZE + i], conWindow[7*MAX_CONV_SIZE + i],
+	// 	// 	conWindow[8*MAX_CONV_SIZE + i], conWindow[9*MAX_CONV_SIZE + i]);
+	// }
 	fclose(out_file);
 
 	//Sanitation Engineering
