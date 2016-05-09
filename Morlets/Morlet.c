@@ -24,6 +24,38 @@ void fillData(double * data)
 	}
 }
 
+void FillDataComplex(fftw_complex * data)
+{
+	// Fit a FREQ signal at two points
+	// double dt = 1./FS;
+	double fsig = FREQ/FS;
+	double dw = 2*M_PI*fsig;
+	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
+	int one_peri = (int)1./fsig;
+	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	// double t=0;
+	int i;
+	for(i=0;i<DATA_SIZE;i++)
+	{
+		data[i][0]= 0.; data[i][1] = 0.;
+		if((i>200)&(i<400))
+		{
+			data[i][0]=sin( (i-200)*dw+w0);
+			data[i][1] = 0.0;
+		}
+		if((i>1000)&(i<1000+2*one_peri))
+		{
+			data[i][0]=sin( (i-200)*dw+w0);
+			data[i][1] = 0.0;
+		}
+		if((i>2000)&(i<2000+3*one_peri))
+		{
+			data[i][0]=sin( (i-200)*dw+w0);
+			data[i][1] = 0.0;
+		}
+	}
+}
+
 double Morlet(double x, double w0, double scale)
 {
     const double w02 = w0 * w0;
@@ -87,21 +119,40 @@ int createFilter(double* conWindow, double* complexWindow, double frequency)
 	double t = 0.0;
 	double scale;
 
-	for (int i = 0; i < MAX_SCALES; ++i) //Run ten times.
+	double normal; 
+	for (int i = 0; i < MAX_SCALES; ++i)
 	{
 		t = 0.0; //Gotta reset the time to zero for every scale. 
 		scale = pow(2, i);
-		printf("Scale is: %f\n", scale);
+		// printf("Scale is: %f\n", scale);
+		normal = sqrt(2*M_PI*scale/dt);
+
 
 		for (int j = 0; j < conSize; ++j)
 		{
-			conWindow[i * MAX_CONV_SIZE + j] = Morlet (t, 5.0 , scale);
+			conWindow[i * MAX_CONV_SIZE + j] = normal * Morlet (t, 5.0 , scale);
 			complexWindow[i * MAX_CONV_SIZE + j] = ComplexMorlet (t, 5.0, scale);
 			t += dt;
 		}
 	}
 
 	return(conSize);
+}
+
+int CreateComplexFilter(double* conWindow, double frequency)
+{
+	double scale = 22.0;
+	double dt = 1.0/FS;
+	double normal = sqrt (2 * M_PI * scale / dt);
+	double df = 1./DATA_SIZE/dt;
+	printf("Dt = %f, Df = %f\n", dt, df);
+
+	for (int i = 0; i < DATA_SIZE; ++i)
+	{
+		conWindow[i] = FourierMorlet(i * df, 5.0, scale);
+	}
+
+	return df;
 }
 
 void convolute(double* data, int conSize, double* conWindow, double* complexWindow, double* result, double* complexResult)

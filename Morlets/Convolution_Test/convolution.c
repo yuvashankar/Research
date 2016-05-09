@@ -31,10 +31,11 @@ void fillData(double * data)
 	int i;
 	for(i=0;i<DATA_SIZE;i++){
 		data[i]=0.;
-		if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+		if(i == 1000) data[i] = 1;
+		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
+		// //if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		// if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		// if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
 	}
 }
 
@@ -194,24 +195,24 @@ int main(void)
 			value = Magnitude(result[i * DATA_SIZE + j], complexResult[i * DATA_SIZE + j]);
 			result[i * DATA_SIZE + j] = value;
 
-			fprintf(out_file, "%f\t", result[i*DATA_SIZE + j]);
+			// fprintf(out_file, "%f\t", result[i*DATA_SIZE + j]);
 		}
-		fprintf(out_file,"\n");
+		// fprintf(out_file,"\n");
 	}
 
-	//Print into a file. 
-	// for (int i = 0; i < DATA_SIZE; ++i)
-	// {
-	// 	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
-	// 		result[0*DATA_SIZE + i] + 0., result[1*DATA_SIZE + i] + 5., result[2*DATA_SIZE + i] + 10, result[3*DATA_SIZE + i] + 15,
-	// 		result[4*DATA_SIZE + i] + 20, result[5*DATA_SIZE + i] + 25, result[6*DATA_SIZE + i] + 30, result[7*DATA_SIZE + i] + 35,
-	// 		result[8*DATA_SIZE + i] + 40, result[9*DATA_SIZE + i] + 45);
+	// Print into a file. 
+	for (int i = 0; i < DATA_SIZE; ++i)
+	{
+		fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
+			result[0*DATA_SIZE + i] + 0., result[1*DATA_SIZE + i] + 5., result[2*DATA_SIZE + i] + 10, result[3*DATA_SIZE + i] + 15,
+			result[4*DATA_SIZE + i] + 20, result[5*DATA_SIZE + i] + 25, result[6*DATA_SIZE + i] + 30, result[7*DATA_SIZE + i] + 35,
+			result[8*DATA_SIZE + i] + 40, result[9*DATA_SIZE + i] + 45);
 
-	// 	// fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
-	// 	// 	conWindow[0*MAX_CONV_SIZE + i], conWindow[1*MAX_CONV_SIZE + i], conWindow[2*MAX_CONV_SIZE + i], conWindow[3*MAX_CONV_SIZE + i],
-	// 	// 	conWindow[4*MAX_CONV_SIZE + i], conWindow[5*MAX_CONV_SIZE + i], conWindow[6*MAX_CONV_SIZE + i], conWindow[7*MAX_CONV_SIZE + i],
-	// 	// 	conWindow[8*MAX_CONV_SIZE + i], conWindow[9*MAX_CONV_SIZE + i]);
-	// }
+		// fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, data[i],
+		// 	conWindow[0*MAX_CONV_SIZE + i], conWindow[1*MAX_CONV_SIZE + i], conWindow[2*MAX_CONV_SIZE + i], conWindow[3*MAX_CONV_SIZE + i],
+		// 	conWindow[4*MAX_CONV_SIZE + i], conWindow[5*MAX_CONV_SIZE + i], conWindow[6*MAX_CONV_SIZE + i], conWindow[7*MAX_CONV_SIZE + i],
+		// 	conWindow[8*MAX_CONV_SIZE + i], conWindow[9*MAX_CONV_SIZE + i]);
+	}
 	fclose(out_file);
 
 	//Sanitation Engineering

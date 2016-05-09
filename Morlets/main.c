@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-#include <math.h>
+
 
 #include "Morlet.h"
 
@@ -12,50 +8,42 @@ int main(void)
     double *data = malloc(DATA_SIZE * sizeof(double));
     assert(data != NULL);
     
-    double *result = malloc(DATA_SIZE * MAX_SCALES * sizeof(double));
+    double *result = malloc(DATA_SIZE * sizeof(double));
     double *complexResult = malloc (DATA_SIZE*MAX_SCALES * sizeof(double));
-    assert(result != NULL);
-    assert(complexResult != NULL);
+    assert(result != NULL); assert(complexResult != NULL);
 
-    double *conWindow = malloc(MAX_CONV_SIZE * MAX_SCALES * sizeof(double));
-    double *complexWindow = malloc(MAX_CONV_SIZE * MAX_SCALES * sizeof(double));
-    assert(conWindow != NULL);
-    assert(complexWindow!= NULL);
+    double *conWindow = malloc(DATA_SIZE * sizeof(double));
+    double *complexWindow = malloc(MAX_CONV_SIZE * DATA_SIZE * sizeof(double));
+    assert(conWindow != NULL); assert(complexWindow != NULL); 
+    
+    fftw_complex *data_in, *fft_result;
+    fftw_plan plan_forward;
+
+    data_in = fftw_alloc_complex(DATA_SIZE); fft_result = fftw_alloc_complex(DATA_SIZE);
+
+
 
     FILE* out_file=fopen("DATA.log","w");
+    assert(out_file != NULL);
 
-    double lowerWavelet = 0;
-    double upperWavelet = 10;
-    double step = (upperWavelet - lowerWavelet) / DATA_SIZE;
+    //We've just found the Fourier Transform of the Data Wavelet. 
+    plan_forward = fftw_plan_dft_1d(DATA_SIZE, data_in, fft_result, FFTW_FORWARD, FFTW_ESTIMATE|FFTW_PRESERVE_INPUT);
+    fftw_execute(plan_forward);
+
+    FillDataComplex(data_in);
+    double df = CreateComplexFilter(conWindow, FREQ);
     double value;
-    double w = lowerWavelet;
+    for (int i = 0; i < DATA_SIZE; ++i)
+    {
+        value = fft_result[i][0] * conWindow[i];
+        result[i] = value;
+    }
 
     for (int i = 0; i < DATA_SIZE; ++i)
     {
-        value = FourierMorlet(w, 5.0, 22.0);
-        w +=step;
-        fprintf(out_file, "%f\t%f\n", w, value);
+        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, data_in[i][0], conWindow[i], fft_result[i][1], result[i]);
     }
-
-    //This used to be the convolution stuff commented out to test out the Fourier Convolution stuff. 
-    // int conSize;
-    // fillData(data);
-    // conSize = createFilter(conWindow, complexWindow, FREQ);
-    // convolute(data, conSize, conWindow, complexWindow, result, complexResult);
-    // FILE* out_file=fopen("DATA.log","w");
     
-    // double value;
-    // for (int i = 0; i < MAX_SCALES; ++i)
-    // {
-    //     for (int j = 0; j < DATA_SIZE; ++j)
-    //     {
-    //         value = Magnitude(result[i * DATA_SIZE + j], complexResult[i * DATA_SIZE + j]);
-    //         result[i * DATA_SIZE + j] = value;
-
-    //         fprintf(out_file, "%f\t", result[i*DATA_SIZE + j]);
-    //     }
-    //     fprintf(out_file,"\n");
-    // }
     fclose(out_file);
 
     //Sanitation Engineering
@@ -64,6 +52,10 @@ int main(void)
     free(complexResult);
     free(conWindow);
     free(complexWindow);
+
+    //FFTW sanitation. 
+    fftw_destroy_play(play_forward);
+    fftw_free(data_in); fftw_free(fft_result);
 
     return 0;
 }
