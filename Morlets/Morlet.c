@@ -37,6 +37,8 @@ void FillDataComplex(fftw_complex * data)
 	int i;
 	for(i=0;i<DATA_SIZE;i++)
 	{
+		// data[i][0] = sin(i * dw + w0);
+		// data[i][1] = 0.0;
 		data[i][0]= 0.; data[i][1] = 0.;
 		if((i>200)&(i<400))
 		{
