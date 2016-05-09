@@ -149,9 +149,13 @@ int CreateComplexFilter(double* conWindow, double frequency)
 	double df = 1./DATA_SIZE/dt;
 	printf("Dt = %f, Df = %f\n", dt, df);
 
+	double value;
 	for (int i = 0; i < DATA_SIZE; ++i)
 	{
-		conWindow[i] = FourierMorlet(i * df, 5.0, scale);
+		value = FourierMorlet(i*df, 5.0, scale);
+		value = value * normal;
+		
+		conWindow[i] = value;
 	}
 
 	return df;
