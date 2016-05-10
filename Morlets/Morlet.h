@@ -20,7 +20,7 @@
 #define FREQ 19.0
 
 #define DATA_SIZE 3000
-#define MAX_SCALES 10
+#define MAX_SCALES 50
 
 #define MORLET_CENT_FREQ 0.8125 //This was taken from the matlab centfreq command not sure if it still pertains to our situation
 #define LOWER_FREQ_BOUND 5.0

@@ -171,7 +171,7 @@ int CreateComplexFilter(double* conWindow, double frequency)
 	
 	
 	printf("Ending df: %f\n", DATA_SIZE * df);
-	return df;
+	return J;
 }
 
 void convolute(double* data, int conSize, double* conWindow, double* complexWindow, double* result, double* complexResult)
