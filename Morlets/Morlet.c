@@ -147,21 +147,29 @@ int createFilter(double* conWindow, double* complexWindow, double frequency)
 
 int CreateComplexFilter(double* conWindow, double frequency)
 {
-	double scale = 22.0;
-	double dt = 1.0/FS;
-	// double normal = sqrt (2 * M_PI * scale / dt);
-	double df = 1./DATA_SIZE/dt;
-	// printf("Dt = %f, Df = %f\n", dt, df);
-	printf("Starting df: %f\n", df);
-
+	double scale;
 	double value;
-	for (int i = 0; i < DATA_SIZE; ++i)
+
+	double dt = 1.0/FS;
+	double df = 1./DATA_SIZE/dt;
+	double s0 = 2 * dt;
+	double dj = 0.25;
+	
+	int J = (int) floor((log(DATA_SIZE * dt / s0) / log(2.0)) / dj);
+
+	for (int i = 0; i < 10; ++i)
 	{
-		value = FourierMorlet(i*df, 5.0, scale);
-		// value = value * normal;
-		
-		conWindow[i] = value;
+		scale = pow(2, i);
+		for (int j = 0; j < DATA_SIZE; ++j)
+		{
+			value = FourierMorlet(j*df, 5.0, scale);
+			// value = value * normal;
+			
+			conWindow[i * DATA_SIZE + j] = value;
+		}
 	}
+	
+	
 	printf("Ending df: %f\n", DATA_SIZE * df);
 	return df;
 }
