@@ -78,7 +78,7 @@ double FourierMorlet(double w, double w0, double scale)
 	const double w02 = w0 * w0;
 	const double k = exp(-0.5 * w02);
 	const double cSigma = sqrt((1. + exp(-w02) - 2*exp(-0.75*w02)));
-
+	
 	double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
 	out = cSigma * out;
 	return(out);

@@ -5,18 +5,7 @@
 int main(void)
 {
     //Allocate Memory for the necessary arrays.
-    double *data = malloc(DATA_SIZE * sizeof(double));
-    assert(data != NULL);
-    
-    // double *result = malloc(DATA_SIZE * sizeof(double));
-    // double *complexResult = malloc (DATA_SIZE*MAX_SCALES * sizeof(double));
-    // assert(complexResult != NULL);
-    // assert(result != NULL); 
-
-
     double *conWindow = malloc(DATA_SIZE * sizeof(double));
-    // double *complexWindow = malloc(MAX_CONV_SIZE * DATA_SIZE * sizeof(double));
-    // assert(complexWindow != NULL); 
     assert(conWindow != NULL); 
     
     //FFTW allocations
@@ -65,10 +54,7 @@ int main(void)
 
     //Sanitation Engineering
     free(data);
-    // free(result);
-    // free(complexResult);
     free(conWindow);
-    // free(complexWindow);
 
     //FFTW sanitation. 
     fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backwards);
