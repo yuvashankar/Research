@@ -8,10 +8,10 @@ int main(void)
     double *data = malloc(DATA_SIZE * sizeof(double));
     assert(data != NULL);
     
-    double *result = malloc(DATA_SIZE * sizeof(double));
+    // double *result = malloc(DATA_SIZE * sizeof(double));
     // double *complexResult = malloc (DATA_SIZE*MAX_SCALES * sizeof(double));
     // assert(complexResult != NULL);
-    assert(result != NULL); 
+    // assert(result != NULL); 
 
 
     double *conWindow = malloc(DATA_SIZE * sizeof(double));
@@ -26,6 +26,7 @@ int main(void)
     data_in = fftw_alloc_complex(DATA_SIZE); 
     fft_data = fftw_alloc_complex(DATA_SIZE);
     result = fftw_alloc_complex(DATA_SIZE);
+    
 
     //Open up the Output File
     FILE* out_file=fopen("DATA.log","w");
@@ -40,10 +41,14 @@ int main(void)
     fftw_execute(plan_forward);
 
     double value;
+    double value2;
     for (int i = 0; i < DATA_SIZE; ++i)
     {
         value = fft_data[i][0] * conWindow[i];
+        value2 = fft_data[i][1] * conWindow[i];
+
         fft_data[i][0] = value;
+        fft_data[i][1] = value2;
     }
     
     //Calculate the backwards FFT of the result and daughter wavelets.
@@ -53,14 +58,14 @@ int main(void)
     //Print to file
     for (int i = 0; i < DATA_SIZE; ++i)
     {
-        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, data_in[i][0], result[i][0], result[i][1], result[i]);
+        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, data_in[i][0], fft_data[i][0], fft_data[i][1], result[i][0]);
     }
 
     fclose(out_file);
 
     //Sanitation Engineering
     free(data);
-    free(result);
+    // free(result);
     // free(complexResult);
     free(conWindow);
     // free(complexWindow);
