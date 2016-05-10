@@ -1,4 +1,6 @@
 #Plot Output.txt as a spectrograph
 
-set pm3d map
-splot "DATA.log" matrix with pm3d
+#set pm3d map
+#splot "DATA.log" matrix with pm3d
+
+plot "DATA.log" u 1:2 w l, "DATA.log" u 1:5 w l

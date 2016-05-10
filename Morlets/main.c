@@ -34,10 +34,10 @@ int main(void)
     for (int i = 0; i < DATA_SIZE; ++i)
     {
         value = fft_data[i][0] * conWindow[i];
-        value2 = fft_data[i][1] * conWindow[i];
+        // value2 = fft_data[i][1] * conWindow[i];
 
         fft_data[i][0] = value;
-        fft_data[i][1] = value2;
+        // fft_data[i][1] = value2;
     }
     
     //Calculate the backwards FFT of the result and daughter wavelets.
@@ -53,7 +53,6 @@ int main(void)
     fclose(out_file);
 
     //Sanitation Engineering
-    free(data);
     free(conWindow);
 
     //FFTW sanitation. 
