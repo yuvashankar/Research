@@ -50,7 +50,7 @@ void FillDataComplex(fftw_complex * data)
 			data[i][0]=sin( (i-200)*dw+w0);
 			data[i][1] = 0.0;
 		}
-		if((i>2000)&(i<2000+3*one_peri))
+		if((i>2500)&(i<2500+3*one_peri))
 		{
 			data[i][0]=sin( (i-200)*dw+w0);
 			data[i][1] = 0.0;
@@ -75,12 +75,17 @@ double Morlet(double x, double w0, double scale)
 
 double FourierMorlet(double w, double w0, double scale)
 {
-	const double w02 = w0 * w0;
-	const double k = exp(-0.5 * w02);
-	const double cSigma = sqrt((1. + exp(-w02) - 2*exp(-0.75*w02)));
-	
-	double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
-	out = cSigma * out;
+	// const double w02 = w0 * w0;
+	// const double k = exp(-0.5 * w02);
+	// const double cSigma = sqrt((1. + exp(-w02) - 2*exp(-0.75*w02)));
+
+	// double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
+	// out = cSigma * out;
+	// return(out);
+
+	const double exponent = -0.5 * (scale * w - w0)*(scale * w - w0);
+	const double normal = sqrt(scale * w) * quadRootPi * sqrt(DATA_SIZE);
+	double out = normal * exp(exponent);
 	return(out);
 }
 
@@ -144,19 +149,20 @@ int CreateComplexFilter(double* conWindow, double frequency)
 {
 	double scale = 22.0;
 	double dt = 1.0/FS;
-	double normal = sqrt (2 * M_PI * scale / dt);
+	// double normal = sqrt (2 * M_PI * scale / dt);
 	double df = 1./DATA_SIZE/dt;
-	printf("Dt = %f, Df = %f\n", dt, df);
+	// printf("Dt = %f, Df = %f\n", dt, df);
+	printf("Starting df: %f\n", df);
 
 	double value;
 	for (int i = 0; i < DATA_SIZE; ++i)
 	{
 		value = FourierMorlet(i*df, 5.0, scale);
-		value = value * normal;
+		// value = value * normal;
 		
 		conWindow[i] = value;
 	}
-
+	printf("Ending df: %f\n", DATA_SIZE * df);
 	return df;
 }
 

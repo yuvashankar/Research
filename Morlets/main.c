@@ -30,7 +30,6 @@ int main(void)
     fftw_execute(plan_forward);
 
     double value;
-    double value2;
     for (int i = 0; i < DATA_SIZE; ++i)
     {
         value = fft_data[i][0] * conWindow[i];
@@ -47,7 +46,8 @@ int main(void)
     //Print to file
     for (int i = 0; i < DATA_SIZE; ++i)
     {
-        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, data_in[i][0], fft_data[i][0], fft_data[i][1], result[i][0]);
+        value = Magnitude(result[i][0], result[i][1]);
+        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, data_in[i][0], result[i][0]/1500, result[i][1]/1500, value/1500);
     }
 
     fclose(out_file);
