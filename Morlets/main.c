@@ -4,6 +4,10 @@
 
 int main(void)
 {
+    //Find the closest 2 power of DATA_SIZE, and pad the arrays to the left with that. 
+    int pad = floor(log(DATA_SIZE)/log(2.0) + 0.4999);
+    double PADDED_SIZE = pow(2, pad + 1);
+
     //Allocate Memory for the necessary arrays.
     double *conWindow = malloc(DATA_SIZE * sizeof(double));
     assert(conWindow != NULL); 
@@ -12,12 +16,12 @@ int main(void)
     fftw_complex *data_in, *fft_data, *result;
     fftw_plan plan_forward, plan_backwards;
 
-    data_in = fftw_alloc_complex(DATA_SIZE); 
-    fft_data = fftw_alloc_complex(DATA_SIZE);
-    result = fftw_alloc_complex(DATA_SIZE);
+    data_in = fftw_alloc_complex(PADDED_SIZE); 
+    fft_data = fftw_alloc_complex(PADDED_SIZE);
+    result = fftw_alloc_complex(PADDED_SIZE);
     
 
-    //Open up the Output File
+    //Open the Output file
     FILE* out_file=fopen("DATA.log","w");
     assert(out_file != NULL);
 
@@ -26,7 +30,7 @@ int main(void)
     CreateComplexFilter(conWindow, FREQ);
 
     //Plan and calculate the Fourier Transform of the data, the fft is stored in fft_data
-    plan_forward = fftw_plan_dft_1d(DATA_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
+    plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan_forward);
 
     double value;
@@ -40,7 +44,7 @@ int main(void)
     }
     
     //Calculate the backwards FFT of the result and daughter wavelets.
-    plan_backwards = fftw_plan_dft_1d(DATA_SIZE, fft_data, result, FFTW_BACKWARD, FFTW_ESTIMATE);
+    plan_backwards = fftw_plan_dft_1d(PADDED_SIZE, fft_data, result, FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_execute(plan_backwards);
 
     //Print to file
