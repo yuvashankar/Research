@@ -33,7 +33,7 @@ int main(void)
 
     for (int i = 0; i < DATA_SIZE; ++i)
     {
-        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", 
+        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
             conWindow[0*DATA_SIZE + i], conWindow[1*DATA_SIZE + i], conWindow[2*DATA_SIZE + i],
             conWindow[3*DATA_SIZE + i], conWindow[4*DATA_SIZE + i], conWindow[5*DATA_SIZE + i],
             conWindow[6*DATA_SIZE + i], conWindow[7*DATA_SIZE + i], conWindow[8*DATA_SIZE + i],
