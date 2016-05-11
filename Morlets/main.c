@@ -29,7 +29,7 @@ int main(void)
 
     //Populate the filter data and input data. 
     FillDataComplex(data_in);
-    CreateComplexFilter(conWindow, FREQ);
+    int scales = CreateComplexFilter(conWindow, FREQ);
 
 
 
@@ -37,39 +37,57 @@ int main(void)
     plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan_forward);
 
-    // for (int i = 0; i < scales; ++i)
-    // {
-        
-    // }
-
     double value;
-    for (int i = 0; i < DATA_SIZE; ++i)
+    for (int i = 0; i < scales; ++i)
     {
-        value = fft_data[i][0] * conWindow[i];
-        // value2 = fft_data[i][1] * conWindow[i];
+        for (int j = 0; j < DATA_SIZE; ++j)
+        {
+            value = fft_data[j][0] * conWindow[i * DATA_SIZE + j];
+            // value2 = fft_data[i][1] * conWindow[i];
 
-        fft_data[i][0] = value;
-        // fft_data[i][1] = value2;
+            fft_data[j][0] = value;
+            // fft_data[i][1] = value2;
+        }
+        
+        //Calculate the backwards FFT of the result and daughter wavelets.
+        plan_backwards = fftw_plan_dft_1d(PADDED_SIZE, fft_data, result, FFTW_BACKWARD, FFTW_ESTIMATE);
+        fftw_execute(plan_backwards);
+
+        for (int j = 0; j < DATA_SIZE; ++j)
+        {
+            output[i * DATA_SIZE + j] = result[j][0]/8000;
+            complexOutput[i * DATA_SIZE + j] = result[j][1]/8000;
+        }
     }
-    
-    //Calculate the backwards FFT of the result and daughter wavelets.
-    plan_backwards = fftw_plan_dft_1d(PADDED_SIZE, fft_data, result, FFTW_BACKWARD, FFTW_ESTIMATE);
-    fftw_execute(plan_backwards);
 
-    //Print to file
-    for (int i = 0; i < DATA_SIZE; ++i)
+    for (int i = 0; i < scales; ++i)
     {
-        value = Magnitude(result[i][0], result[i][1]);
-        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, data_in[i][0], result[i][0]/1500, result[i][1]/1500, value/1500);
+        for (int j = 0; j < DATA_SIZE; ++j)
+        {
+            value = Magnitude(output[i * DATA_SIZE + j], complexOutput[i * DATA_SIZE + j]);
+            fprintf(out_file, "%f\t", value);
+        }
+        fprintf(out_file, "\n");
     }
+
     // for (int i = 0; i < DATA_SIZE; ++i)
     // {
     //     fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-    //         conWindow[0*DATA_SIZE + i], conWindow[1*DATA_SIZE + i], conWindow[2*DATA_SIZE + i],
-    //         conWindow[3*DATA_SIZE + i], conWindow[4*DATA_SIZE + i], conWindow[5*DATA_SIZE + i],
-    //         conWindow[6*DATA_SIZE + i], conWindow[7*DATA_SIZE + i], conWindow[8*DATA_SIZE + i],
-    //         conWindow[9*DATA_SIZE + i]);
+    //         output[0*DATA_SIZE + i] + 0., output[1*DATA_SIZE + i] + 5., output[2*DATA_SIZE + i] + 10,
+    //         output[3*DATA_SIZE + i] + 15, output[4*DATA_SIZE + i] + 20, output[5*DATA_SIZE + i] + 25,
+    //         output[6*DATA_SIZE + i] + 30, output[7*DATA_SIZE + i] + 35, output[8*DATA_SIZE + i] + 40,
+    //         output[9*DATA_SIZE + i] + 45);
     // }
+
+    // for (int i = 0; i < DATA_SIZE; ++i)
+    // {
+    //     fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+    //         conWindow[0*DATA_SIZE + i] + 0., conWindow[1*DATA_SIZE + i] + 5., conWindow[2*DATA_SIZE + i] + 10,
+    //         conWindow[3*DATA_SIZE + i] + 15, conWindow[4*DATA_SIZE + i] + 20, conWindow[5*DATA_SIZE + i] + 25,
+    //         conWindow[6*DATA_SIZE + i] + 30, conWindow[7*DATA_SIZE + i] + 35, conWindow[8*DATA_SIZE + i] + 40,
+    //         conWindow[9*DATA_SIZE + i] + 45);
+    // }
+    
 
     fclose(out_file);
 

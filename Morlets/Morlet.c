@@ -6,56 +6,121 @@
 
 void fillData(double * data)
 {
+
+	// double signal[SIGNAL_SIZE];
+
+	FILE* signalFile = fopen("bic.txt", "r");
+	assert(signalFile != NULL);
+
+	// obtain file size:
+	fseek (signalFile , 0 , SEEK_END);
+	long lSize = ftell (signalFile);
+	rewind (signalFile);
+
+	char * buffer = (char*) malloc(sizeof(char)*lSize);
+	assert(buffer);
+
+	size_t result = fread (buffer, 1, lSize, signalFile);
+	assert(result == lSize);
+	// puts(buffer);
+
+
+	char * token = strtok(buffer, "\n");
+	
+    //Get input from txt.
+	int counterVariable = 0;
+	while (token !=NULL)
+    {
+    	data[counterVariable] = atof(token);
+    	double difference = data[counterVariable] - atof(token);
+    	// printf("signal: %f, difference: %f\n", signal[counterVariable], difference);
+    	counterVariable++;
+        token = strtok (NULL, "\n");
+    }
+    fclose(signalFile);
+
 	// Fit a FREQ signal at two points
 	// double dt = 1./FS;
-	double fsig = FREQ/FS;
-	double dw = 2*M_PI*fsig;
-	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
-	int one_peri = (int)1./fsig;
-	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
-	// double t=0;
-	int i;
-	for(i=0;i<DATA_SIZE;i++){
-		data[i]=0.;
-		if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
-	}
+	// double fsig = FREQ/FS;
+	// double dw = 2*M_PI*fsig;
+	// double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
+	// int one_peri = (int)1./fsig;
+	// printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	// // double t=0;
+	// int i;
+	// for(i=0;i<DATA_SIZE;i++){
+	// 	data[i]=0.;
+	// 	if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
+	// 	//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
+	// 	if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+	// 	if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+	// }
 }
 
 void FillDataComplex(fftw_complex * data)
 {
-	// Fit a FREQ signal at two points
-	// double dt = 1./FS;
-	double fsig = FREQ/FS;
-	double dw = 2*M_PI*fsig;
-	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
-	int one_peri = (int)1./fsig;
-	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
-	// double t=0;
-	int i;
-	for(i=0;i<DATA_SIZE;i++)
-	{
-		// data[i][0] = sin(i * dw + w0);
-		// data[i][1] = 0.0;
-		data[i][0]= 0.; data[i][1] = 0.;
-		if((i>200)&(i<400))
-		{
-			data[i][0]=sin( (i-200)*dw+w0);
-			data[i][1] = 0.0;
-		}
-		if((i>1000)&(i<1000+2*one_peri))
-		{
-			data[i][0]=sin( (i-200)*dw+w0);
-			data[i][1] = 0.0;
-		}
-		if((i>2500)&(i<2500+3*one_peri))
-		{
-			data[i][0]=sin( (i-200)*dw+w0);
-			data[i][1] = 0.0;
-		}
-	}
+
+	// double signal[SIGNAL_SIZE];
+
+	FILE* signalFile = fopen("signal.txt", "r");
+	assert(signalFile != NULL);
+
+	// obtain file size:
+	fseek (signalFile , 0 , SEEK_END);
+	long lSize = ftell (signalFile);
+	rewind (signalFile);
+
+	char * buffer = (char*) malloc(sizeof(char)*lSize);
+	assert(buffer);
+
+	size_t result = fread (buffer, 1, lSize, signalFile);
+	assert(result == lSize);
+	// puts(buffer);
+
+
+	char * token = strtok(buffer, "\n");
+	
+    //Get input from txt.
+	int counterVariable = 0;
+	while (token !=NULL)
+    {
+    	data[counterVariable][0] = atof(token);
+    	data[counterVariable][1] = 0.0;
+    	counterVariable++;
+        token = strtok (NULL, "\n");
+    }
+    fclose(signalFile);
+
+    //Sample Sine Wave.
+	// // Fit a FREQ signal at two points
+	// double fsig = FREQ/FS;
+	// double dw = 2*M_PI*fsig;
+	// double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
+	// int one_peri = (int)1./fsig;
+	// printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	// // double t=0;
+	// int i;
+	// for(i=0;i<DATA_SIZE;i++)
+	// {
+	// 	// data[i][0] = sin(i * dw + w0);
+	// 	// data[i][1] = 0.0;
+	// 	data[i][0]= 0.; data[i][1] = 0.;
+	// 	if((i>200)&(i<400))
+	// 	{
+	// 		data[i][0]=sin( (i-200)*dw+w0);
+	// 		data[i][1] = 0.0;
+	// 	}
+	// 	if((i>1000)&(i<1000+2*one_peri))
+	// 	{
+	// 		data[i][0]=sin( (i-200)*dw+w0);
+	// 		data[i][1] = 0.0;
+	// 	}
+	// 	if((i>2500)&(i<2500+3*one_peri))
+	// 	{
+	// 		data[i][0]=sin( (i-200)*dw+w0);
+	// 		data[i][1] = 0.0;
+	// 	}
+	// }
 }
 
 double Morlet(double x, double w0, double scale)
@@ -157,9 +222,10 @@ int CreateComplexFilter(double* conWindow, double frequency)
 	
 	int J = (int) floor((log(DATA_SIZE * dt / s0) / log(2.0)) / dj);
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < J; ++i)
 	{
-		scale = pow(2, i);
+		scale = s0 * pow(2, i * dj);
+
 		for (int j = 0; j < DATA_SIZE; ++j)
 		{
 			value = FourierMorlet(j*df, 5.0, scale);
