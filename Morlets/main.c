@@ -1,5 +1,3 @@
-
-
 #include "Morlet.h"
 
 int main(void)
@@ -33,6 +31,7 @@ int main(void)
 
 
 
+
     //Plan and calculate the Fourier Transform of the data, the fft is stored in fft_data
     plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
     fftw_execute(plan_forward);
@@ -55,18 +54,22 @@ int main(void)
 
         for (int j = 0; j < DATA_SIZE; ++j)
         {
-            output[i * DATA_SIZE + j] = result[j][0]/8000;
-            complexOutput[i * DATA_SIZE + j] = result[j][1]/8000;
+            output[i * DATA_SIZE + j] = result[j][0];
+            complexOutput[i * DATA_SIZE + j] = result[j][1];
         }
     }
+
+
 
     for (int i = 0; i < scales; ++i)
     {
         for (int j = 0; j < DATA_SIZE; ++j)
         {
-            value = Magnitude(output[i * DATA_SIZE + j], complexOutput[i * DATA_SIZE + j]);
+            value = Magnitude(output[i*DATA_SIZE + j], complexOutput[i*DATA_SIZE + j]);
+
             fprintf(out_file, "%f\t", value);
         }
+
         fprintf(out_file, "\n");
     }
 

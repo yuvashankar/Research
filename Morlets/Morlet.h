@@ -19,12 +19,8 @@
 //Measuring Frequency
 #define FREQ 19.0
 
-#define DATA_SIZE 4000
+#define DATA_SIZE 504
 #define MAX_SCALES 50 * 4
-
-#define MORLET_CENT_FREQ 0.8125 //This was taken from the matlab centfreq command not sure if it still pertains to our situation
-#define LOWER_FREQ_BOUND 5.0
-#define UPPER_FREQ_BOUND 25.0
 
 #define MAX_CONV_SIZE 512
 
