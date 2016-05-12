@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+
 #include "Morlet.h"
 
 void fillData(double * data)
@@ -57,7 +59,7 @@ void fillData(double * data)
 	}
 }
 
-void FillDataComplex(fftw_complex * data)
+int FillDataComplex(fftw_complex * data)
 {
 
 
@@ -86,22 +88,15 @@ void FillDataComplex(fftw_complex * data)
     {
     	data[counterVariable][0] = atof(token);
     	data[counterVariable][1] = 0.0;
-    	sum += data[counterVariable][0];
 
     	counterVariable++;
         token = strtok (NULL, "\n");
     }
-
-    //Sum(x)/N to find the mean. 
-    double mean = sum/counterVariable;
-
-    for (int i = 0; i < counterVariable; ++i)
-    {
-    	data[i][0] -= mean;
-    }
     fclose(signalFile);
 
-    printf("counterVariable: %d\n", counterVariable);
+    return (counterVariable);
+
+    // printf("counterVariable: %d\n", counterVariable);
 
  //    // Sample Sine Wave.
 	// // Fit a FREQ signal at two points

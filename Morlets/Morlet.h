@@ -9,6 +9,7 @@
 #include <string.h>
 #include <math.h>
 #include <fftw3.h>
+#include <gsl/gsl_math.h>
 
 //Global Constants
 #define quadRootPi 0.7511255444649425 //Precalculated to machine precision
@@ -26,7 +27,7 @@
 
 //Morlet Functions
 void fillData(double * data);
-void FillDataComplex(fftw_complex * data);
+int FillDataComplex(fftw_complex * data);
 
 double Morlet(double x, double w0, double scale);
 double FourierMorlet(double w, double w0, double scale);

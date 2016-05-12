@@ -26,7 +26,8 @@ int main(void)
     assert(out_file != NULL);
 
     //Populate the filter data and input data. 
-    FillDataComplex(data_in);
+    int n = FillDataComplex(data_in);
+
     int scales = CreateComplexFilter(conWindow, FREQ);
 
 
