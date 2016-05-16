@@ -11,7 +11,9 @@ int main(void)
     FILE* out_file = fopen("DATA.log", "w");
     
 
-    int n = ReadFile(raw_data, fileName);
+    // int n = ReadFile(raw_data, fileName);
+    fillData(raw_data);
+    int n = DATA_SIZE;
     
     double mean = gsl_stats_mean(raw_data, 1, n);
     double deviation = gsl_stats_variance(raw_data, 1, n);
@@ -49,7 +51,7 @@ int main(void)
 
     for (int i = 0; i < DATA_SIZE; ++i)
     {
-        fft_data[i][0] = fft_data[i][0] * filter[i];
+        fft_data[i][0] *= filter[i];
     }
 
     plan_backwards = fftw_plan_dft_1d(PADDED_SIZE, fft_data, result, FFTW_BACKWARD, FFTW_ESTIMATE);
@@ -59,7 +61,7 @@ int main(void)
     {
         // fprintf(out_file, "%i\t%f\t%f\n", i, data_in[i][0], result[i][0]);
         // fprintf(out_file, "%i\t%f\n", i, data_in[i][0]);
-        fprintf(out_file, "%i\t%f\n", i, data_in[i][0]);
+        fprintf(out_file, "%i\t%f\n", i, raw_data[i]);
     }
 
     fclose(out_file);
