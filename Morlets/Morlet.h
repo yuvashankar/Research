@@ -9,7 +9,7 @@
 #include <string.h>
 #include <math.h>
 #include <fftw3.h>
-#include <gsl/gsl_math.h>
+#include <gsl/gsl_statistics.h>
 
 //Global Constants
 #define quadRootPi 0.7511255444649425 //Precalculated to machine precision
@@ -20,6 +20,8 @@
 //Measuring Frequency
 #define FREQ 19.0
 
+#define MAX_DATA_SIZE 100000
+
 #define DATA_SIZE 504
 #define MAX_SCALES 50 * 4
 
@@ -28,6 +30,8 @@
 //Morlet Functions
 void fillData(double * data);
 int FillDataComplex(fftw_complex * data);
+
+int ReadFile(double data[], char filename[]);
 
 double Morlet(double x, double w0, double scale);
 double FourierMorlet(double w, double w0, double scale);

@@ -130,6 +130,40 @@ int FillDataComplex(fftw_complex * data)
 	// }
 }
 
+int ReadFile(double data[], char filename[])
+{
+	FILE* signalFile = fopen(filename, "r");
+	assert(signalFile != NULL);
+	// obtain file size:
+	fseek (signalFile , 0 , SEEK_END);
+	long lSize = ftell (signalFile);
+	rewind (signalFile);
+
+	char * buffer = (char*) malloc(sizeof(char)*lSize);
+	assert(buffer != NULL);
+
+	size_t result = fread (buffer, 1, lSize, signalFile);
+	assert(result == lSize);
+	// puts(buffer);
+
+
+	char * token = strtok(buffer, "\n");
+	
+    //Get input from text.
+	int counterVariable = 0;
+	double sum = 0.0;
+	while (token !=NULL)
+    {
+    	data[counterVariable] = atof(token);
+    	counterVariable++;
+        token = strtok (NULL, "\n");
+
+    }
+    fclose(signalFile);
+
+    return (counterVariable);
+}
+
 double Morlet(double x, double w0, double scale)
 {
     const double w02 = w0 * w0;

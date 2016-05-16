@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -Wall -lfftw3 -lm
+CFLAGS  = -Wall -lfftw3 -lgsl -lgslcblas -lm
 OBJECTS = main.o Morlet.o
 
 morlet: $(OBJECTS)
