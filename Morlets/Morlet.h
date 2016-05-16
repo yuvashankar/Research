@@ -41,7 +41,7 @@ double ComplexMorlet(double x, double w0, double scale);
 double Magnitude (double x, double y);
 
 int createFilter(double* conWindow, double* complexWindow, double frequency);
-int CreateComplexFilter(double* conWindow, double frequency);
+int CreateComplexFilter(double* conWindow);
 
 void convolute(double* data, int conSize, double* conWindow, 
 	double* complexWindow, double* result, double* complexResult);

@@ -188,10 +188,15 @@ double FourierMorlet(double w, double w0, double scale)
 	// double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
 	// out = cSigma * out;
 	// return(out);
+	double dw = 2 * M_PI / (DATA_SIZE * 1);
+	int kplus = 0;
+	if (w > 0) kplus = 1;
 
-	const double exponent = -0.5 * (scale * w - w0)*(scale * w - w0);
-	const double normal = sqrt(scale * w) * quadRootPi * sqrt(DATA_SIZE);
-	double out = normal * exp(exponent);
+	const double exponent = -0.5 * (scale * w - w0)*(scale * w - w0) * kplus;
+	const double normal = sqrt(scale * dw) * quadRootPi * sqrt(DATA_SIZE);
+	double out = normal * exp(exponent); 
+	out = out * kplus; //Heaviside Step Function.
+
 	return(out);
 }
 
@@ -251,7 +256,7 @@ int createFilter(double* conWindow, double* complexWindow, double frequency)
 	return(conSize);
 }
 
-int CreateComplexFilter(double* conWindow, double frequency)
+int CreateComplexFilter(double* conWindow)
 {
 	double scale;
 	double value;
@@ -262,7 +267,21 @@ int CreateComplexFilter(double* conWindow, double frequency)
 	double dj = 0.25;
 	
 	int J = (int) floor((log(DATA_SIZE * dt / s0) / log(2)) / dj);
-	// printf("J inside CreateComplexFilter is: %d\n", J);
+	
+	double k[DATA_SIZE];
+    for (int i = 0; i < DATA_SIZE/2 + 1; ++i)
+    {
+        k[i] = (i * 2 * M_PI / (DATA_SIZE * 1));
+        // printf("%f\n", k[i]);
+    }
+
+    int counterVariable = DATA_SIZE/2 - 1;
+    for (int i = DATA_SIZE/2 + 1; i < DATA_SIZE; ++i)
+    {
+        k[i] = -k[counterVariable];
+        counterVariable -- ;
+        // printf("%f\n", k[i]);
+    }
 
 	for (int i = 0; i < J; ++i)
 	{
@@ -270,9 +289,7 @@ int CreateComplexFilter(double* conWindow, double frequency)
 
 		for (int j = 0; j < DATA_SIZE; ++j)
 		{
-			value = FourierMorlet(j*df, 5.0, scale);
-			// value = value * normal;
-			
+			value = FourierMorlet(k[j], 5.0, scale);
 			conWindow[i * DATA_SIZE + j] = value;
 		}
 	}
