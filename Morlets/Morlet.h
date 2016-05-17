@@ -22,7 +22,7 @@
 
 #define MAX_DATA_SIZE 100000
 
-#define DATA_SIZE 504
+#define DATA_SIZE 3000
 #define MAX_SCALES 50 * 4
 
 #define MAX_CONV_SIZE 512
@@ -36,7 +36,11 @@ int ReadFile(double data[], char filename[]);
 double Morlet(double x, double w0, double scale);
 double FourierMorlet(double w, double w0, double scale);
 
+double NewFourierMorlet(double w, double w0, double scale, int n);
+
 double ComplexMorlet(double x, double w0, double scale);
+
+int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result);
 
 double Magnitude (double x, double y);
 
