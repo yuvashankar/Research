@@ -50,11 +50,17 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	double scale[J];
 	for (int i = 0; i < J; ++i)
 	{
-		scale[J] = s0 * pow(2, i * dj);
+		scale[i] = s0 * pow(2, i * dj);
+		// fprintf(debug_file, "%f\n", scale[i]);
 	}
 
 	//Compute the fourier transform of the data signal
 	fftw_execute(plan_forward);
+
+	// for (int i = 0; i < n; ++i)
+	// {
+	// 	fprintf(debug_file, "%d\t%f\t%f\n", i, fft_data[i][0], fft_data[i][1]);
+	// }
 
 	//Populate the filter array
 	for (int i = 0; i < J; ++i)
@@ -63,8 +69,9 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		{
 			filter[i * n + j] = NewFourierMorlet(k[j], 5.0, scale[i], n);
 			//Only do the real part, not the complex part. 
-			fft_data[j][0] *= filter[i * n + j];
+			fft_data[j][0] = fft_data[j][0] * filter[i * n + j];
 		}
+
 		//Compute the Fourier transform of xhat and sigmaHat this should put results in 
 		fftw_execute(plan_backward);
 
@@ -74,6 +81,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 			result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
 		}
 	}
+
 
 
 	//Clean things up... this may not be needed because this is a function
