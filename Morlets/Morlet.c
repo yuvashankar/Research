@@ -6,6 +6,7 @@
 
 #include "Morlet.h"
 
+
 void fillData(double * data)
 {
 
@@ -163,6 +164,28 @@ int ReadFile(double data[], char filename[])
     fclose(signalFile);
 
     return (counterVariable);
+}
+
+int WriteFile(double *data, int x, int y, char filename[])
+{
+
+    FILE* out_file=fopen(filename,"w");
+    if (out_file == NULL) return -1;
+
+    // assert(out_file != NULL);
+
+	for (int i = 0; i < x; ++i)
+    {
+        for (int j = 0; j < y; ++j)
+        {
+            // value = Magnitude(result[i*n + j], result[i*n + j]);
+            fprintf(out_file, "%f\t", data[i*y + j]);
+        }
+
+        fprintf(out_file, "\n");
+    }
+    fclose(out_file);
+    return(0);
 }
 
 double Morlet(double x, double w0, double scale)

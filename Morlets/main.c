@@ -12,9 +12,10 @@ int main(void)
 
     double dj, dt, s0, J;
     dt = 1.0/FS;
-    dj = 0.25;
+    dj = 1;
     s0 = 2 * dt;
-    J = 7/dj;
+    // J = 7/dj;
+    J = 10;
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));
@@ -25,17 +26,9 @@ int main(void)
     
 
     int out  = Wavelet(data, dt, n, dj, s0, J, result);
-    printf("Wavelet Flag = %d\n", out);
-    for (int i = 0; i < J; ++i)
-    {
-        for (int j = 0; j < DATA_SIZE; ++j)
-        {
-            // value = Magnitude(result[i*n + j], result[i*n + j]);
-            fprintf(out_file, "%f\t", result[i*n + j]);
-        }
+    // printf("Wavelet Flag = %d\n", out);
 
-        fprintf(out_file, "\n");
-    }
+    int writeFlag = WriteFile(result, J, n, "DATA.log");
 
     free(data); free(result);
     fclose(out_file);

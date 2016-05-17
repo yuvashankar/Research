@@ -32,6 +32,7 @@ void fillData(double * data);
 int FillDataComplex(fftw_complex * data);
 
 int ReadFile(double data[], char filename[]);
+int WriteFile(double *data, int x, int y, char filename[]);
 
 double Morlet(double x, double w0, double scale);
 double FourierMorlet(double w, double w0, double scale);

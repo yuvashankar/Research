@@ -18,6 +18,10 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	int pad = floor(log(DATA_SIZE)/log(2.0) + 0.4999);
     double PADDED_SIZE = pow(2, pad + 1);
 
+    int oldN = n;
+    //Reallocate int to the padded size;
+    n = (int) PADDED_SIZE;
+
     //Memory Allocations
     filter = malloc(n * J * sizeof(double));
     assert(filter != NULL);
@@ -29,6 +33,12 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     //Prepare the plans. 
     plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
     plan_backward = fftw_plan_dft_1d(PADDED_SIZE, fft_data, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
+
+    //populate the data vector. 
+    for (int i = 0; i < n; ++i)
+    {
+    	data_in[i][0] = raw_data[i];
+    }
 
 	//Making w step. 
 	double k[n];
@@ -50,17 +60,14 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	double scale[J];
 	for (int i = 0; i < J; ++i)
 	{
-		scale[i] = s0 * pow(2, i * dj);
+		// scale[i] = s0 * pow(2, i * dj);
+		scale[i] = pow(2, i*dj);
+		printf("scale = %f\n", scale[i]);
 		// fprintf(debug_file, "%f\n", scale[i]);
 	}
 
 	//Compute the fourier transform of the data signal
 	fftw_execute(plan_forward);
-
-	// for (int i = 0; i < n; ++i)
-	// {
-	// 	fprintf(debug_file, "%d\t%f\t%f\n", i, fft_data[i][0], fft_data[i][1]);
-	// }
 
 	//Populate the filter array
 	for (int i = 0; i < J; ++i)
@@ -75,13 +82,22 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		//Compute the Fourier transform of xhat and sigmaHat this should put results in 
 		fftw_execute(plan_backward);
 
-		for (int j = 0; j < n; ++j)
+		// do this to remove padding
+		for (int j = 0; j < oldN; ++j)
 		{
 			//Take the magnitude of the real and the complex part, this is a guess. 
-			result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
+			result[i * oldN + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
 		}
 	}
 
+    for (int i = 0; i < oldN; ++i)
+    {
+        fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+            result[0*oldN + i] + 0., result[1*oldN + i] + 5., result[2*oldN + i] + 10,
+            result[3*oldN + i] + 15, result[4*oldN + i] + 20, result[5*oldN + i] + 25,
+            result[6*oldN + i] + 30, result[7*oldN + i] + 35, result[8*oldN + i] + 40,
+            result[9*oldN + i] + 45);
+    }
 
 
 	//Clean things up... this may not be needed because this is a function
@@ -89,6 +105,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
     fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
 
+    free(filter);
     fclose(debug_file);
 
     return(0);
