@@ -18,7 +18,7 @@ __author__ = 'Evgeniya Predybaylo'
 # ------------------------------------------------------------------------------------------------------------------
 
 # READ THE DATA
-sst = np.loadtxt('sst_nino3.dat')  # input SST time series
+sst = np.loadtxt('DATA.dat')  # input SST time series
 
 #----------C-O-M-P-U-T-A-T-I-O-N------S-T-A-R-T-S------H-E-R-E------------------------------------------------------
 
@@ -36,7 +36,7 @@ dj = 0.25  # this will do 4 sub-octaves per octave
 s0 = 2 * dt  # this says start at a scale of 6 months
 j1 = 7 / dj  # this says do 7 powers-of-two with dj sub-octaves each
 lag1 = 0.72  # lag-1 autocorrelation for red noise background
-mother = 'PAUL'
+mother = 'MORLET'
 
 # Wavelet transform:
 wave, period, scale, coi = wavelet(sst, dt, pad, dj, s0, j1, mother)
