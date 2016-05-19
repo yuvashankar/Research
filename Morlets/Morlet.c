@@ -242,6 +242,9 @@ double ComplexMorlet(double x, double w0, double scale)
 
 double Magnitude (double x, double y)
 {
+	x = fabs(x);
+	y = fabs(y);
+
 	double output = x * x + y * y;
 	output = sqrt(output);
 	return (output);
@@ -321,6 +324,7 @@ int CreateComplexFilter(double* conWindow)
 	
 	// printf("Ending df: %f\n", DATA_SIZE * df);
 	// return (J);
+	return(0);
 }
 
 void convolute(double* data, int conSize, double* conWindow, double* complexWindow, double* result, double* complexResult)
