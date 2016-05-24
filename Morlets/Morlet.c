@@ -242,9 +242,6 @@ double ComplexMorlet(double x, double w0, double scale)
 
 double Magnitude (double x, double y)
 {
-	x = fabs(x);
-	y = fabs(y);
-
 	double output = x * x + y * y;
 	output = sqrt(output);
 	return (output);

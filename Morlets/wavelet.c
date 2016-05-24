@@ -6,6 +6,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 {
 	
 	//Variable Declarations
+	double value;
+
 	double* filter;
 	fftw_plan plan_forward, plan_backward;
 	fftw_complex *data_in, *fft_data, *fftw_result;
@@ -15,7 +17,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     assert(debug_file != NULL);
 
 	//Calculate Padding Required
-	int pad = floor(log(DATA_SIZE)/log(2.0));
+	//Where did that 0.4999 come from I don't know
+	int pad = floor(log(DATA_SIZE)/log(2.0) + 0.499);
     double PADDED_SIZE = pow(2, pad + 1);
 
     int oldN = n;
@@ -34,6 +37,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     for (int i = 0; i < oldN; ++i)
     {
     	data_in[i][0] = raw_data[i];
+    	data_in[i][1] = 0.0;
     }
 
 	//Making omega steps 
@@ -58,7 +62,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	{
 		
 		scale[i] = s0 * pow(2, i*dj);
-		printf("scale = %f\n", scale[i]);
+		// printf("scale = %f\n", scale[i]);
 		
 	}
 
@@ -66,15 +70,29 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
+	double complexE;
+	double realE;
+	double df = 1.0/FS/dt;
+	double sign = 1.0;
+	for (int i = 0; i < FS/2; ++i)
+	{
+		// realE = exp(cos(k[i] * oldN * dt));
+		// complexE = exp(sin( * oldN * dt));
+
+		filter[i] = NewFourierMorlet(i*df, 5.0, 22.0, n);
+		filter[FS - i - 1] = 0.0;
+		// fft_data[i][0] = fft_data[i][0] * filter[i];
+		// fft_data[i][1] = fft_data[i][1];
+		sign *= -1;
+	}
+
 	for (int i = 0; i < oldN; ++i)
 	{
-		filter[i] = NewFourierMorlet(k[i], 5.0, 22.0, n);
-		fft_data[i][0] = fft_data[i][0] * filter[i];
-
+		fft_data[i][0] *= filter[i];
 	}
 
 	// //Take the magnitude of the multipled values. 
-	// double value;
+	
 	// for (int i = 0; i < n; ++i)
 	// {
 	// 	value = Magnitude(fft_data[i][0], fft_data[i][1]);
@@ -86,11 +104,12 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, fft_data, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_backward);
 
-	double value;
+	// double value;
 	for (int i = 0; i < oldN; ++i)
 	{
 		value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
-		fprintf(debug_file, "%d\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1]);
+
+		fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
 	}
 
 	//Clean things up... this may not be needed because this is a function
@@ -106,16 +125,13 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 double NewFourierMorlet(double w, double w0, double scale, int n)
 {
-	//This is for the heaviside function multiplicaiton. 
-	float kplus = 0.;
-	if (w > 0) kplus = 1;
+	//Wikipedia's Definition
+	const double w02 = w0 * w0;
+	const double k = exp(-0.5 * w02);
+	const double cSigma = sqrt((1. + exp(-w02) - 2*exp(-0.75*w02)));
 
-	double dw = (1 * 2 * M_PI / (n * 1));
-
-	double exponent = -0.5 * kplus * (scale * w - w0) * (scale * w - w0);
-	double norm = sqrt(scale * dw) * quadRootPi * sqrt(n);
-
-	double out = norm * exp(exponent);
-	out = out * kplus;
+	double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
+	out = cSigma * out;
 	return(out);
 }
+
