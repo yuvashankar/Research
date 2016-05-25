@@ -40,21 +40,36 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     	data_in[i][1] = 0.0;
     }
 
+
+    // double k[oldN];
+    // for (int i = oldN/2 - 1; i < oldN/2 + 1; ++i)
+    // {
+    // 	k[i] = (i*2*M_PI)/ (oldN * 1);
+
+    // 	fprintf(debug_file, "%d\t%f\n", i, k[i]);
+
+    // }
+
 	//Making omega steps 
 	double k[oldN];
-    for (int i = 0; i < oldN/2 + 1; ++i)
+	double dw =  (2 * M_PI) / (oldN * 1);
+	// value = -(oldN/2) * 2 * M_PI/ (oldN * 1);
+	value = M_PI/2;
+    for (int i = 0; i < oldN; ++i)
     {
-        k[i] = (i * 2 * M_PI / (oldN * 1));
+    	k[i] = value;
+    	value += dw;
+    	// dw += dw;
         // fprintf(debug_file, "%f\n", k[i]);
     }
 
-    int counterVariable = oldN/2 - 1;
-    for (int i = oldN/2 + 1; i < oldN; ++i)
-    {
-        k[i] = -k[counterVariable];
-        counterVariable -- ;
-        // fprintf(debug_file, "%f\n", k[i]);
-    }
+    // int counterVariable = oldN/2 - 1;
+    // for (int i = oldN/2 + 1; i < oldN; ++i)
+    // {
+    //     k[i] = -k[counterVariable];
+    //     counterVariable -- ;
+    //     fprintf(debug_file, "%f\n", k[i]);
+    // }
 
 	//populate the scales array ... not used right now, i'm just doing one scale
 	double scale[J];
@@ -74,21 +89,14 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	double realE;
 	double df = 1.0/FS/dt;
 	double sign = 1.0;
-	for (int i = 0; i < FS/2; ++i)
+	for (int i = 0; i < oldN; ++i)
 	{
 		// realE = exp(cos(k[i] * oldN * dt));
 		// complexE = exp(sin( * oldN * dt));
 
-		filter[i] = NewFourierMorlet(i*df, 5.0, 22.0, n);
-		filter[FS - i - 1] = 0.0;
-		// fft_data[i][0] = fft_data[i][0] * filter[i];
+		filter[i] = NewFourierMorlet(k[i], 5.0, 22.0, n);
+		fft_data[i][0] = fft_data[i][0] * filter[i];
 		// fft_data[i][1] = fft_data[i][1];
-		sign *= -1;
-	}
-
-	for (int i = 0; i < oldN; ++i)
-	{
-		fft_data[i][0] *= filter[i];
 	}
 
 	// //Take the magnitude of the multipled values. 
