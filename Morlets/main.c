@@ -25,10 +25,18 @@ int main(void)
     fillData(data);
     
 
-    int out  = Wavelet(data, dt, n, dj, s0, J, result);
-    // printf("Wavelet Flag = %d\n", out);
+    fftw_complex* 
+    const double df= 1./n/dt;
+    double sign=1.;
+    for (int i = 0; i < n/2; ++i)
+    {
+        /* code */
+    }
+    
 
-    int writeFlag = WriteFile(result, J, n, "DATA.log");
+    // int out  = Wavelet(data, dt, n, dj, s0, J, result);
+
+    // int writeFlag = WriteFile(result, J, n, "DATA.log");
 
     free(data); free(result);
     fclose(out_file);

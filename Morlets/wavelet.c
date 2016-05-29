@@ -40,36 +40,17 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     	data_in[i][1] = 0.0;
     }
 
-
-    // double k[oldN];
-    // for (int i = oldN/2 - 1; i < oldN/2 + 1; ++i)
-    // {
-    // 	k[i] = (i*2*M_PI)/ (oldN * 1);
-
-    // 	fprintf(debug_file, "%d\t%f\n", i, k[i]);
-
-    // }
-
 	//Making omega steps 
 	double k[oldN];
 	double dw =  (2 * M_PI) / (oldN * 1);
 	// value = -(oldN/2) * 2 * M_PI/ (oldN * 1);
+	
 	value = M_PI/2;
     for (int i = 0; i < oldN; ++i)
     {
     	k[i] = value;
     	value += dw;
-    	// dw += dw;
-        // fprintf(debug_file, "%f\n", k[i]);
     }
-
-    // int counterVariable = oldN/2 - 1;
-    // for (int i = oldN/2 + 1; i < oldN; ++i)
-    // {
-    //     k[i] = -k[counterVariable];
-    //     counterVariable -- ;
-    //     fprintf(debug_file, "%f\n", k[i]);
-    // }
 
 	//populate the scales array ... not used right now, i'm just doing one scale
 	double scale[J];
@@ -94,25 +75,17 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		// realE = exp(cos(k[i] * oldN * dt));
 		// complexE = exp(sin( * oldN * dt));
 
-		filter[i] = NewFourierMorlet(k[i], 5.0, 22.0, n);
+		filter[i] = NewFourierMorlet(i*df, 5.0, 22.0, n);
 		fft_data[i][0] = fft_data[i][0] * filter[i];
 		// fft_data[i][1] = fft_data[i][1];
 	}
 
-	// //Take the magnitude of the multipled values. 
-	
-	// for (int i = 0; i < n; ++i)
-	// {
-	// 	value = Magnitude(fft_data[i][0], fft_data[i][1]);
-	// 	fft_data[i][0] = value;
-	// 	fft_data[i][1] = 0.0;
-	// }
 
 	//Take the inverse FFT. 
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, fft_data, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_backward);
 
-	// double value;
+	//Write to debug file.
 	for (int i = 0; i < oldN; ++i)
 	{
 		value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
