@@ -66,18 +66,18 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
-	double complexE;
-	double realE;
-	double df = 1.0/FS/dt;
+	double df = 1.0/oldN/dt;
 	double sign = 1.0;
-	for (int i = 0; i < oldN; ++i)
+	for (int i = 0; i < oldN/2; ++i)
 	{
-		// realE = exp(cos(k[i] * oldN * dt));
-		// complexE = exp(sin( * oldN * dt));
-
-		filter[i] = NewFourierMorlet(i*df, 5.0, 22.0, n);
+		filter[i] = sign * NewFourierMorlet(i*df, 5.0, 22.0, n);
 		fft_data[i][0] = fft_data[i][0] * filter[i];
-		// fft_data[i][1] = fft_data[i][1];
+		fft_data[i][1] = 0.0;
+
+		fft_data[oldN - i - 1][0] = 0.0;
+		fft_data[oldN - i - 1][1] = 0.0;
+
+		sign *= -1.0;
 	}
 
 
