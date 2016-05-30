@@ -62,6 +62,13 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		
 	}
 
+	//Zeroing out everything just because of that fluctuation... 
+	for (int i = 0; i < PADDED_SIZE; ++i)
+	{
+		fft_data[i][0] = 0.0;
+		fft_data[i][1] = 0.0;
+	}
+
 	//Compute the fourier transform of the data signal
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
