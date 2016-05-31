@@ -45,7 +45,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	double scale[J];
 	for (int i = 0; i < J; ++i)
 	{
-		scale[i] = s0 * pow(2, i*dj);
+		scale[i] = pow(2, i);
 		// scale[i] = (i + 1) * 10;
 	}
 
@@ -66,10 +66,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		for (int j = 0; j < oldN/2; ++j)
 		{
 			filter[i*oldN + j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
-
 			filter_convolution[j][0] = fft_data[j][0] * filter[i * oldN + j];
 			filter_convolution[j][1] = 0.0;
-
 			sign *= -1.0;
 		}
 		//copy the rest of fft_data into filter_convolution
@@ -91,24 +89,24 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	}
 
 	// //Write to debug file.
-	// for (int i = 0; i < oldN; ++i)
-	// {
+	for (int i = 0; i < oldN; ++i)
+	{
 	// // 	fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
 	// // 		filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
 	// // 		filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
 	// // 		filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
 	// // 		filter[oldN*9 + i] + 45);
-	// 	fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-	// 		result[oldN*0 + i] + 0., result[oldN*1 + i] + 5., result[oldN*2 + i] + 10., 
-	// 		result[oldN*3 + i] + 15, result[oldN*4 + i] + 20, result[oldN*5 + i] + 25, 
-	// 		result[oldN*6 + i] + 30, result[oldN*7 + i] + 35, result[oldN*8 + i] + 40, 
-	// 		result[oldN*9 + i] + 45);
+		fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+			result[oldN*0 + i] + 0., result[oldN*1 + i] + 5., result[oldN*2 + i] + 10., 
+			result[oldN*3 + i] + 15, result[oldN*4 + i] + 20, result[oldN*5 + i] + 25, 
+			result[oldN*6 + i] + 30, result[oldN*7 + i] + 35, result[oldN*8 + i] + 40, 
+			result[oldN*9 + i] + 45);
 
 	// 	// value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
 
 	// 	// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
 
-	// }
+	}
 
 	//Clean things up... this may not be needed because this is a function
 	//FFTW sanitation. 
@@ -124,16 +122,26 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 double NewFourierMorlet(double w, double w0, double scale, int n)
 {
-	w = w * 2.0 * M_PI;
+
+	// w=w*2.*M_PI; // Trasnform to Rad/Sec
+	// w=w/scale;
+	// const double normal = sqrt(2.*M_PI*scale*FS);
+	// const double val = exp(-.5*(w-w0)*(w-w0))*normal;
+	// return(val);
+
+	// w = w * 2.0 * M_PI;
 	w = w/scale;
 
 	//Wikipedia's Definition
 	const double w02 = w0 * w0;
 	const double k = exp(-0.5 * w02);
-	const double cSigma = sqrt((1. + exp(-w02) - 2*exp(-0.75*w02)));
+	double cSigma = pow(1. + exp(-w02) - 2*exp(-0.75*w02), -0.5);
+
+
+	const double normal = sqrt((2 * M_PI * scale)/(1.0/FS));
 
 	double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
-	out = cSigma * out;
+	out = cSigma * quadRootPi * normal * out;
 	return(out);
 }
 
