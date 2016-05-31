@@ -15,6 +15,7 @@ int main(void)
     dj = 0.25;
     s0 = 2 * dt;
     J = 7/dj;
+    printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));

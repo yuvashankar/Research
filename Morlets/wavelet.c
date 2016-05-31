@@ -46,7 +46,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	for (int i = 0; i < J; ++i)
 	{
 		scale[i] = s0 * pow(2, i*dj);
-		// scale[i] = (i + 1) * 4;
+		// scale[i] = (i + 1) * 10;
 	}
 
 	//Compute the fourier transform of the data signal
@@ -59,11 +59,10 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	double df = 1.0/oldN/dt;
 	// printf("df is: %f\n", df);
 	double sign = 1.0;
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < J; ++i)
 	{
-		
 		sign = 1.0;
-		printf("Scale is: %f, I is: %d\n", scale[i], i);
+		// printf("Scale is: %f, I is: %d\n", scale[i], i);
 		for (int j = 0; j < oldN/2; ++j)
 		{
 			filter[i*oldN + j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
@@ -80,7 +79,6 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 			filter_convolution[j][1] = fft_data[j][1];
 		}
 
-
 		//Take the inverse FFT. 
 		fftw_execute(plan_backward);
 
@@ -88,29 +86,29 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		for (int j = 0; j < oldN; ++j)
 		{
 			value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-			result[i * oldN + j] = value/4000.0;
+			result[i * oldN + j] = value;
 		}
 	}
 
-	//Write to debug file.
-	for (int i = 0; i < oldN; ++i)
-	{
+	// //Write to debug file.
+	// for (int i = 0; i < oldN; ++i)
+	// {
+	// // 	fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+	// // 		filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
+	// // 		filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
+	// // 		filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
+	// // 		filter[oldN*9 + i] + 45);
 	// 	fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-	// 		filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
-	// 		filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
-	// 		filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
-	// 		filter[oldN*9 + i] + 45);
-		fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-			result[oldN*0 + i] + 0., result[oldN*1 + i] + 5., result[oldN*2 + i] + 10., 
-			result[oldN*3 + i] + 15, result[oldN*4 + i] + 20, result[oldN*5 + i] + 25, 
-			result[oldN*6 + i] + 30, result[oldN*7 + i] + 35, result[oldN*8 + i] + 40, 
-			result[oldN*9 + i] + 45);
+	// 		result[oldN*0 + i] + 0., result[oldN*1 + i] + 5., result[oldN*2 + i] + 10., 
+	// 		result[oldN*3 + i] + 15, result[oldN*4 + i] + 20, result[oldN*5 + i] + 25, 
+	// 		result[oldN*6 + i] + 30, result[oldN*7 + i] + 35, result[oldN*8 + i] + 40, 
+	// 		result[oldN*9 + i] + 45);
 
-		// value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
+	// 	// value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
 
-		// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
+	// 	// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
 
-	}
+	// }
 
 	//Clean things up... this may not be needed because this is a function
 	//FFTW sanitation. 
