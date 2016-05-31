@@ -58,8 +58,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	for (int i = 0; i < J; ++i)
 	{
 		
-		// scale[i] = s0 * pow(2, i*dj);
-		scale[i] = (i + 1) * 10;
+		scale[i] = pow(2, i);
+		// scale[i] = (i + 1) * 10;
 		// printf("scale = %f\n", scale[i]);
 		
 	}
@@ -80,7 +80,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		printf("Scale is: %f\n", scale[i]);
 		for (int j = 0; j < oldN/2; ++j)
 		{
-			filter[j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
+			filter[i*oldN + j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
 
 			filter_convolution[j][0] = fft_data[j][0] * filter[j];
 			filter_convolution[j][1] = 0.0;
@@ -107,14 +107,26 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 			value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
 			result[i * oldN + j] = value/4000.0;
 		}
+
+		for (int i = 0; i < PADDED_SIZE; ++i)
+		{
+			fftw_result[i][0] = 0.0;
+			fftw_result[i][1] = 0.0;
+		}
 	}
 
 	//Write to debug file.
 	for (int i = 0; i < oldN; ++i)
 	{
-		value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
+		fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+			filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
+			filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
+			filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
+			filter[oldN*9 + i] + 45);
 
-		fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
+		// value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
+
+		// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
 
 	}
 
@@ -132,6 +144,9 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 double NewFourierMorlet(double w, double w0, double scale, int n)
 {
+	w = w * 2.0 * M_PI;
+	w = w/scale;
+
 	//Wikipedia's Definition
 	const double w02 = w0 * w0;
 	const double k = exp(-0.5 * w02);

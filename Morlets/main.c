@@ -12,10 +12,10 @@ int main(void)
 
     double dj, dt, s0, J;
     dt = 1.0/FS;
-    dj = 1;
+    dj = 0.25;
     s0 = 2 * dt;
-    // J = 7/dj;
-    J = 10;
+    J = 7/dj;
+    // J = 10;
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));
@@ -42,7 +42,7 @@ int main(void)
 
     // fftw_plan plan_backward = fftw_plan_dft_1d(n, fourier_morlet, output, FFTW_FORWARD, FFTW_ESTIMATE);
     // fftw_execute(plan_backward);
-    
+
     // for (int i = 0; i < n; ++i)
     // {
     //     fprintf(out_file, "%d\t%f\t%f\n", i, fourier_morlet[i][0], output[i][0]);

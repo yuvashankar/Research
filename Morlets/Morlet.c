@@ -188,7 +188,7 @@ int WriteFile(double *data, int x, int y, char filename[])
     for (int i = 0; i < y; ++i)
     {
     	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-    		data[y*0 + i] + 0., data[y*1 + i] + 5., data[y*2 + i] + 10., 
+    		data[y*0 + i] + 0., data[y*1 + i] + 5., data[y*2 + i] + 10, 
     		data[y*3 + i] + 15, data[y*4 + i] + 20, data[y*5 + i] + 25, 
     		data[y*6 + i] + 30, data[y*7 + i] + 35, data[y*8 + i] + 40, 
     		data[y*9 + i] + 45);
