@@ -10,7 +10,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 	double* filter;
 	fftw_plan plan_forward, plan_backward;
-	fftw_complex *data_in, *fft_data, *fftw_result;
+	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
 	//An ouptut file for debugging. 
 	FILE* debug_file=fopen("debug.log","w");
@@ -31,6 +31,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
     data_in = fftw_alloc_complex(PADDED_SIZE); 
     fft_data = fftw_alloc_complex(PADDED_SIZE);
+    filter_convolution = fftw_alloc_complex(PADDED_SIZE);
     fftw_result = fftw_alloc_complex(PADDED_SIZE);
 
     //populate the data vector. 
@@ -57,7 +58,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	for (int i = 0; i < J; ++i)
 	{
 		
-		scale[i] = s0 * pow(2, i*dj);
+		// scale[i] = s0 * pow(2, i*dj);
+		scale[i] = (i + 1) * 10;
 		// printf("scale = %f\n", scale[i]);
 		
 	}
@@ -66,27 +68,46 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
+
+
 	double df = 1.0/oldN/dt;
-	// df = df/4;
 	// printf("df is: %f\n", df);
 	
-	double sign = 1.0;
-	for (int i = 0; i < oldN/2; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
-		filter[i] = sign * NewFourierMorlet(i*df, 5.0, 22.0, n);
-		fft_data[i][0] = fft_data[i][0] * filter[i];
-		fft_data[i][1] = 0.0;
+		
+		double sign = 1.0;
+		printf("Scale is: %f\n", scale[i]);
+		for (int j = 0; j < oldN/2; ++j)
+		{
+			filter[j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
 
-		fft_data[oldN - i - 1][0] = 0.0;
-		fft_data[oldN - i - 1][1] = 0.0;
+			filter_convolution[j][0] = fft_data[j][0] * filter[j];
+			filter_convolution[j][1] = 0.0;
 
-		sign *= -1.0;
+			filter_convolution[oldN - j - 1][0] = 0.0;
+			filter_convolution[oldN - j - 1][1] = 0.0;
+			sign *= -1.0;
+		}
+
+		for (int j = oldN/2; j < PADDED_SIZE; ++j)
+		{
+			filter_convolution[j][0] = fft_data[j][0];
+			filter_convolution[j][1] = fft_data[j][1];
+		}
+
+
+		//Take the inverse FFT. 
+		plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
+		fftw_execute(plan_backward);
+
+		//copy to result array
+		for (int j = 0; j < oldN; ++j)
+		{
+			value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
+			result[i * oldN + j] = value/4000.0;
+		}
 	}
-
-
-	//Take the inverse FFT. 
-	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, fft_data, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
-	fftw_execute(plan_backward);
 
 	//Write to debug file.
 	for (int i = 0; i < oldN; ++i)
@@ -94,12 +115,14 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
 
 		fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
+
 	}
 
 	//Clean things up... this may not be needed because this is a function
 	//FFTW sanitation. 
     fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
     fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
+    fftw_free(filter_convolution);
 
     free(filter);
     fclose(debug_file);
