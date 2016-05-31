@@ -15,7 +15,6 @@ int main(void)
     dj = 0.25;
     s0 = 2 * dt;
     J = 7/dj;
-    // J = 10;
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));

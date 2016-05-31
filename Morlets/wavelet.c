@@ -41,55 +41,39 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     	data_in[i][1] = 0.0;
     }
 
-	//Making omega steps 
-	double k[oldN];
-	double dw =  (2 * M_PI) / (oldN * 1);
-	// value = -(oldN/2) * 2 * M_PI/ (oldN * 1);
-	
-	value = M_PI/2;
-    for (int i = 0; i < oldN; ++i)
-    {
-    	k[i] = value;
-    	value += dw;
-    }
-
 	//populate the scales array ... not used right now, i'm just doing one scale
 	double scale[J];
 	for (int i = 0; i < J; ++i)
 	{
-		
-		scale[i] = pow(2, i);
-		// scale[i] = (i + 1) * 10;
-		// printf("scale = %f\n", scale[i]);
-		
+		scale[i] = s0 * pow(2, i*dj);
+		// scale[i] = (i + 1) * 4;
 	}
 
 	//Compute the fourier transform of the data signal
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
+	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 
 
 	double df = 1.0/oldN/dt;
 	// printf("df is: %f\n", df);
-	
+	double sign = 1.0;
 	for (int i = 0; i < 10; ++i)
 	{
 		
-		double sign = 1.0;
-		printf("Scale is: %f\n", scale[i]);
+		sign = 1.0;
+		printf("Scale is: %f, I is: %d\n", scale[i], i);
 		for (int j = 0; j < oldN/2; ++j)
 		{
 			filter[i*oldN + j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
 
-			filter_convolution[j][0] = fft_data[j][0] * filter[j];
+			filter_convolution[j][0] = fft_data[j][0] * filter[i * oldN + j];
 			filter_convolution[j][1] = 0.0;
 
-			filter_convolution[oldN - j - 1][0] = 0.0;
-			filter_convolution[oldN - j - 1][1] = 0.0;
 			sign *= -1.0;
 		}
-
+		//copy the rest of fft_data into filter_convolution
 		for (int j = oldN/2; j < PADDED_SIZE; ++j)
 		{
 			filter_convolution[j][0] = fft_data[j][0];
@@ -98,7 +82,6 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 
 		//Take the inverse FFT. 
-		plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 		fftw_execute(plan_backward);
 
 		//copy to result array
@@ -107,22 +90,21 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 			value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
 			result[i * oldN + j] = value/4000.0;
 		}
-
-		for (int i = 0; i < PADDED_SIZE; ++i)
-		{
-			fftw_result[i][0] = 0.0;
-			fftw_result[i][1] = 0.0;
-		}
 	}
 
 	//Write to debug file.
 	for (int i = 0; i < oldN; ++i)
 	{
+	// 	fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+	// 		filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
+	// 		filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
+	// 		filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
+	// 		filter[oldN*9 + i] + 45);
 		fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-			filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
-			filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
-			filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
-			filter[oldN*9 + i] + 45);
+			result[oldN*0 + i] + 0., result[oldN*1 + i] + 5., result[oldN*2 + i] + 10., 
+			result[oldN*3 + i] + 15, result[oldN*4 + i] + 20, result[oldN*5 + i] + 25, 
+			result[oldN*6 + i] + 30, result[oldN*7 + i] + 35, result[oldN*8 + i] + 40, 
+			result[oldN*9 + i] + 45);
 
 		// value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
 
