@@ -49,22 +49,24 @@ void fillData(double * data)
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
-	// double t=0;
-	////Impulse Sample
+
+	//Impulse Sample
 	data[2000] = 1.0;
 
-	// //Sawtooth wave sample
-	// int start = 1500;
-	// double dSaw = 1.0/150;
-
-	// for (int i = 0; i < 150; ++i)
-	// {
-	// 	data[start + i] = dSaw;
-	// 	dSaw += dSaw;
-	// }
+	//Sawtooth wave sample
+	int start = 1500;
+	double dSaw = 1.0/150;
+	double saw = 0;
+	printf("dSaw: = %f\n", dSaw);
+	for (int i = 0; i < 150; ++i)
+	{
+		data[start + i] = saw;
+		saw += dSaw;
+	}
 
 	/////Sine Wave Sample
 	// int i;
+	// double t=0;
 	// for(i=0;i<DATA_SIZE;i++){
 	// 	data[i]=0.;
 	// 	if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
