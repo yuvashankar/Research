@@ -45,7 +45,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	double scale[J];
 	for (int i = 0; i < J; ++i)
 	{
-		scale[i] = pow(2, i);
+		scale[i] = s0 * pow(2, i);
 		// scale[i] = (i + 1) * 10;
 	}
 

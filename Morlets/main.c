@@ -14,7 +14,7 @@ int main(void)
     dt = 1.0/FS;
     dj = 0.25;
     s0 = 2 * dt;
-    J = 7/dj;
+    J = 7/dj; //Where did this 7 come from? dunno m8.
     // printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);
 
     data = malloc(n * sizeof(double));
