@@ -15,7 +15,7 @@
 #define quadRootPi 0.7511255444649425 //Precalculated to machine precision
 
 //Sample Rate
-#define FS 1000
+#define FS 1000.0
 
 //Measuring Frequency
 #define FREQ 19.0
