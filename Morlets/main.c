@@ -40,26 +40,26 @@ int main(void)
         fft_data[i][1] = 0.0;
     }
 
-    double sign = 1.0;
-    for (int i = 0; i < 1000/2; ++i)
-    {
-        fft_data[i][0] = sign * NewFourierMorlet(i*df, 5.0, 0.5, n);
-        fft_data[i][1] = 0.0;
+    // double sign = 1.0;
+    // for (int i = 0; i < FS/2; ++i)
+    // {
+    //     fft_data[i][0] = sign * NewFourierMorlet(i*df, 5.0, 0.5, n);
+    //     fft_data[i][1] = 0.0;
 
-        sign *= -1.0;
-    }
+    //     sign *= -1.0;
+    // }
     
-    plan_backward = fftw_plan_dft_1d(n, fft_data, fftw_result, FFTW_FORWARD, FFTW_ESTIMATE);
-    fftw_execute(plan_backward);
+    // plan_backward = fftw_plan_dft_1d(n, fft_data, fftw_result, FFTW_FORWARD, FFTW_ESTIMATE);
+    // fftw_execute(plan_backward);
 
-    for (int i = 0; i < n; ++i)
-    {
-        double tmp = Magnitude(fftw_result[i][0], fftw_result[i][1]);
-        fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], tmp, fft_data[i][0]);
-    }
+    // for (int i = 0; i < n; ++i)
+    // {
+    //     double tmp = Magnitude(fftw_result[i][0], fftw_result[i][1]);
+    //     fprintf(out_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], tmp, fft_data[i][0]);
+    // }
 
-    // int out  = Wavelet(data, dt, n, dj, s0, J, result);
-    // int writeFlag = WriteFile(result, J, n, "DATA.log");
+    int out  = Wavelet(data, dt, n, dj, s0, J, result);
+    int writeFlag = WriteFile(result, J, n, "DATA.log");
 
     free(data); free(result);
     fclose(out_file);

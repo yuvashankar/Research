@@ -46,7 +46,6 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	for (int i = 0; i < J; ++i)
 	{
 		scale[i] = s0 * pow(2, i);
-		// scale[i] = (i + 1) * 10;
 	}
 
 	//Compute the fourier transform of the data signal
@@ -68,7 +67,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 			filter[i*oldN + j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
 			filter_convolution[j][0] = fft_data[j][0] * filter[i * oldN + j];
 			filter_convolution[j][1] = 0.0;
-			sign *= -1.0;
+			// sign *= -1.0;
 		}
 		//copy the rest of fft_data into filter_convolution
 		for (int j = oldN/2; j < PADDED_SIZE; ++j)
