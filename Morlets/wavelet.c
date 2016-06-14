@@ -2,7 +2,8 @@
 //Starting over and trying to implement the Wavelet Function in this new file. 
 #include "Morlet.h"
 
-int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result)
+int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, 
+	double* result, double* frequency)
 {
 	
 	//Variable Declarations

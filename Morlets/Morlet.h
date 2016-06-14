@@ -42,7 +42,7 @@ double NewFourierMorlet(double w, double w0, double scale, int n);
 
 double ComplexMorlet(double x, double w0, double scale);
 
-int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result);
+int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result, double* frequency);
 
 double Magnitude (double x, double y);
 
