@@ -8,12 +8,12 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	//Variable Declarations
 	double value;
 
-	double* filter;
+	double *filter;
 	fftw_plan plan_forward, plan_backward;
 	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
 	//An ouptut file for debugging. 
-	FILE* debug_file=fopen("debug.log","w");
+	FILE *debug_file=fopen("debug.log","w");
     assert(debug_file != NULL);
 
 	//Calculate Padding Required
@@ -21,12 +21,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	int pad = floor(log(DATA_SIZE)/log(2.0) + 0.5);
     double PADDED_SIZE = pow(2, pad + 1);
 
-    int oldN = n;
-    //Reallocate int to the padded size;
-    n = (int) PADDED_SIZE;
-
     //Memory Allocations
-    filter = malloc(n * J * sizeof(double));
+    filter = malloc(PADDED_SIZE * J * sizeof(double));
     assert(filter != NULL);
 
     data_in = fftw_alloc_complex(PADDED_SIZE); 
@@ -35,18 +31,11 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     fftw_result = fftw_alloc_complex(PADDED_SIZE);
 
     //populate the data vector. 
-    for (int i = 0; i < oldN; ++i)
+    for (int i = 0; i < n; ++i)
     {
     	data_in[i][0] = raw_data[i];
     	data_in[i][1] = 0.0;
     }
-
-	//populate the scales array ... not used right now, i'm just doing one scale
-	// double scale[J];
-	// for (int i = 0; i < J; ++i)
-	// {
-	// 	scale[i] = s0 * pow(2, i);
-	// }
 
 	//Compute the fourier transform of the data signal
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
@@ -55,21 +44,21 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 
 
-	double df = 1.0/oldN/dt;
+	double df = 1.0/n/dt;
 	double scale; 
 	for (int i = 0; i < J; ++i)
 	{
 		scale = s0 * pow(2, i);
-		printf("Scale is: %f, I is: %d\n", scale, i);
-		for (int j = 0; j < oldN; ++j)
+		// printf("Scale is: %f, I is: %d\n", scale, i);
+		for (int j = 0; j < n; ++j)
 		{
-			filter[i*oldN + j] = NewFourierMorlet(j*df, 5.0, scale, n);
-			filter_convolution[j][0] = fft_data[j][0] * filter[i * oldN + j];
+			filter[i*n + j] = NewFourierMorlet(j*df, 5.0, scale, n);
+			filter_convolution[j][0] = fft_data[j][0] * filter[i * n + j];
 			filter_convolution[j][1] = 0.0;
 		}
 
 		//copy the rest of fft_data into filter_convolution
-		for (int j = oldN/2; j < PADDED_SIZE; ++j)
+		for (int j = n/2; j < PADDED_SIZE; ++j)
 		{
 			filter_convolution[j][0] = fft_data[j][0];
 			filter_convolution[j][1] = fft_data[j][1];
@@ -79,15 +68,15 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		fftw_execute(plan_backward);
 
 		//Copy to result array
-		for (int j = 0; j < oldN; ++j)
+		for (int j = 0; j < n; ++j)
 		{
 			value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-			result[i * oldN + j] = value;
+			result[i * n + j] = value;
 		}
 	}
 
 	// //Write to debug file.
-	// for (int i = 0; i < oldN; ++i)
+	// for (int i = 0; i < n; ++i)
 	// {
 		// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
 		// 	filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
@@ -129,4 +118,11 @@ double NewFourierMorlet(double w, double w0, double scale, int n)
 	double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
 	out = cSigma * quadRootPi * normal * out;
 	return(out);
+}
+
+double Magnitude (double x, double y)
+{
+	double output = x * x + y * y;
+	output = sqrt(output);
+	return (output);
 }

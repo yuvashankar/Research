@@ -181,13 +181,6 @@ double ComplexMorlet(double x, double w0, double scale)
     return(more);
 }
 
-double Magnitude (double x, double y)
-{
-	double output = x * x + y * y;
-	output = sqrt(output);
-	return (output);
-}
-
 int createFilter(double* conWindow, double* complexWindow, double frequency)
 {
 	double signalFrequency = frequency/FS;
