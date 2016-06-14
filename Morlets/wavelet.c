@@ -18,7 +18,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 	//Calculate Padding Required
 	//Where did that 0.4999 come from I don't know
-	int pad = floor(log(DATA_SIZE)/log(2.0) + 0.499);
+	int pad = floor(log(DATA_SIZE)/log(2.0) + 0.5);
     double PADDED_SIZE = pow(2, pad + 1);
 
     int oldN = n;
@@ -56,19 +56,16 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 
 	double df = 1.0/oldN/dt;
-	// printf("df is: %f\n", df);
-	double sign = 1.0;
 	for (int i = 0; i < J; ++i)
 	{
-		sign = 1.0;
-		// printf("Scale is: %f, I is: %d\n", scale[i], i);
-		for (int j = 0; j < oldN/2; ++j)
+		printf("Scale is: %f, I is: %d\n", scale[i], i);
+		for (int j = 0; j < oldN; ++j)
 		{
-			filter[i*oldN + j] = sign * NewFourierMorlet(j*df, 5.0, scale[i], n);
+			filter[i*oldN + j] = NewFourierMorlet(j*df, 5.0, scale[i], n);
 			filter_convolution[j][0] = fft_data[j][0] * filter[i * oldN + j];
 			filter_convolution[j][1] = 0.0;
-			// sign *= -1.0;
 		}
+
 		//copy the rest of fft_data into filter_convolution
 		for (int j = oldN/2; j < PADDED_SIZE; ++j)
 		{
@@ -79,7 +76,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 		//Take the inverse FFT. 
 		fftw_execute(plan_backward);
 
-		//copy to result array
+		//Copy to result array
 		for (int j = 0; j < oldN; ++j)
 		{
 			value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
@@ -88,24 +85,20 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 	}
 
 	// //Write to debug file.
-	for (int i = 0; i < oldN; ++i)
-	{
+	// for (int i = 0; i < oldN; ++i)
+	// {
 		// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
 		// 	filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
 		// 	filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
 		// 	filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
 		// 	filter[oldN*9 + i] + 45);
+
 		// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
 		// 	result[oldN*0 + i] + 0., result[oldN*1 + i] + 5., result[oldN*2 + i] + 10., 
 		// 	result[oldN*3 + i] + 15, result[oldN*4 + i] + 20, result[oldN*5 + i] + 25, 
 		// 	result[oldN*6 + i] + 30, result[oldN*7 + i] + 35, result[oldN*8 + i] + 40, 
 		// 	result[oldN*9 + i] + 45);
-
-	// 	// value = Magnitude(fftw_result[i][0], fftw_result[i][1]);
-
-	// 	// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\n", i, fftw_result[i][0], fftw_result[i][1], value, filter[i]);
-
-	}
+	// }
 
 	//Clean things up... this may not be needed because this is a function
 	//FFTW sanitation. 
@@ -121,14 +114,6 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 double NewFourierMorlet(double w, double w0, double scale, int n)
 {
-
-	// w=w*2.*M_PI; // Trasnform to Rad/Sec
-	// w=w/scale;
-	// const double normal = sqrt(2.*M_PI*scale*FS);
-	// const double val = exp(-.5*(w-w0)*(w-w0))*normal;
-	// return(val);
-
-	// w = w * 2.0 * M_PI;
 	w = w/scale;
 
 	//Wikipedia's Definition
@@ -143,4 +128,3 @@ double NewFourierMorlet(double w, double w0, double scale, int n)
 	out = cSigma * quadRootPi * normal * out;
 	return(out);
 }
-

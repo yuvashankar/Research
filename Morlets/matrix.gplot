@@ -1,3 +1,3 @@
 set pm3d map
-set logscale z 2
+set logscale z 10
 splot "DATA.log" matrix with pm3d

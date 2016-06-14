@@ -9,39 +9,6 @@
 
 void fillData(double * data)
 {
-
-	// // double signal[SIGNAL_SIZE];
-
-	// FILE* signalFile = fopen("bic.txt", "r");
-	// assert(signalFile != NULL);
-
-	// // obtain file size:
-	// fseek (signalFile , 0 , SEEK_END);
-	// long lSize = ftell (signalFile);
-	// rewind (signalFile);
-
-	// char * buffer = (char*) malloc(sizeof(char)*lSize);
-	// assert(buffer);
-
-	// size_t result = fread (buffer, 1, lSize, signalFile);
-	// assert(result == lSize);
-	// // puts(buffer);
-
-
-	// char * token = strtok(buffer, "\n");
-	
- //    //Get input from txt.
-	// int counterVariable = 0;
-	// while (token !=NULL)
- //    {
- //    	data[counterVariable] = atof(token);
- //    	double difference = data[counterVariable] - atof(token);
- //    	// printf("signal: %f, difference: %f\n", signal[counterVariable], difference);
- //    	counterVariable++;
- //        token = strtok (NULL, "\n");
- //    }
- //    fclose(signalFile);
-
 	// Fit a FREQ signal at two points
 	double dt = 1./FS;
 	double fsig = FREQ/FS;
@@ -55,8 +22,8 @@ void fillData(double * data)
 		data[i] = 0.0;
 	}
 
-	//Impulse Sample
-	data[2000] = 1.0;
+	// //Impulse Sample
+	// data[2000] = 1.0;
 
 
 	// //Sawtooth wave sample
@@ -70,57 +37,20 @@ void fillData(double * data)
 	// 	saw += dSaw;
 	// }
 
-	/////Sine Wave Sample
-	// int i;
-	// double t=0;
-	// for(i=0;i<DATA_SIZE;i++){
-	// 	data[i]=0.;
-	// 	if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-	// 	//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
-	// 	if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-	// 	if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
-	// }
+	///Sine Wave Sample
+	int i;
+	double t=0;
+	for(i=0;i<DATA_SIZE;i++){
+		data[i]=0.;
+		if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
+		//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+	}
 }
 
 int FillDataComplex(fftw_complex * data)
 {
-
-
-	// FILE* signalFile = fopen("sst_nino3.dat", "r");
-	// assert(signalFile != NULL);
-
-	// // obtain file size:
-	// fseek (signalFile , 0 , SEEK_END);
-	// long lSize = ftell (signalFile);
-	// rewind (signalFile);
-
-	// char * buffer = (char*) malloc(sizeof(char)*lSize);
-	// assert(buffer);
-
-	// size_t result = fread (buffer, 1, lSize, signalFile);
-	// assert(result == lSize);
-	// // puts(buffer);
-
-
-	// char * token = strtok(buffer, "\n");
-	
- //    //Get input from txt.
-	// int counterVariable = 0;
-	// double sum = 0.0;
-	// while (token !=NULL)
- //    {
- //    	data[counterVariable][0] = atof(token);
- //    	data[counterVariable][1] = 0.0;
-
- //    	counterVariable++;
- //        token = strtok (NULL, "\n");
- //    }
- //    fclose(signalFile);
-
- //    return (counterVariable);
-
-    // printf("counterVariable: %d\n", counterVariable);
-
     // Sample Sine Wave.
 	// Fit a FREQ signal at two points
 	double fsig = FREQ/FS;
@@ -289,50 +219,6 @@ int createFilter(double* conWindow, double* complexWindow, double frequency)
 	}
 
 	return(conSize);
-}
-
-int CreateComplexFilter(double* conWindow)
-{
-	// double scale;
-	// double value;
-
-	// double dt = 1.0/FS;
-	// double df = 1./DATA_SIZE/dt;
-	// double s0 = 2 * dt;
-	// double dj = 0.25;
-	
-	// int J = (int) floor((log(DATA_SIZE * dt / s0) / log(2)) / dj);
-	
-	// double k[DATA_SIZE];
- //    for (int i = 0; i < DATA_SIZE/2 + 1; ++i)
- //    {
- //        k[i] = (i * 2 * M_PI / (DATA_SIZE * 1));
- //        // printf("%f\n", k[i]);
- //    }
-
- //    int counterVariable = DATA_SIZE/2 - 1;
- //    for (int i = DATA_SIZE/2 + 1; i < DATA_SIZE; ++i)
- //    {
- //        k[i] = -k[counterVariable];
- //        counterVariable -- ;
- //        // printf("%f\n", k[i]);
- //    }
-
-	// for (int i = 0; i < J; ++i)
-	// {
-	// 	scale = s0 * pow(2, i * dj);
-
-	// 	for (int j = 0; j < DATA_SIZE; ++j)
-	// 	{
-	// 		value = FourierMorlet(k[j], 5.0, scale);
-	// 		conWindow[i * DATA_SIZE + j] = value;
-	// 	}
-	// }
-	
-	
-	// printf("Ending df: %f\n", DATA_SIZE * df);
-	// return (J);
-	return(0);
 }
 
 void convolute(double* data, int conSize, double* conWindow, double* complexWindow, double* result, double* complexResult)

@@ -1,3 +1,4 @@
+
 //Header file for Morlet.c
 //By: Vinay Yuvashankar
 //Email: yuvashv@mcmaster.ca
@@ -15,12 +16,12 @@
 #define quadRootPi 0.7511255444649425 //Precalculated to machine precision
 
 //Sample Rate
-#define FS 1000.0
+#define FS 2048
 
 //Measuring Frequency
 #define FREQ 19.0
 
-#define MAX_DATA_SIZE 100000
+#define MAX_DATA_SIZE 1000
 
 #define DATA_SIZE 3000
 #define MAX_SCALES 50 * 4
@@ -46,7 +47,6 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 double Magnitude (double x, double y);
 
 int createFilter(double* conWindow, double* complexWindow, double frequency);
-int CreateComplexFilter(double* conWindow);
 
 void convolute(double* data, int conSize, double* conWindow, 
 	double* complexWindow, double* result, double* complexResult);
