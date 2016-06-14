@@ -22,9 +22,9 @@ int main(void)
     assert(data != NULL); assert(result != NULL);
 
     // populate the data array
-    // fillData(data);
-    char *read_file_name = "sst_nino3.dat";
-    ReadFile(data, read_file_name);
+    fillData(data);
+    // char *read_file_name = "sst_nino3.dat";
+    // ReadFile(data, read_file_name);
 
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
     int writeFlag = WriteFile(result, J, n, "DATA.log");
