@@ -42,11 +42,11 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
     }
 
 	//populate the scales array ... not used right now, i'm just doing one scale
-	double scale[J];
-	for (int i = 0; i < J; ++i)
-	{
-		scale[i] = s0 * pow(2, i);
-	}
+	// double scale[J];
+	// for (int i = 0; i < J; ++i)
+	// {
+	// 	scale[i] = s0 * pow(2, i);
+	// }
 
 	//Compute the fourier transform of the data signal
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
@@ -56,12 +56,14 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, dou
 
 
 	double df = 1.0/oldN/dt;
+	double scale; 
 	for (int i = 0; i < J; ++i)
 	{
-		printf("Scale is: %f, I is: %d\n", scale[i], i);
+		scale = s0 * pow(2, i);
+		printf("Scale is: %f, I is: %d\n", scale, i);
 		for (int j = 0; j < oldN; ++j)
 		{
-			filter[i*oldN + j] = NewFourierMorlet(j*df, 5.0, scale[i], n);
+			filter[i*oldN + j] = NewFourierMorlet(j*df, 5.0, scale, n);
 			filter_convolution[j][0] = fft_data[j][0] * filter[i * oldN + j];
 			filter_convolution[j][1] = 0.0;
 		}
