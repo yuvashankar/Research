@@ -25,18 +25,6 @@ void fillData(double * data)
 	// //Impulse Sample
 	// data[2000] = 1.0;
 
-
-	// //Sawtooth wave sample
-	// int start = 1500;
-	// double dSaw = 1.0/150;
-	// double saw = 0;
-	// printf("dSaw: = %f\n", dSaw);
-	// for (int i = 0; i < 150; ++i)
-	// {
-	// 	data[start + i] = saw;
-	// 	saw += dSaw;
-	// }
-
 	///Sine Wave Sample
 	int i;
 	double t=0;
@@ -47,6 +35,35 @@ void fillData(double * data)
 		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
 		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
 	}
+}
+
+void TestCases(double *data, int flag)
+{
+
+	// Fit a FREQ signal at two points
+	double dt = 1./FS;
+	double fsig = FREQ/FS;
+	double dw = 2*M_PI*fsig;
+	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
+	int one_peri = (int)1./fsig;
+	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	
+	switch(flag)
+	{
+		//Impulse
+		case 1:
+			data[1500] = 1.0;
+			break;
+		
+		//Multiple Sines
+		case 2:
+			for (int i = 1500; i < 2 * one_peri; ++i)
+			{
+				data[i] = sin((i - 1500)* dw + w0);
+			}
+			break;
+	}
+
 }
 
 int FillDataComplex(fftw_complex * data)
@@ -62,8 +79,6 @@ int FillDataComplex(fftw_complex * data)
 	int i;
 	for(i=0;i<DATA_SIZE;i++)
 	{
-		// data[i][0] = sin(i * dw + w0);
-		// data[i][1] = 0.0;
 		data[i][0]= 0.; data[i][1] = 0.;
 		if((i>200)&(i<400))
 		{
@@ -124,7 +139,6 @@ int WriteFile(double *data, int x, int y, char filename[])
     FILE* out_file=fopen(filename,"w");
     if (out_file == NULL) return -1;
 
-    // assert(out_file != NULL);
 
 	for (int i = 0; i < x; ++i)
     {
@@ -133,8 +147,8 @@ int WriteFile(double *data, int x, int y, char filename[])
             // value = Magnitude(result[i*n + j], result[i*n + j]);
             fprintf(out_file, "%f\t", data[i*y + j]);
         }
-
         fprintf(out_file, "\n");
+        
     }
 
     // for (int i = 0; i < y; ++i)

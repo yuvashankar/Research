@@ -19,7 +19,7 @@
 #define FS 2048
 
 //Measuring Frequency
-#define FREQ 19.0
+#define FREQ 15.0
 
 #define MAX_DATA_SIZE 1000
 
@@ -30,6 +30,7 @@
 
 //Morlet Functions
 void fillData(double * data);
+void TestCases(double *data, int flag);
 int FillDataComplex(fftw_complex * data);
 
 int ReadFile(double data[], char filename[]);

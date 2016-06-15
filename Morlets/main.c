@@ -19,10 +19,12 @@ int main(void)
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));
+    frequency = malloc(J * sizeof(double));
     assert(data != NULL); assert(result != NULL);
 
     // populate the data array
     fillData(data);
+    // TestCases(data, 1);
     // char *read_file_name = "sst_nino3.dat";
     // ReadFile(data, read_file_name);
 

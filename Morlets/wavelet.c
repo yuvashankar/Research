@@ -47,13 +47,16 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
 	double df = 1.0/n/dt;
 	double scale; 
+	double freq; 
 	//The 5.0 should be changed to w0 ASAP.
 	double fourier_wavelength_factor = (4 * M_PI)/(5.0 + sqrt(2 + 5.0 * 5.0));
 	for (int i = 0; i < J; ++i)
 	{
 		scale = s0 * pow(2, i);
-		// frequency[i] = scale * fourier_wavelength_factor;
-		// printf("Scale is: %f, frequency is: %f\n", scale, frequency[i]);
+		// freq = scale * fourier_wavelength_factor;
+		frequency[i] = scale * fourier_wavelength_factor;
+		printf("i is: %d, Scale is: %f, frequency is: %f\n", i, scale, frequency[i]);
+
 		for (int j = 0; j < n; ++j)
 		{
 			filter[i*n + j] = NewFourierMorlet(j*df, 5.0, scale, n);
