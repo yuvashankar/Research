@@ -133,22 +133,31 @@ int ReadFile(double data[], char filename[])
     return (counterVariable);
 }
 
-int WriteFile(double *data, int x, int y, char filename[])
+int WriteFile(double *data, double *frequency, int x, int y, char filename[])
 {
 
     FILE* out_file=fopen(filename,"w");
     if (out_file == NULL) return -1;
 
+    //Xticks
+    fprintf(out_file, "%d\t", x);
+    for (int i = 0; i < y; ++i)
+    {
+    	fprintf(out_file, "%f\t", i);
+    }
+    fprintf(out_file, "\n");
+
 
 	for (int i = 0; i < x; ++i)
     {
+    	fprintf(out_file, "%f\t", frequency[i]);
         for (int j = 0; j < y; ++j)
         {
             // value = Magnitude(result[i*n + j], result[i*n + j]);
             fprintf(out_file, "%f\t", data[i*y + j]);
         }
         fprintf(out_file, "\n");
-        
+
     }
 
     // for (int i = 0; i < y; ++i)
