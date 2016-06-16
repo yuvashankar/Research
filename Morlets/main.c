@@ -13,16 +13,16 @@ int main(void)
 
     double dj, dt, s0, J, maxScale, minScale;
     dt = 1.0/FS;
-    dj = 0.25;
+    dj = 0.125;
     s0 = 2 * dt;
 
 
-    // J = (log2(n * dt)/s0)/dj;
+    J = (log2(n * dt)/s0)/dj;
 
-    // maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2 + W_0_2))) / 4 * M_PI;
-    maxScale = ((W_0 + sqrt(2.0 + W_0_2)) * MAX_FREQUENCY) / (4 * M_PI);
+    maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2 + W_0_2))) / (4 * M_PI);
 
-    J = ceil((log2(maxScale/s0))/dj);
+    // double maximumJ = (log2(maxScale/s0))/dj;
+    J = (log2(maxScale/s0))/dj;
 
     printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);
     printf("Max Scale = %f\n", maxScale);
