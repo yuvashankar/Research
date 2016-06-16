@@ -57,9 +57,9 @@ void TestCases(double *data, int flag)
 		
 		//Multiple Sines
 		case 2:
-			for (int i = 1500; i < 2 * one_peri; ++i)
+			for (int i = 1500; i < 1500 + 2*one_peri; ++i)
 			{
-				data[i] = sin((i - 1500)* dw + w0);
+				data[i] = sin((i - 1500)* dw + w0) + sin((i - 1500)* 2* dw + w0);
 			}
 			break;
 	}
@@ -160,15 +160,6 @@ int WriteFile(double *data, double *frequency, int x, int y, char filename[])
 
     }
 
-    // for (int i = 0; i < y; ++i)
-    // {
-    // 	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-    // 		data[y*0 + i] + 0., data[y*1 + i] + 5., data[y*2 + i] + 10, 
-    // 		data[y*3 + i] + 15, data[y*4 + i] + 20, data[y*5 + i] + 25, 
-    // 		data[y*6 + i] + 30, data[y*7 + i] + 35, data[y*8 + i] + 40, 
-    // 		data[y*9 + i] + 45);
-    // }
-
     fclose(out_file);
     return(0);
 }
@@ -180,14 +171,18 @@ int WriteTestCases(double *data, int length, char filename[])
 
 	for (int i = 0; i < length; ++i)
     {
-    	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+    	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
     		data[length*0 + i] + 0., data[length*1 + i] + 5., data[length*2 + i] + 10, 
     		data[length*3 + i] + 15, data[length*4 + i] + 20, data[length*5 + i] + 25, 
     		data[length*6 + i] + 30, data[length*7 + i] + 35, data[length*8 + i] + 40, 
-    		data[length*9 + i] + 45);
+    		data[length*9 + i] + 45, data[length*10+ i] + 50);
     }
+    
+    fclose(out_file);
     return 0;
+
 }
+
 double Morlet(double x, double w0, double scale)
 {
     const double w02 = w0 * w0;

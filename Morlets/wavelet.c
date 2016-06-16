@@ -48,18 +48,18 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	double df = 1.0/n/dt;
 	double scale; 
 	double freq; 
-	//The 5.0 should be changed to w0 ASAP.
-	double fourier_wavelength_factor = (4 * M_PI)/(5.0 + sqrt(2 + 5.0 * 5.0));
+	//The W_0 should be changed to w0 ASAP.
+	double fourier_wavelength_factor = (4 * M_PI)/(W_0 + sqrt(2 + W_0_2));
 	for (int i = 0; i < J; ++i)
 	{
-		scale = s0 * pow(2, i);
+		scale = s0 * pow(2, i*dj);
 		// freq = scale * fourier_wavelength_factor;
 		frequency[i] = scale * fourier_wavelength_factor;
 		printf("i is: %d, Scale is: %f, frequency is: %f\n", i, scale, frequency[i]);
 
 		for (int j = 0; j < n; ++j)
 		{
-			filter[i*n + j] = NewFourierMorlet(j*df, 5.0, scale, n);
+			filter[i*n + j] = NewFourierMorlet(j*df, W_0, scale, n);
 			filter_convolution[j][0] = fft_data[j][0] * filter[i * n + j];
 			filter_convolution[j][1] = 0.0;
 		}
@@ -81,22 +81,6 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 			result[i * n + j] = value;
 		}
 	}
-
-	// //Write to debug file.
-	// for (int i = 0; i < n; ++i)
-	// {
-		// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-		// 	filter[oldN*0 + i] + 0., filter[oldN*1 + i] + 5., filter[oldN*2 + i] + 10., 
-		// 	filter[oldN*3 + i] + 15, filter[oldN*4 + i] + 20, filter[oldN*5 + i] + 25, 
-		// 	filter[oldN*6 + i] + 30, filter[oldN*7 + i] + 35, filter[oldN*8 + i] + 40, 
-		// 	filter[oldN*9 + i] + 45);
-
-		// fprintf(debug_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-		// 	result[oldN*0 + i] + 0., result[oldN*1 + i] + 5., result[oldN*2 + i] + 10., 
-		// 	result[oldN*3 + i] + 15, result[oldN*4 + i] + 20, result[oldN*5 + i] + 25, 
-		// 	result[oldN*6 + i] + 30, result[oldN*7 + i] + 35, result[oldN*8 + i] + 40, 
-		// 	result[oldN*9 + i] + 45);
-	// }
 
 	//Clean things up... this may not be needed because this is a function
 	//FFTW sanitation. 
