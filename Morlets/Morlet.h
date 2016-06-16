@@ -21,7 +21,7 @@
 //Measuring Frequency
 #define FREQ 15.0
 
-#define MAX_DATA_SIZE 1000
+#define MAX_DATA_SIZE 1000000000
 
 #define DATA_SIZE 3000
 #define MAX_SCALES 50 * 4
@@ -34,7 +34,8 @@ void TestCases(double *data, int flag);
 int FillDataComplex(fftw_complex * data);
 
 int ReadFile(double data[], char filename[]);
-int WriteFile(double *data, int x, int y, char filename[]);
+int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
+int WriteTestCases(double *data, int length, char filename[]);
 
 double Morlet(double x, double w0, double scale);
 double FourierMorlet(double w, double w0, double scale);

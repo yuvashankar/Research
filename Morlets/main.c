@@ -7,8 +7,8 @@ int main(void)
     double *data, *result, *frequency;
 
     //Open the Output file
-    FILE* out_file=fopen("DATA.log","w");
-    assert(out_file != NULL);
+    // FILE* out_file=fopen("DATA.log","w");
+    // assert(out_file != NULL);
 
     double dj, dt, s0, J;
     dt = 1.0/FS;
@@ -29,9 +29,9 @@ int main(void)
     // ReadFile(data, read_file_name);
 
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
-    int writeFlag = WriteFile(result, J, n, "DATA.log");
+    int writeFlag = WriteFile(result, frequency, J, n, "DATA.log");
 
     free(data); free(result);
-    fclose(out_file);
+    // fclose(out_file);
     return 0;
 }

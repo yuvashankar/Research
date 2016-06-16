@@ -143,7 +143,7 @@ int WriteFile(double *data, double *frequency, int x, int y, char filename[])
     fprintf(out_file, "%d\t", x);
     for (int i = 0; i < y; ++i)
     {
-    	fprintf(out_file, "%f\t", i);
+    	fprintf(out_file, "%d\t", i);
     }
     fprintf(out_file, "\n");
 
@@ -173,6 +173,21 @@ int WriteFile(double *data, double *frequency, int x, int y, char filename[])
     return(0);
 }
 
+int WriteTestCases(double *data, int length, char filename[])
+{
+	FILE* out_file=fopen(filename,"w");
+    if (out_file == NULL) return -1;
+
+	for (int i = 0; i < length; ++i)
+    {
+    	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+    		data[length*0 + i] + 0., data[length*1 + i] + 5., data[length*2 + i] + 10, 
+    		data[length*3 + i] + 15, data[length*4 + i] + 20, data[length*5 + i] + 25, 
+    		data[length*6 + i] + 30, data[length*7 + i] + 35, data[length*8 + i] + 40, 
+    		data[length*9 + i] + 45);
+    }
+    return 0;
+}
 double Morlet(double x, double w0, double scale)
 {
     const double w02 = w0 * w0;
