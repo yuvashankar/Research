@@ -22,8 +22,10 @@
 #define MAX_FREQUENCY 80.0
 #define MIN_FREQUENCY 0.0
 
+#define CENT_FRQ 0.8125
+
 //Measuring Frequency
-#define FREQ 60.0
+#define FREQ 20.0
 
 #define MAX_DATA_SIZE 10000000   
 

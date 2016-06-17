@@ -1,5 +1,6 @@
 set pm3d map
 set logscale z 10
+set logscale y 2
 set ticslevel 0
-set yrange [0:80]
+#set yrange [0:80]
 splot "DATA.log" matrix nonuniform with pm3d t ''
