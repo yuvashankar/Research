@@ -1,4 +1,0 @@
-CC=gcc
-
-morlet: main.o
-	gcc -o -c $@ $< $(CFLAGS)
