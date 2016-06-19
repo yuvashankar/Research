@@ -13,17 +13,15 @@ int main(void)
 
     double dj, dt, s0, J, maxScale, minScale;
     dt = 1.0/FS;
-    dj = 0.0625;
+    dj = 0.25;
     s0 = 2 * dt;
     // J = (log2(n * dt)/s0)/dj;
-    maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2 + W_0_2))) / (4 * M_PI);
-    minScale = (MIN_FREQUENCY * (W_0 + sqrt(2 + W_0_2))) / (4 * M_PI);
-
-    J = (log2(maxScale/s0))/dj;
+    // maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2.0 + W_0_2))) / (4.0 * M_PI);
+    maxScale = CENT_FRQ/(MAX_FREQUENCY * dt);
+    J = ceil((log2(maxScale/s0))/dj);
     
 
-    printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);
-    printf("Max Scale = %f, Min Scale = %f\n", maxScale, minScale);
+    printf("dt = %f, dj = %f, s0 = %f, J = %f, Max Scale = %f\n", dt, dj, s0, J, maxScale);
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));
@@ -32,7 +30,6 @@ int main(void)
 
     // populate the data array
     fillData(data);
-    // TestCases(data, 2);
 
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
     int writeFlag = WriteFile(result, frequency, J, n, "DATA.log");

@@ -193,7 +193,7 @@ double Morlet(double x, double w0, double scale)
 
     x = x * scale;
     // Now we take the real part of it only !!
-    double more =  quadRootPi * exp (-.5 * x*x) * (cos (w0*x) - k) * normal;
+    double more =  QUAD_ROOT_PI * exp (-.5 * x*x) * (cos (w0*x) - k) * normal;
     
     return(more);
 }

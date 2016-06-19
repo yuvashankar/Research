@@ -46,20 +46,22 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
 
 	double df = 1.0/n/dt;
-	double scale; 
+	double scale;
 
 	double fourier_wavelength_factor = (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0_2));
 	printf("Fourier Wavelength Factor = %f\n", fourier_wavelength_factor);
+	
 	for (int i = 0; i < J; ++i)
 	{
-		scale = s0 * pow(2, i*dj);
+		scale = s0 * pow(2, i * dj);
 		frequency[i] = scale * fourier_wavelength_factor;
+		// frequency[i] = CENT_FRQ /(scale * dt);
 
-		// printf("i is: %d, Scale is: %f, frequency is: %f\n", i, scale, frequency[i]);
+		printf("i is: %d, Scale is: %.2f, frequency is: %.2f\n", i, scale, frequency[i]);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 		//Don't need to use the heaviside step function because i'm starting from w >= 0
-		for (int j = 0; j < n; ++j)
+		for (int j = 0; j < n/2; ++j)
 		{
 			filter[i*n + j] = NewFourierMorlet(j*df, W_0, scale, n);
 			filter_convolution[j][0] = fft_data[j][0] * filter[i * n + j];
@@ -98,9 +100,11 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
 double NewFourierMorlet(double w, double w0, double scale, int n)
 {
-	w = w/scale;
+
+	
 
 	//Wikipedia's Definition
+	w = w/scale;
 	const double w02 = w0 * w0;
 	const double k = exp(-0.5 * w02);
 	double cSigma = pow(1. + exp(-w02) - 2*exp(-0.75*w02), -0.5);
@@ -109,7 +113,7 @@ double NewFourierMorlet(double w, double w0, double scale, int n)
 	const double normal = sqrt((2 * M_PI * scale)/(1.0/FS));
 
 	double out = exp( -0.5 * (w0 - w)*(w0 - w)) - k * exp(-0.5 * w*w);
-	out = cSigma * quadRootPi * normal * out;
+	out = cSigma * QUAD_ROOT_PI * normal * out;
 	return(out);
 }
 

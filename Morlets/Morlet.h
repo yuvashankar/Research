@@ -1,4 +1,3 @@
-
 //Header file for Morlet.c
 //By: Vinay Yuvashankar
 //Email: yuvashv@mcmaster.ca
@@ -13,19 +12,19 @@
 #include <gsl/gsl_statistics.h>
 
 //Global Constants
-#define quadRootPi 0.7511255444649425 //Precalculated to machine precision
+#define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
 #define W_0 5.0
 #define W_0_2 25.0
 
 //Sample Rate
-#define FS 2048.0
+#define FS 1000.0
 #define MAX_FREQUENCY 128.0
 #define MIN_FREQUENCY 0.5
 
-#define CENT_FRQ 0.8125
+#define CENT_FRQ 3.99999998454134688 //Wikipedia's Cent Freq
 
 //Measuring Frequency
-#define FREQ 4.0
+#define FREQ 16.0
 
 #define MAX_DATA_SIZE 10000000   
 
