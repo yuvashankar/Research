@@ -48,7 +48,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	double df = 1.0/n/dt;
 	double scale; 
 
-	double fourier_wavelength_factor = (4 * M_PI)/(W_0 + sqrt(2.0 + W_0_2));
+	double fourier_wavelength_factor = (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0_2));
+	printf("Fourier Wavelength Factor: %f\n", fourier_wavelength_factor);
 	for (int i = 0; i < J; ++i)
 	{
 		scale = s0 * pow(2, i*dj);

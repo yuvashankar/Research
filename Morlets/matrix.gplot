@@ -1,5 +1,5 @@
-#set pm3d map
-set view 30,20
+set pm3d map
+#set view 30,20
 set logscale z 10
 set logscale y 2
 set ticslevel 0

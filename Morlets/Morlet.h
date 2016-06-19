@@ -15,17 +15,17 @@
 //Global Constants
 #define quadRootPi 0.7511255444649425 //Precalculated to machine precision
 #define W_0 5.0
-#define W_0_2 25.0
+#define W_0_2 5.0
 
 //Sample Rate
-#define FS 2048
+#define FS 2048.0
 #define MAX_FREQUENCY 128.0
 #define MIN_FREQUENCY 0.5
 
 #define CENT_FRQ 0.8125
 
 //Measuring Frequency
-#define FREQ 15.0
+#define FREQ 20.0
 
 #define MAX_DATA_SIZE 10000000   
 

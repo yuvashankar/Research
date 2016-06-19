@@ -10,7 +10,7 @@
 void fillData(double * data)
 {
 	// Fit a FREQ signal at two points
-	double dt = 1./FS;
+	// double dt = 1./FS;
 	double fsig = FREQ/FS;
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
@@ -27,7 +27,7 @@ void fillData(double * data)
 
 	///Sine Wave Sample
 	int i;
-	double t=0;
+	// double t=0;
 	for(i=0;i<DATA_SIZE;i++){
 		data[i]=0.;
 		if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
@@ -41,7 +41,7 @@ void TestCases(double *data, int flag)
 {
 
 	// Fit a FREQ signal at two points
-	double dt = 1./FS;
+	// double dt = 1./FS;
 	double fsig = FREQ/FS;
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
@@ -120,7 +120,7 @@ int ReadFile(double data[], char filename[])
 	
     //Get input from text.
 	int counterVariable = 0;
-	double sum = 0.0;
+	// double sum = 0.0;
 	while (token !=NULL)
     {
     	data[counterVariable] = atof(token);
