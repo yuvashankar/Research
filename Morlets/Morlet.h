@@ -19,13 +19,13 @@
 
 //Sample Rate
 #define FS 2048
-#define MAX_FREQUENCY 80.0
-#define MIN_FREQUENCY 0.0
+#define MAX_FREQUENCY 128.0
+#define MIN_FREQUENCY 0.5
 
 #define CENT_FRQ 0.8125
 
 //Measuring Frequency
-#define FREQ 20.0
+#define FREQ 15.0
 
 #define MAX_DATA_SIZE 10000000   
 

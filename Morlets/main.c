@@ -17,14 +17,13 @@ int main(void)
     s0 = 2 * dt;
     // J = (log2(n * dt)/s0)/dj;
     maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2 + W_0_2))) / (4 * M_PI);
+    minScale = (MIN_FREQUENCY * (W_0 + sqrt(2 + W_0_2))) / (4 * M_PI);
+
     J = (log2(maxScale/s0))/dj;
     
 
-    // double maximumJ = (log2(maxScale/s0))/dj;
-    
-
     printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);
-    // printf("Max Scale = %f\n", maxScale);
+    printf("Max Scale = %f, Min Scale = %f\n", maxScale, minScale);
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));

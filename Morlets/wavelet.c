@@ -48,16 +48,16 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	double df = 1.0/n/dt;
 	double scale; 
 
-	double fourier_wavelength_factor = (4 * M_PI)/(W_0 + sqrt(2 + W_0_2));
-	// double fourier_wavelength_factor = (5.0/FS) * 2 * M_PI;
+	double fourier_wavelength_factor = (4 * M_PI)/(W_0 + sqrt(2.0 + W_0_2));
 	for (int i = 0; i < J; ++i)
 	{
 		scale = s0 * pow(2, i*dj);
 		frequency[i] = scale * fourier_wavelength_factor;
-	
-		printf("i is: %d, Scale is: %f, frequency is: %f\n", i, scale, frequency[i]);
+
+		// printf("i is: %d, Scale is: %f, frequency is: %f\n", i, scale, frequency[i]);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
+		//Don't need to use the heaviside step function because i'm starting from w >= 0
 		for (int j = 0; j < n; ++j)
 		{
 			filter[i*n + j] = NewFourierMorlet(j*df, W_0, scale, n);
