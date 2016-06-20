@@ -15,9 +15,10 @@ int main(void)
     dt = 1.0/FS;
     dj = 0.0625;
     s0 = 2 * dt;
-    J = (log2(n * dt)/s0)/dj;
+    // J = (log2(n * dt)/s0)/dj;
 
     maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2.0 + W_0_2))) / (4.0 * M_PI);
+    J = log2 (maxScale) / (s0 * dj);
 
     printf("dt = %f, dj = %f, s0 = %f, J = %f, Max Scale = %f\n", dt, dj, s0, J, maxScale);
 

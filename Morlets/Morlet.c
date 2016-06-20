@@ -12,7 +12,7 @@ void FillData(double * data)
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
-	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	printf("FS  %.2f   Pitch %.f   Discrete Period = %d \n",FS,FREQ,one_peri);
 
 	for (int i = 0; i < DATA_SIZE; ++i)
 	{
@@ -26,12 +26,12 @@ void FillData(double * data)
 	int i;
 	// double t=0;
 	for(i=0;i<DATA_SIZE;i++){
-		data[i] = sin(i*dw) + sin(i*dw*4);
-		// data[i]=0.;
+		// data[i] = sin(i*dw) + sin(i*dw*4);
+		data[i]=0.;
 		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		// //if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		// if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		// if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+		if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
 	}
 }
 

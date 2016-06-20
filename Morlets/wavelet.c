@@ -13,13 +13,13 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
 	//An ouptut file for debugging. 
-	FILE *debug_file=fopen("debug.log","w");
-    assert(debug_file != NULL);
+	// FILE *debug_file=fopen("debug.log","w");
+ //    assert(debug_file != NULL);
 
 	//Calculate Padding Required
 	//Where did that 0.4999 come from I don't know
-	int pad = floor(log(DATA_SIZE)/log(2.0) + 0.5);
-    double PADDED_SIZE = pow(2, pad + 1);
+	const int pad = floor(log(DATA_SIZE)/log(2.0) + 0.5);
+    const double PADDED_SIZE = pow(2, pad + 1);
 
     //Memory Allocations
     // filter = malloc(PADDED_SIZE * J * sizeof(double));
@@ -45,12 +45,14 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 
 
-	double df = FS/n;
+	const double df = FS/n;
 	double scale;
 
 	// double fourier_wavelength_factor = (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0));
-	double fourier_wavelength_factor = 1.8827925275534296252520792527491;
-	printf("Fourier Wavelength Factor = %f\n", fourier_wavelength_factor);
+	//This works but I don't know why... Where'd this number come from?
+	const static double fourier_wavelength_factor = 1.8827925275534296252520792527491;
+
+	// printf("Fourier Wavelength Factor = %f\n", fourier_wavelength_factor);
 
 	for (int i = 0; i < J; ++i)
 	{
@@ -89,7 +91,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     fftw_free(filter_convolution);
 
     // free(filter);
-    fclose(debug_file);
+    // fclose(debug_file);
 
     return(0);
 }
@@ -102,7 +104,7 @@ double FourierMorlet(double w, double scale, int n)
 	const double k = exp(-0.5 * W_0_2);
 	const double normal = sqrt((2 * M_PI * scale)/(1.0/FS));
 
-	double cSigma = pow(1. + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
+	double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
 	double out = exp( -0.5 * (W_0 - w)*(W_0 - w)) - k * exp(-0.5 * w*w);
 
 	out = cSigma * QUAD_ROOT_PI * normal * out;
@@ -111,7 +113,7 @@ double FourierMorlet(double w, double scale, int n)
 
 double Magnitude (double x, double y)
 {
-	double output = x * x + y * y;
+	double output = (x * x) + (y * y);
 	output = sqrt(output);
 	return (output);
 }
