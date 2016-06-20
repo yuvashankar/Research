@@ -14,7 +14,7 @@
 //Global Constants
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
 #define W_0 5.0
-#define W_0_2 25.0
+#define W_0_2 W_0 * W_0
 
 //Sample Rate
 #define FS 1000.0
@@ -38,7 +38,7 @@ int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
 int WriteTestCases(double *data, int length, char filename[]);
 
-double FourierMorlet(double w, double w0, double scale, int n);
+double FourierMorlet(double w, double scale, int n);
 
 int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result, double* frequency);
 
