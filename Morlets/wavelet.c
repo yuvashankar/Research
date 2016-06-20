@@ -8,7 +8,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	//Variable Declarations
 	double value;
 
-	double *filter;
+	// double *filter;
 	fftw_plan plan_forward, plan_backward;
 	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
@@ -22,9 +22,10 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     double PADDED_SIZE = pow(2, pad + 1);
 
     //Memory Allocations
-    filter = malloc(PADDED_SIZE * J * sizeof(double));
-    assert(filter != NULL);
+    // filter = malloc(PADDED_SIZE * J * sizeof(double));
+    // assert(filter != NULL);
 
+    //FFTW allocations.
     data_in = fftw_alloc_complex(PADDED_SIZE); 
     fft_data = fftw_alloc_complex(PADDED_SIZE);
     filter_convolution = fftw_alloc_complex(PADDED_SIZE);
@@ -47,11 +48,12 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	double df = FS/n;
 	double scale;
 
-	double fourier_wavelength_factor = (W_0*df*4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0));
+	double fourier_wavelength_factor = (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0));
 	// double fourier_wavelength_factor = sqrt(5/2);
 
 	printf("Fourier Wavelength Factor = %f\n", fourier_wavelength_factor);
 	
+	#pragma omp parallel for num_threads(2)
 	for (int i = 0; i < J; ++i)
 	{
 		scale = s0 * pow(2, i * dj);
@@ -95,7 +97,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
     fftw_free(filter_convolution);
 
-    free(filter);
+    // free(filter);
     fclose(debug_file);
 
     return(0);

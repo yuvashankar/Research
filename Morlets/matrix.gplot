@@ -1,7 +1,13 @@
 set pm3d map
-#set view 30,20
+
 set logscale z 10
 set logscale y 2
+
 set ticslevel 0
+
+set xlabel "time (s)"
+set ylabel "Frequency (Hz)"
+set title "Wavelet Power Spectrum of sin(4{/Symbol w}) + sin(16{/Symbol w}) in log base 2"
+
 set yrange [0.5:128]
 splot "DATA.log" matrix nonuniform with pm3d t ''

@@ -11,7 +11,7 @@ int main(void)
     FILE* out_file=fopen("DATA.log","w");
     // assert(out_file != NULL);
 
-    double dj, dt, s0, J, maxScale, minScale;
+    double dj, dt, s0, J, maxScale;
     dt = 1.0/FS;
     dj = 0.25;
     s0 = 2 * dt;
@@ -30,7 +30,7 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(frequency != NULL);
 
     // populate the data array
-    fillData(data);
+    FillData(data);
 
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
     int writeFlag = WriteFile(result, frequency, J, n, "DATA.log");

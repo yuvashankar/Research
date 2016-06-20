@@ -18,10 +18,10 @@
 
 //Sample Rate
 #define FS 1000.0
+
+
 #define MAX_FREQUENCY 128.0
 #define MIN_FREQUENCY 0.5
-
-#define CENT_FRQ 3.99999998454134688 //Wikipedia's Cent Freq
 
 //Measuring Frequency
 #define FREQ 4.0
@@ -29,31 +29,17 @@
 #define MAX_DATA_SIZE 10000000   
 
 #define DATA_SIZE 3000
-#define MAX_SCALES 50 * 4
-
-#define MAX_CONV_SIZE 512
 
 //Morlet Functions
-void fillData(double * data);
+void FillData(double * data);
 void TestCases(double *data, int flag);
-int FillDataComplex(fftw_complex * data);
 
 int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
 int WriteTestCases(double *data, int length, char filename[]);
 
-double Morlet(double x, double w0, double scale);
-double FourierMorlet(double w, double w0, double scale);
-
 double NewFourierMorlet(double w, double w0, double scale, int n);
-
-double ComplexMorlet(double x, double w0, double scale);
 
 int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result, double* frequency);
 
 double Magnitude (double x, double y);
-
-int createFilter(double* conWindow, double* complexWindow, double frequency);
-
-void convolute(double* data, int conSize, double* conWindow, 
-	double* complexWindow, double* result, double* complexResult);
