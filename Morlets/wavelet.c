@@ -66,10 +66,10 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		//Don't need to use the heaviside step function because i'm starting from w >= 0
 		for (int j = 0; j < n/2; ++j)
 		{
-			// filter[i*n + j] = NewFourierMorlet(j*df, W_0, scale, n);
+			// filter[i*n + j] = FourierMorlet(j*df, W_0, scale, n);
 
 			// filter_convolution[j][0] = fft_data[j][0] * filter[i * n + j];
-			filter_convolution[j][0] = fft_data[j][0] * NewFourierMorlet(j*df, W_0, scale, n);
+			filter_convolution[j][0] = fft_data[j][0] * FourierMorlet(j*df, W_0, scale, n);
 			filter_convolution[j][1] = 0.0;
 		}
 
@@ -103,7 +103,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     return(0);
 }
 
-double NewFourierMorlet(double w, double w0, double scale, int n)
+double FourierMorlet(double w, double w0, double scale, int n)
 {
 
 	

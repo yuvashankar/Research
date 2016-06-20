@@ -38,7 +38,7 @@ int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
 int WriteTestCases(double *data, int length, char filename[]);
 
-double NewFourierMorlet(double w, double w0, double scale, int n);
+double FourierMorlet(double w, double w0, double scale, int n);
 
 int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result, double* frequency);
 
