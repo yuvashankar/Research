@@ -61,19 +61,21 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
 		// printf("i is: %d, Scale is: %.2f, frequency is: %.2f\n", i, scale, frequency[i]);
 
+		memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
+
 		//Caluclate the Fourier Morlet at the specific scale. 
 		for (int j = 0; j < n/2; ++j)
 		{
-			filter_convolution[j][0] = fft_data[j][0] * FourierMorlet(j*df, scale, n);
+			filter_convolution[j][0] *= FourierMorlet(j*df, scale, n);
 			filter_convolution[j][1] = 0.0;
 		}
 
-		//copy the rest of fft_data into filter_convolution
-		for (int j = n; j < PADDED_SIZE; ++j)
-		{
-			filter_convolution[j][0] = fft_data[j][0];
-			filter_convolution[j][1] = fft_data[j][1];
-		}
+		// //copy the rest of fft_data into filter_convolution
+		// for (int j = n; j < PADDED_SIZE; ++j)
+		// {
+		// 	// filter_convolution[j][0] = fft_data[j][0];
+		// 	// filter_convolution[j][1] = fft_data[j][1];
+		// }
 
 		//Take the inverse FFT. 
 		fftw_execute(plan_backward);
