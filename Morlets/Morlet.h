@@ -24,7 +24,7 @@
 #define CENT_FRQ 3.99999998454134688 //Wikipedia's Cent Freq
 
 //Measuring Frequency
-#define FREQ 16.0
+#define FREQ 4.0
 
 #define MAX_DATA_SIZE 10000000   
 

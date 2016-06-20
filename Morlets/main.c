@@ -9,16 +9,17 @@ int main(void)
 
     //Open the Output file
     FILE* out_file=fopen("DATA.log","w");
-    assert(out_file != NULL);
+    // assert(out_file != NULL);
 
     double dj, dt, s0, J, maxScale, minScale;
     dt = 1.0/FS;
     dj = 0.25;
     s0 = 2 * dt;
-    // J = (log2(n * dt)/s0)/dj;
-    // maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2.0 + W_0_2))) / (4.0 * M_PI);
-    maxScale = CENT_FRQ/(MAX_FREQUENCY * dt);
-    J = ceil((log2(maxScale/s0))/dj);
+    J = (log2(n * dt)/s0)/dj;
+    maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2.0 + W_0_2))) / (4.0 * M_PI);
+    // maxScale = (MAX_FREQUENCY * (W_0 + sqrt(2.0 + W_0_2))) / (2.0);
+    // maxScale = CENT_FRQ/(MAX_FREQUENCY/FS * dt);
+    // J = ceil((log2(maxScale/s0))/dj);
     
 
     printf("dt = %f, dj = %f, s0 = %f, J = %f, Max Scale = %f\n", dt, dj, s0, J, maxScale);

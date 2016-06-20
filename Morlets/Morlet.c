@@ -29,11 +29,12 @@ void fillData(double * data)
 	int i;
 	// double t=0;
 	for(i=0;i<DATA_SIZE;i++){
-		data[i]=0.;
-		if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+		data[i] = sin(i*dw) + sin(i*dw*4);
+		// data[i]=0.;
+		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
+		// //if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		// if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		// if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
 	}
 }
 
@@ -120,7 +121,6 @@ int ReadFile(double data[], char filename[])
 	
     //Get input from text.
 	int counterVariable = 0;
-	// double sum = 0.0;
 	while (token !=NULL)
     {
     	data[counterVariable] = atof(token);

@@ -1,5 +1,4 @@
 //Wavelet.c
-//Starting over and trying to implement the Wavelet Function in this new file. 
 #include "Morlet.h"
 
 int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, 
@@ -45,10 +44,12 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 
 
-	double df = 1.0/n/dt;
+	double df = FS/n;
 	double scale;
 
-	double fourier_wavelength_factor = (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0_2));
+	double fourier_wavelength_factor = (W_0*df*4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0));
+	// double fourier_wavelength_factor = sqrt(5/2);
+
 	printf("Fourier Wavelength Factor = %f\n", fourier_wavelength_factor);
 	
 	for (int i = 0; i < J; ++i)
@@ -57,14 +58,16 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		frequency[i] = scale * fourier_wavelength_factor;
 		// frequency[i] = CENT_FRQ /(scale * dt);
 
-		printf("i is: %d, Scale is: %.2f, frequency is: %.2f\n", i, scale, frequency[i]);
+		// printf("i is: %d, Scale is: %.2f, frequency is: %.2f\n", i, scale, frequency[i]);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 		//Don't need to use the heaviside step function because i'm starting from w >= 0
 		for (int j = 0; j < n/2; ++j)
 		{
-			filter[i*n + j] = NewFourierMorlet(j*df, W_0, scale, n);
-			filter_convolution[j][0] = fft_data[j][0] * filter[i * n + j];
+			// filter[i*n + j] = NewFourierMorlet(j*df, W_0, scale, n);
+
+			// filter_convolution[j][0] = fft_data[j][0] * filter[i * n + j];
+			filter_convolution[j][0] = fft_data[j][0] * NewFourierMorlet(j*df, W_0, scale, n);
 			filter_convolution[j][1] = 0.0;
 		}
 
@@ -81,8 +84,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		//Copy to result array
 		for (int j = 0; j < n; ++j)
 		{
-			value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-			result[i * n + j] = value;
+			// value = Magnitude(fftw_result[j][0], fftw_result[j][1]);
+			result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
 		}
 	}
 
