@@ -30,6 +30,10 @@
 
 #define DATA_SIZE 3000
 
+
+#define PLAN_FORWARD "plan_forward"
+#define PLAN_BACKWARD "plan_backward"
+
 //Morlet Functions
 void FillData(double * data);
 void TestCases(double *data, int flag);
