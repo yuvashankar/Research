@@ -6,7 +6,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 {
 	
 	//Variable Declarations
-	double value;
+	double value, scale;
+	const double df = FS/n;
 
 	// double *filter; //Un-comment to look at each filter
 	fftw_plan plan_forward, plan_backward;
@@ -37,36 +38,19 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     	data_in[i][0] = raw_data[i];
     	data_in[i][1] = 0.0;
     }
+    //Calculate the FFT for the Data
+	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
+	fftw_execute(plan_forward);
 
-	//Compute the fourier transform of the data signal
-    int plan_forward_flag = fftw_import_wisdom_from_filename(PLAN_FORWARD);
+	//Copy the data into filter Convolution
+	memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 
-    //If there is no wisdom, then run the fft and save the wisedom. 
-    if (plan_forward_flag == 0)
-    {
-    	printf("FFTW Plan forward does not exist, running tests and determining best FFT method...\n");
-		plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_EXHAUSTIVE);
-		fftw_execute(plan_forward);
-		plan_forward_flag = fftw_export_wisdom_to_filename(PLAN_FORWARD);
-		assert(plan_forward_flag != 0);
-    }
-
-    int plan_backward_flag = fftw_import_wisdom_from_filename(PLAN_BACKWARD);
-    if (plan_backward_flag == 0)
-    {
-    	printf("FFTW Plan Backward does not exist, running tests and determining best FFT method...\n");
-    	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_EXHAUSTIVE);
-    	plan_backward_flag = fftw_export_wisdom_to_filename(PLAN_BACKWARD);
-    	assert(plan_backward_flag != 0);
-    }
-	// plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
-	// fftw_execute(plan_forward);
+	//Preapre for the plan backwards
+	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 
 	
 
 
-	const double df = FS/n;
-	double scale;
 
 	//This works but I don't know why... Where'd this number come from?
 	const static double fourier_wavelength_factor = 1.8827925275534296252520792527491;
@@ -78,8 +62,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		scale = s0 * pow(2, i * dj);
 		frequency[i] = scale * fourier_wavelength_factor;
 
-		//Copy the fft_data into a seperate filter_convolution 
-		memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
+		
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 		for (int j = 0; j < n/2; ++j)
@@ -96,6 +79,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		{
 			result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
 		}
+		//Copy the fft_data into a seperate filter_convolution 
+		memcpy(filter_convolution, fft_data, (n/2 * sizeof(fftw_complex)));
 	}
 
 	//FFTW sanitation engineering. 
