@@ -16,10 +16,10 @@ int main(void)
 
     double dj, dt, s0, J, maxScale;
     dt = 1.0/FS;
-    dj = 0.0625;
+    dj = 0.25;
     s0 = 2 * dt;
     // J = (log2(n * dt)/s0)/dj;
-    
+
     maxScale = MAX_FREQUENCY / FOURIER_WAVELENGTH_FACTOR;
     J = log2 (maxScale/s0)/dj;
 

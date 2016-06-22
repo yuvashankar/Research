@@ -46,20 +46,19 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
     
     //Calculate the FFT for the Data
-	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
+	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
+		FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
 	//Copy the data into filter Convolution
 	memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 
 	//Preapre for the plan backwards
-	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
-
-	//This works but I don't know why... Where'd this number come from?
-	// const static double FOURIER_WAVELENGTH_FACTOR = 1.8827925275534296252520792527491;
+	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
+		FFTW_BACKWARD, FFTW_ESTIMATE);
 
 	// printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
-	#pragma omp parallel for num_threads(2) shared(fft_data, frequency, result) schedule(dynamic)
+	#pragma omp parallel for num_threads(2) shared(frequency, result)
 	for (int i = 0; i < J; ++i)
 	{
 		//Calculate the scale and frequency at the specific Scale
