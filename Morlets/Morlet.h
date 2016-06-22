@@ -13,8 +13,10 @@
 
 //Global Constants
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
+#define FOURIER_WAVELENGTH_FACTOR 1.8827925275534296252520792527491;
+
 #define W_0 5.0
-#define W_0_2 W_0 * W_0
+#define W_0_2 25.0
 
 //Sample Rate
 #define FS 1000.0
@@ -28,11 +30,7 @@
 
 #define MAX_DATA_SIZE 10000000   
 
-#define DATA_SIZE 30000
-
-
-#define PLAN_FORWARD "plan_forward"
-#define PLAN_BACKWARD "plan_backward"
+#define DATA_SIZE 3000
 
 //Morlet Functions
 void FillData(double * data);

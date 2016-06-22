@@ -1,12 +1,13 @@
 //Wavelet.c
 #include "Morlet.h"
+#include <omp.h>
 
 int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, 
 	double* result, double* frequency)
 {
 	
 	//Variable Declarations
-	double normal, scale;
+	// double scale;
 	
 
 	// double *filter; //Un-comment to look at each filter
@@ -55,17 +56,18 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 
 	//This works but I don't know why... Where'd this number come from?
-	const static double fourier_wavelength_factor = 1.8827925275534296252520792527491;
+	// const static double FOURIER_WAVELENGTH_FACTOR = 1.8827925275534296252520792527491;
 
-	// printf("Fourier Wavelength Factor = %f\n", fourier_wavelength_factor);
-
+	// printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
+	#pragma omp parallel for num_threads(2) shared(fft_data, frequency, result) schedule(dynamic)
 	for (int i = 0; i < J; ++i)
 	{
 		//Calculate the scale and frequency at the specific Scale
-		scale = s0 * pow(2, i * dj);
-		frequency[i] = scale * fourier_wavelength_factor;
+		double scale = s0 * pow(2, i * dj);
+		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
+
 		//Normalization Factor needes to be recomputed at every scale.
-		normal = sqrt((2 * M_PI * scale)/(dt));
+		double normal = sqrt((2 * M_PI * scale)/(dt));
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 		for (int j = 0; j < n/2; ++j)
@@ -105,7 +107,6 @@ double FourierMorlet(double w, double scale, double k, double cSigma,
 	const double w2 = w * w;
 	////These are all needed by Fourier Morlet i'm going to move 
 	////them out to optimize the code
-
 	// const double k = exp(-0.5 * W_0_2);
 	// const double normal = sqrt((2 * M_PI * scale)/(1.0/FS));
 	// const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
