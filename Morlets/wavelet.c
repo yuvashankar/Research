@@ -8,23 +8,24 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	
 	//Variable Declarations
 	// double scale;
-	
-
-	// double *filter; //Un-comment to look at each filter
-	fftw_plan plan_forward, plan_backward;
-	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
-
-	//An ouptut file for debugging. 
-	// FILE *debug_file=fopen("debug.log","w");
-	// assert(debug_file != NULL);
-	//Memory Allocations
-    // filter = malloc(PADDED_SIZE * J * sizeof(double));
-    // assert(filter != NULL);
 
 	//Calculate Padding Required
 	//Where did that 0.4999 come from I don't know
 	const int pad = floor(log(DATA_SIZE)/log(2.0) + 0.499);
     const double PADDED_SIZE = pow(2, pad + 1);
+	
+	double *filter; //Un-comment to look at each filter
+	fftw_plan plan_forward, plan_backward;
+	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
+
+	//An ouptut file for debugging. 
+	FILE *debug_file=fopen("debug.log","w");
+	assert(debug_file != NULL);
+
+	//Memory Allocations
+    filter = malloc((int)PADDED_SIZE * J * sizeof(double));
+    assert(filter != NULL);
+
 
     
 
@@ -58,11 +59,11 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		FFTW_BACKWARD, FFTW_ESTIMATE);
 
 	// printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
-	#pragma omp parallel for num_threads(2) shared(frequency, result)
 	for (int i = 0; i < J; ++i)
 	{
 		//Calculate the scale and frequency at the specific Scale
-		double scale = s0 * pow(2, i * dj);
+		// double scale = s0 * pow(2, i * dj);
+		double scale = 1.0;
 		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 		//Normalization Factor needes to be recomputed at every scale.
@@ -71,8 +72,9 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		//Caluclate the Fourier Morlet at the specific scale. 
 		for (int j = 0; j < n/2; ++j)
 		{
-			filter_convolution[j][0] *= FourierMorlet(j*df, scale, k, cSigma, normal);
-			filter_convolution[j][1] = 0.0;
+			filter[i*(int)PADDED_SIZE + j] = FourierMorlet(j*df, scale, k, cSigma, normal);
+			filter_convolution[j][0] *= filter[i*(int)PADDED_SIZE + j];
+			filter_convolution[j][1] *= filter[i*(int)PADDED_SIZE + j];
 		}
 
 		//Take the inverse FFT. 
@@ -88,13 +90,20 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		memcpy(filter_convolution, fft_data, (n/2 * sizeof(fftw_complex)));
 	}
 
+	for (int i = 0; i < n; ++i)
+	{
+		fprintf(debug_file, "%d\t%f\t%f\n", i, raw_data[i], filter[i]);
+	}
+	
+
+
 	//FFTW sanitation engineering. 
     fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
     fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
     fftw_free(filter_convolution);
 
-    // free(filter);
-    // fclose(debug_file);
+    free(filter);
+    fclose(debug_file);
 
     return(0);
 }

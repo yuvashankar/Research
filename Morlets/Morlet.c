@@ -50,6 +50,11 @@ void TestCases(double *data, int flag)
 	{
 		//Impulse
 		case 1:
+			for (int i = 0; i < DATA_SIZE; ++i)
+			{
+				data[i] = 0.0;
+			}
+
 			data[1500] = 1.0;
 			break;
 		

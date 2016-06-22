@@ -8,8 +8,6 @@ int main(void)
     int n = DATA_SIZE;
     double *data, *result, *frequency;
 
-    
-
     //Open the Output file
     FILE* out_file=fopen("DATA.log","w");
     assert(out_file != NULL);
@@ -31,7 +29,8 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(frequency != NULL);
 
     // populate the data array
-    FillData(data);
+    // FillData(data);
+    TestCases(data, 1);
     
     double execution_time = omp_get_wtime();
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
