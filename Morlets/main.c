@@ -19,7 +19,7 @@ int main(void)
     execution_time = omp_get_wtime();
 
     dt = 1.0/FS;
-    dj = 0.0015625;
+    dj = 0.25;
     s0 = 2 * dt;
 
     maxScale = MAX_FREQUENCY / FOURIER_WAVELENGTH_FACTOR;

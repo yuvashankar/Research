@@ -10,7 +10,7 @@ void FillData(double * data)
 	// double dt = 1./FS;
 	double fsig = FREQ/FS;
 	double dw = 2*M_PI*fsig;
-	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
+	double w0 =  dw/2; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 	printf("FS  %.2f   Pitch %.f   Discrete Period = %d \n",FS,FREQ,one_peri);
 

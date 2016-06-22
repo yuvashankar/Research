@@ -14,10 +14,10 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
 
-	#pragma omp parallel num_threads(2) private(i) shared(result, raw_data, n, dj, s0, frequency, dt, J) default(none)
+	#pragma omp parallel num_threads(1) private(i) shared(result, raw_data, n, dj, s0, frequency, dt, J) default(none)
 	{
 		//Variable Declarations
-		// double scale;
+		double value;
 		// double *filter; //Un-comment to look at each filter
 		fftw_plan plan_forward, plan_backward;
 		fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
@@ -74,7 +74,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 			for (int j = 0; j < n/2; ++j)
 			{
 				filter_convolution[j][0] *= FourierMorlet(j*df, scale, k, cSigma, normal);
-				filter_convolution[j][1] = 0.0;
+				filter_convolution[j][1] *= FourierMorlet(j*df, scale, k, cSigma, normal);
 			}
 
 			//Take the inverse FFT. 
