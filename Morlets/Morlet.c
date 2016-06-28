@@ -29,9 +29,9 @@ void FillData(double * data)
 		// data[i] = sin(i*dw) + sin(i*dw*4);
 		data[i]=0.;
 		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+		if((i>0.25*DATA_SIZE)&(i<0.25*DATA_SIZE+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		if((i>0.5*DATA_SIZE)&(i<0.5*DATA_SIZE+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		if((i>0.75*DATA_SIZE)&(i<0.75*DATA_SIZE+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
 	}
 }
 
@@ -65,6 +65,11 @@ void TestCases(double *data, int flag)
 				data[i] = sin((i - 1500)* dw + w0) + sin((i - 1500)* 2* dw + w0);
 			}
 			break;
+		case 3:
+			for (int i = 0; i < DATA_SIZE; ++i)
+			{
+				data[i] = sin(i*dw + w0);
+			}
 	}
 
 }
@@ -119,12 +124,16 @@ int WriteFile(double *data, double *frequency, int x, int y, char filename[])
 
 	for (int i = 0; i < x; ++i)
     {
+    	//Feed Frequency
     	fprintf(out_file, "%f\t", frequency[i]);
+
+    	//Feed Data
         for (int j = 0; j < y; ++j)
         {
             // value = Magnitude(result[i*n + j], result[i*n + j]);
             fprintf(out_file, "%f\t", data[i*y + j]);
         }
+        //Ready for the next line.
         fprintf(out_file, "\n");
 
     }

@@ -18,7 +18,7 @@ int main(void)
     s0 = 2 * dt;
     // J = (log2(n * dt)/s0)/dj;
 
-    maxScale = MAX_FREQUENCY / FOURIER_WAVELENGTH_FACTOR;
+    maxScale = (MAX_FREQUENCY * W_0) / 2 * M_PI;
     J = log2 (maxScale/s0)/dj;
 
     printf("dt = %f, dj = %f, s0 = %f, J = %f, Max Scale = %f\n", dt, dj, s0, J, maxScale);
@@ -29,8 +29,8 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(frequency != NULL);
 
     // populate the data array
-    FillData(data);
-    // TestCases(data, 1);
+    // FillData(data);
+    TestCases(data, 3);
     
     double execution_time = omp_get_wtime();
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);

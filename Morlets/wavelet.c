@@ -7,7 +7,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 {
 	
 	//Variable Declarations
-	// double scale;
+	double value;
 	
 
 	// double *filter; //Un-comment to look at each filter
@@ -22,17 +22,14 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     // assert(filter != NULL);
 
 	//Calculate Padding Required
-	//Where did that 0.4999 come from I don't know
 	const int pad = floor(log(DATA_SIZE)/log(2.0) + 0.499);
     const double PADDED_SIZE = pow(2, pad + 1);
 
-    
-
     //FFTW allocations.
-    data_in = fftw_alloc_complex(PADDED_SIZE); 
-    fft_data = fftw_alloc_complex(PADDED_SIZE);
+    data_in = 			 fftw_alloc_complex(PADDED_SIZE); 
+    fft_data = 			 fftw_alloc_complex(PADDED_SIZE);
     filter_convolution = fftw_alloc_complex(PADDED_SIZE);
-    fftw_result = fftw_alloc_complex(PADDED_SIZE);
+    fftw_result = 		 fftw_alloc_complex(PADDED_SIZE);
 
     //populate the data vector. 
     for (int i = 0; i < n; ++i)
@@ -69,10 +66,13 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		double normal = sqrt((2 * M_PI * scale)/(dt));
 
 		//Caluclate the Fourier Morlet at the specific scale. 
+
 		for (int j = 0; j < n/2; ++j)
 		{
-			filter_convolution[j][0] *= FourierMorlet(j*df, scale, k, cSigma, normal);
-			filter_convolution[j][1] = 0.0;
+			value = FourierMorlet(j*df, scale, k, cSigma, normal);
+
+			filter_convolution[j][0] *= value;
+			filter_convolution[j][1] *= value;
 		}
 
 		//Take the inverse FFT. 
@@ -85,7 +85,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		}
 
 		//Copy the fft_data into a seperate filter_convolution 
-		memcpy(filter_convolution, fft_data, (n/2 * sizeof(fftw_complex)));
+		memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 	}
 
 	//FFTW sanitation engineering. 
