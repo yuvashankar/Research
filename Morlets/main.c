@@ -16,10 +16,13 @@ int main(void)
     dt = 1.0/FS;
     dj = 0.25;
     s0 = 2 * dt;
-    // J = (log2(n * dt)/s0)/dj;
+    J = (log2(n * dt)/s0)/dj;
 
-    maxScale = (MAX_FREQUENCY * W_0) / 2 * M_PI;
-    J = log2 (maxScale/s0)/dj;
+    // maxScale = (MAX_FREQUENCY * W_0) / (2 * M_PI);
+    // maxScale = (2 * FS * W_0 * MAX_FREQUENCY)/(2 * M_PI * DATA_SIZE);
+    // maxScale = (2 * W_0 * FS * MAX_FREQUENCY)/(M_PI * n);
+    // maxScale = MAX_FREQUENCY/ FOURIER_WAVELENGTH_FACTOR;
+    // J = log2 (maxScale/s0)/dj;
 
     printf("dt = %f, dj = %f, s0 = %f, J = %f, Max Scale = %f\n", dt, dj, s0, J, maxScale);
 

@@ -60,7 +60,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		//Calculate the scale and frequency at the specific Scale
 		double scale = s0 * pow(2, i * dj);
 
-		frequency[i] = scale * (2 * M_PI)/W_0;
+		frequency[i] = scale * (DATA_SIZE * M_PI)/(FS * W_0);
 
 		//Normalization Factor needes to be recomputed at every scale.
 		double normal = sqrt((2 * M_PI * scale)/(dt));
