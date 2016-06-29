@@ -29,7 +29,7 @@
 
 #define MAX_DATA_SIZE 10000000   
 
-#define DATA_SIZE 16000
+#define DATA_SIZE 2000
 
 //Morlet Functions
 void FillData(double * data);
