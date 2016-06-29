@@ -54,20 +54,23 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 		FFTW_BACKWARD, FFTW_ESTIMATE);
 
-	// printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
+	double FOURIER_WAVELENGTH_FACTOR = (4 * M_PI)/(W_0);
+	// FOURIER_WAVELENGTH_FACTOR *= (n*dt)/pow(2, (n/FS)/2 - 1);
+	printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
 	for (int i = 0; i < J; ++i)
 	{
 		//Calculate the scale and frequency at the specific Scale
 		double scale = s0 * pow(2, i * dj);
 
-		frequency[i] = scale * (DATA_SIZE * M_PI)/(FS * W_0);
+		// frequency[i] = scale * (DATA_SIZE * M_PI)/(FS * W_0);
+		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 		//Normalization Factor needes to be recomputed at every scale.
 		double normal = sqrt((2 * M_PI * scale)/(dt));
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 
-		for (int j = 0; j < n/2; ++j)
+		for (int j = 0; j < n; ++j)
 		{
 			value = FourierMorlet(j*df, scale, k, cSigma, normal);
 

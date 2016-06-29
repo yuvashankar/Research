@@ -17,7 +17,7 @@ int main(void)
     dj = 0.25;
     s0 = 2 * dt;
     J = (log2(n * dt)/s0)/dj;
-
+    // maxScale = (W_0 * pow(2, DATA_SIZE/(2*FS) - 1) * MAX_FREQUENCY)/(2 * M_PI * DATA_SIZE*dt);
     // maxScale = (MAX_FREQUENCY * W_0) / (2 * M_PI);
     // maxScale = (2 * FS * W_0 * MAX_FREQUENCY)/(2 * M_PI * DATA_SIZE);
     // maxScale = (2 * W_0 * FS * MAX_FREQUENCY)/(M_PI * n);
