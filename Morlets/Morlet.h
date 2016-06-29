@@ -25,15 +25,11 @@
 #define MIN_FREQUENCY 0.5
 
 //Measuring Frequency
-#define FREQ 16.0
+#define FREQ 32.0
 
 #define MAX_DATA_SIZE 10000000   
 
-<<<<<<< HEAD
 #define DATA_SIZE 2000
-=======
-#define DATA_SIZE 3000
->>>>>>> 47fb99510c8bcc42f9ccd659cdb407d22e812a71
 
 //Morlet Functions
 void FillData(double * data);

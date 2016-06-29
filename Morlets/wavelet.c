@@ -69,12 +69,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		double normal = sqrt((2 * M_PI * scale)/(dt));
 
 		//Caluclate the Fourier Morlet at the specific scale. 
-
-<<<<<<< HEAD
 		for (int j = 0; j < PADDED_SIZE; ++j)
-=======
-		for (int j = 0; j < n/2; ++j)
->>>>>>> 47fb99510c8bcc42f9ccd659cdb407d22e812a71
 		{
 			value = FourierMorlet(j*df, scale, k, cSigma, normal);
 
