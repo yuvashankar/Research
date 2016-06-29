@@ -70,7 +70,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 
-		for (int j = 0; j < n; ++j)
+		for (int j = 0; j < PADDED_SIZE; ++j)
 		{
 			value = FourierMorlet(j*df, scale, k, cSigma, normal);
 
