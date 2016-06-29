@@ -12,15 +12,20 @@ int main(void)
     FILE* out_file=fopen("DATA.log","w");
     assert(out_file != NULL);
 
-    double dj, dt, s0, J, maxScale;
+    double dj, dt, s0, J, maxScale, minScale;
     dt = 1.0/FS;
     dj = 0.25;
     s0 = 2 * dt;
-    // J = (log2(n * dt)/s0)/dj;
-    // J = (W_0 * MAX_FREQUENCY)/(4 * M_PI);
+
+    J = ceil(log2((W_0 * MAX_FREQUENCY)/(4 * M_PI * s0))/dj);
+    printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);
+
     maxScale = (W_0 * MAX_FREQUENCY) / (4*M_PI);
-    J = log2((W_0 * MAX_FREQUENCY)/(4 * M_PI * s0))/dj;
-    printf("dt = %f, dj = %f, s0 = %f, J = %f, Max Scale = %f\n", dt, dj, s0, J, maxScale);
+    minScale = (W_0 * MIN_FREQUENCY) / (4*M_PI);
+    double startJ = log2((W_0 * MIN_FREQUENCY)/(4 * M_PI * s0))/dj;
+    printf("Max Scale = %f, Start J = %f\n", maxScale, startJ);
+
+    
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));
@@ -29,7 +34,7 @@ int main(void)
 
     // populate the data array
     // FillData(data);
-    TestCases(data, 3);
+    TestCases(data, 2);
     
     double execution_time = omp_get_wtime();
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
