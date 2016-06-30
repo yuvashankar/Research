@@ -9,9 +9,5 @@ set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
 set title "Wavelet Power Spectrum of sin(4{/Symbol w}) + sin(16{/Symbol w}) in log base 2"
 
-<<<<<<< HEAD
-set yrange [4:64]
-=======
-#set yrange [0.5:128]
->>>>>>> 47fb99510c8bcc42f9ccd659cdb407d22e812a71
+set yrange [0.5:128]
 splot "DATA.log" matrix nonuniform with pm3d t ''

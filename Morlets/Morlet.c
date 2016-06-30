@@ -60,13 +60,9 @@ void TestCases(double *data, int flag)
 		
 		//Multiple Sines
 		case 2:
-			// for (int i = 1500; i < 1500 + 2*one_peri; ++i)
-			// {
-			// 	data[i] = sin((i - 1500)* dw + w0) + sin((i - 1500)* 2* dw + w0);
-			// }
-			for (int i = 0; i < DATA_SIZE; ++i)
+			for (int i = 1500; i < 1500 + 2*one_peri; ++i)
 			{
-				data[i] = sin(i*dw + w0) + sin(i*2*dw + w0);
+				data[i] = sin((i - 1500)* dw + w0) + sin((i - 1500)* 2* dw + w0);
 			}
 			break;
 		case 3:
