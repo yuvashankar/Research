@@ -22,7 +22,7 @@ int main(void)
     execution_time = omp_get_wtime();
 
     dt = 1.0/FS;
-    dj = 0.0625;
+    dj = 0.25;
     s0 = 2 * dt;
 <<<<<<< HEAD
     // J = (log2(n * dt)/s0)/dj;
@@ -41,7 +41,12 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(frequency != NULL);
 
     // populate the data array
+<<<<<<< HEAD
     TestCases(data, 2);
+=======
+    // FillData(data);
+    TestCases(data, 1);
+>>>>>>> parent of f037623... "all of the tests came out positive i'm pretty confident that I have the right graphs and the right math now going to work on parallelizing it"
     
     parallel_time = omp_get_wtime();
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
