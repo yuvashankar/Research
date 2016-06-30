@@ -14,7 +14,7 @@ int main(void)
 
     double dj, dt, s0, J, maxScale;
     dt = 1.0/FS;
-    dj = 0.25;
+    dj = 0.0625;
     s0 = 2 * dt;
     // J = (log2(n * dt)/s0)/dj;
     J = ceil( log2( (W_0 * MAX_FREQUENCY)/(8 * M_PI * s0) )/dj);
@@ -28,7 +28,7 @@ int main(void)
 
     // populate the data array
     // FillData(data);
-    TestCases(data, 1);
+    TestCases(data, 2);
     
     double execution_time = omp_get_wtime();
     int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
