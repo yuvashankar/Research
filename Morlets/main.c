@@ -42,7 +42,12 @@ int main(void)
 
     // populate the data array
 <<<<<<< HEAD
+<<<<<<< HEAD
     TestCases(data, 2);
+=======
+    // FillData(data);
+    TestCases(data, 1);
+>>>>>>> parent of f037623... "all of the tests came out positive i'm pretty confident that I have the right graphs and the right math now going to work on parallelizing it"
 =======
     // FillData(data);
     TestCases(data, 1);
