@@ -11,7 +11,7 @@ git add *
 echo "What's your commit message, no quotes needed"
 read input_variable
 
-git commit -m "$input_variable"
+git commit -m "\"$input_variable\""
 
 git push origin $1
 
