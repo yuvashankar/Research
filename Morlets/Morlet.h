@@ -13,6 +13,7 @@
 
 //Global Constants
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
+#define FOURIER_WAVELENGTH_FACTOR (8 * M_PI)/W_0
 
 #define W_0 5.0
 #define W_0_2 25.0
