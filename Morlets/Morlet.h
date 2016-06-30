@@ -11,15 +11,19 @@
 #include <fftw3.h>
 #include <gsl/gsl_statistics.h>
 
-//Global Constants
-#define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
-#define FOURIER_WAVELENGTH_FACTOR (8 * M_PI)/W_0
 
 #define W_0 5.0
 #define W_0_2 25.0
 
+//Global Constants
+#define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
+
+
+#define FOURIER_WAVELENGTH_FACTOR 1.0
+//(8 * M_PI)/W_0
+
 //Sample Rate
-#define FS 1000.0
+#define FS 1000
 
 
 #define MAX_FREQUENCY 128.0
@@ -43,6 +47,6 @@ int WriteTestCases(double *data, int length, char filename[]);
 double FourierMorlet(double w, double scale, double k, double cSigma,
 	double normal);
 
-int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result, double* frequency);
+int Wavelet(double* raw_data, int sampling_frequency, int n, double dj, double s0, int J, double* result, double* frequency);
 
 double Magnitude (double x, double y);
