@@ -27,7 +27,6 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(frequency != NULL);
 
     // populate the data array
-    // FillData(data);
     TestCases(data, 2);
     
     double execution_time = omp_get_wtime();
