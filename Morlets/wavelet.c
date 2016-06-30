@@ -54,7 +54,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 		FFTW_BACKWARD, FFTW_ESTIMATE);
 
-	double FOURIER_WAVELENGTH_FACTOR = (4 * M_PI)/(W_0);
+	double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
 	// FOURIER_WAVELENGTH_FACTOR *= (n*dt)/pow(2, (n/FS)/2 - 1);
 	printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
 	for (int i = 0; i < J; ++i)
