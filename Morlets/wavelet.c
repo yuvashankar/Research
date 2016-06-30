@@ -38,7 +38,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     	data_in[i][1] = 0.0;
     }
 
-    const double df = FS/n;
+    const double df = FS/PADDED_SIZE;
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
     
@@ -70,7 +70,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 
-		for (int j = 0; j < n; ++j)
+		for (int j = 0; j < PADDED_SIZE; ++j)
 		{
 			value = FourierMorlet(j*df, scale, k, cSigma, normal);
 
