@@ -2,7 +2,8 @@
 #include "Morlet.h"
 #include <omp.h>
 
-int Wavelet(double* raw_data, int sampling_frequency, int n, double dj, double s0, int J, double* result, double* frequency)
+int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, 
+	double* result, double* frequency)
 {
 	//An ouptut file for debugging. 
 	// FILE *debug_file=fopen("debug.log","w");
@@ -15,14 +16,14 @@ int Wavelet(double* raw_data, int sampling_frequency, int n, double dj, double s
 	//Calculate Padding Required
 	const int pad = floor(log(DATA_SIZE)/log(2.0) + 0.499);
 	const double PADDED_SIZE = pow(2, pad + 1);
-	const double df = sampling_frequency/PADDED_SIZE;
+	const double df = FS/PADDED_SIZE;
 
 	//Constants needed by the Fourier Morlet Funciton. Needed to compute only once. 
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
 
 
-	#pragma omp parallel num_threads(1) private(i) shared(result, raw_data, n, dj, s0, frequency, sampling_frequency, J) default(none)
+	#pragma omp parallel num_threads(1) private(i) shared(result, raw_data, n, dj, s0, frequency, dt, J) default(none)
 	{
 
 		//Variable Declarations
@@ -40,7 +41,7 @@ int Wavelet(double* raw_data, int sampling_frequency, int n, double dj, double s
 
 	    //populate the data vector. 
 	    #pragma omp for schedule(dynamic)
-	    for (i = 0; i < n; ++i)
+	    for (int i = 0; i < n; ++i)
 	    {
 	    	data_in[i][0] = raw_data[i];
 	    	data_in[i][1] = 0.0;
@@ -64,14 +65,14 @@ int Wavelet(double* raw_data, int sampling_frequency, int n, double dj, double s
 
 		//Main For loop. 
 		#pragma omp for schedule(dynamic)
-		for (i = 0; i < J; ++i)
+		for (int i = 0; i < J; ++i)
 		{
 			//Calculate the scale and frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
 			frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 			//Normalization Factor needes to be recomputed at every scale.
-			double normal = sqrt(2 * M_PI * scale * sampling_frequency);
+			double normal = sqrt((2 * M_PI * scale)/(dt));
 
 			//Caluclate the Fourier Morlet at the specific scale for the entire spectrum. 
 			for (int j = 0; j < PADDED_SIZE; ++j)
@@ -116,7 +117,7 @@ double FourierMorlet(double w, double scale, double k, double cSigma,
 	////These are all needed by Fourier Morlet i'm going to move 
 	////them out to optimize the code
 	// const double k = exp(-0.5 * W_0_2);
-	// const double normal = sqrt((2 * M_PI * scale)/(1.0/sampling_frequency));
+	// const double normal = sqrt((2 * M_PI * scale)/(1.0/FS));
 	// const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
 	double out = exp( -0.5 * (W_0_2 - 2*W_0*w + w2)) - k * exp(-0.5 * w2);
 

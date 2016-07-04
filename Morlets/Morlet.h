@@ -11,6 +11,11 @@
 #include <fftw3.h>
 #include <gsl/gsl_statistics.h>
 
+<<<<<<< HEAD
+=======
+//Global Constants
+#define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
+>>>>>>> parent of f269b9b... Ok I now have master parallilized. it's now time to start thinking about making this self sufficient the next thing that I'm going to be doing is figureing out how to make sure that someone can just downlad this file and use it without having any constants defined.
 
 #define W_0 5.0
 #define W_0_2 25.0
