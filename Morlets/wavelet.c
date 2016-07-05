@@ -66,8 +66,6 @@ int Wavelet(double* raw_data,  double* frequency,
 	{
 		//Calculate the scale and frequency at the specific Scale
 		double scale = s0 * pow(2, i * dj);
-
-
 		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 		//Normalization Factor needes to be recomputed at every scale.
