@@ -8,7 +8,6 @@ int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, doubl
 	
 	//Variable Declarations
 	double value;
-	
 
 	// double *filter; //Un-comment to look at each filter
 	fftw_plan plan_forward, plan_backward;

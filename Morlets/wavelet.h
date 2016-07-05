@@ -19,7 +19,6 @@
 //Sample Rate
 #define FS 1000.0
 
-
 #define MAX_FREQUENCY 128.0
 #define MIN_FREQUENCY 0.5
 
@@ -30,9 +29,12 @@
 
 #define DATA_SIZE 3000
 
-//Morlet Functions
 void FillData(double * data);
 void TestCases(double *data, int flag);
+
+int AllocateMemory(double *data, double *result, double *frequency, 
+	double n, double sampling_frequency, 
+	double max_frequency, double dj, double s0);
 
 int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);

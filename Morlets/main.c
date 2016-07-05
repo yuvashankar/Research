@@ -9,17 +9,18 @@ int main(void)
     double *data, *result, *frequency;
 
     //Open the Output file
-    FILE* out_file=fopen("DATA.log","w");
-    assert(out_file != NULL);
-
-    double dj, dt, s0, J, maxScale;
-    dt = 1.0/FS;
+    // FILE* out_file=fopen("DATA.log","w");
+    // assert(out_file != NULL);
+    
+    double dj, dt, s0, J;
     dj = 0.25;
+
+    dt = 1.0/FS;
     s0 = 2 * dt;
-    // J = (log2(n * dt)/s0)/dj;
+
     J = ceil( log2( (W_0 * MAX_FREQUENCY)/(8 * M_PI * s0) )/dj);
 
-    printf("dt = %f, dj = %f, s0 = %f, J = %f, Max Scale = %f\n", dt, dj, s0, J, maxScale);
+    printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);
 
     data = malloc(n * sizeof(double));
     result = malloc(J * n * sizeof(double));
@@ -40,6 +41,6 @@ int main(void)
     
 
     free(data); free(result); free(frequency);
-    fclose(out_file);
+    // fclose(out_file);
     return 0;
 }
