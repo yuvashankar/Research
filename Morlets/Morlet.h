@@ -9,7 +9,6 @@
 #include <string.h>
 #include <math.h>
 #include <fftw3.h>
-#include <gsl/gsl_statistics.h>
 
 //Global Constants
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
@@ -43,6 +42,8 @@ double FourierMorlet(double w, double scale, double k, double cSigma,
 	double normal);
 
 // int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result, double* frequency);
-int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, double s0, int J, 
+int Wavelet(double* raw_data, double sampling_frequency, int n, 
+	double dj, double s0, int J, 
 	double* result, double* frequency);
+
 double Magnitude (double x, double y);
