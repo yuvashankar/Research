@@ -2,8 +2,9 @@
 #include "wavelet.h"
 #include <omp.h>
 
-int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, double s0, int J, 
-	double* result, double* frequency)
+int Wavelet(double* raw_data,  double* frequency, 
+	double sampling_frequency, int n, double dj, double s0, int J, double minimum_frequency,
+	double* result)
 {
 	
 	//Variable Declarations
@@ -37,6 +38,7 @@ int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, doubl
     	data_in[i][1] = 0.0;
     }
 
+    //Things needed for FourierMorlet Calculated only once.
     const double df = sampling_frequency/PADDED_SIZE;
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
@@ -53,23 +55,25 @@ int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, doubl
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 		FFTW_BACKWARD, FFTW_ESTIMATE);
 
+	
 	double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
-	// FOURIER_WAVELENGTH_FACTOR *= (n*dt)/pow(2, (n/sampling_frequency)/2 - 1);
-	printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
-	for (int i = 0; i < J; ++i)
+
+	int start = (int)floor( log2( (W_0 * minimum_frequency)/(8 * M_PI * s0) )/dj);
+	// printf("Start J = %d\n", start);
+
+	
+	for (int i = start; i < J; ++i)
 	{
 		//Calculate the scale and frequency at the specific Scale
 		double scale = s0 * pow(2, i * dj);
 
-		// frequency[i] = scale * (DATA_SIZE * M_PI)/(sampling_frequency * W_0);
+
 		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 		//Normalization Factor needes to be recomputed at every scale.
-		// double normal = sqrt((2 * M_PI * scale)/(dt));
 		double normal = sqrt(2 * M_PI * scale * sampling_frequency);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
-
 		for (int j = 0; j < PADDED_SIZE; ++j)
 		{
 			value = FourierMorlet(j*df, scale, k, cSigma, normal);
