@@ -1,4 +1,4 @@
-#include "Morlet.h"
+#include "wavelet.h"
 #include "math.h"
 #include <omp.h>
 

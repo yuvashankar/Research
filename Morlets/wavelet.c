@@ -1,5 +1,5 @@
 //Wavelet.c
-#include "Morlet.h"
+#include "wavelet.h"
 #include <omp.h>
 
 int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, double s0, int J, 
@@ -194,7 +194,6 @@ void TestCases(double *data, int flag)
 				data[i] = sin(i*dw + w0) + sin(i*2*dw + w0);
 			}
 	}
-
 }
 
 int ReadFile(double data[], char filename[])

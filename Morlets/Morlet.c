@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "Morlet.h"
 
 
 // void FillData(double * data)
