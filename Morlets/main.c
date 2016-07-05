@@ -31,7 +31,7 @@ int main(void)
     TestCases(data, 2);
     
     double execution_time = omp_get_wtime();
-    int out  = Wavelet(data, dt, n, dj, s0, J, result, frequency);
+    int out  = Wavelet(data, FS, n, dj, s0, J, result, frequency);
     execution_time = omp_get_wtime() - execution_time;
     printf("Execution Time: %f\n", execution_time);
 

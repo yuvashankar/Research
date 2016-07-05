@@ -2,7 +2,7 @@
 #include "Morlet.h"
 #include <omp.h>
 
-int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, 
+int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, double s0, int J, 
 	double* result, double* frequency)
 {
 	
@@ -66,7 +66,8 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 		//Normalization Factor needes to be recomputed at every scale.
-		double normal = sqrt((2 * M_PI * scale)/(dt));
+		// double normal = sqrt((2 * M_PI * scale)/(dt));
+		double normal = sqrt(2 * M_PI * scale * FS);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 
