@@ -17,15 +17,8 @@
 #define W_0 5.0
 #define W_0_2 25.0
 
-//Global Constants
-#define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
-
-
-#define FOURIER_WAVELENGTH_FACTOR 1.0
-//(8 * M_PI)/W_0
-
 //Sample Rate
-#define FS 1000
+#define FS 1000.0
 
 
 #define MAX_FREQUENCY 128.0

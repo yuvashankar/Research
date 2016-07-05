@@ -1,10 +1,19 @@
 //Wavelet.c
 #include "Morlet.h"
-//#include <omp.h>
+#include <omp.h>
 
 int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, 
 	double* result, double* frequency)
 {
+	
+	//Variable Declarations
+	double value;
+	
+
+	// double *filter; //Un-comment to look at each filter
+	fftw_plan plan_forward, plan_backward;
+	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
+
 	//An ouptut file for debugging. 
 	// FILE *debug_file=fopen("debug.log","w");
 	// assert(debug_file != NULL);
@@ -14,19 +23,7 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
 	//Calculate Padding Required
 	const int pad = floor(log(DATA_SIZE)/log(2.0) + 0.499);
-	const double PADDED_SIZE = pow(2, pad + 1);
-	const double df = FS/PADDED_SIZE;
-
-	//Constants needed by the Fourier Morlet Funciton. Needed to compute only once. 
-    const double k = exp(-0.5 * W_0_2);
-    const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-
-	//Variable Declarations
-	double value;
-	
-	// double *filter; //Un-comment to look at each filter
-	fftw_plan plan_forward, plan_backward;
-	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
+    const double PADDED_SIZE = pow(2, pad + 1);
 
     //FFTW allocations.
     data_in = 			 fftw_alloc_complex(PADDED_SIZE); 
@@ -40,8 +37,11 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
     	data_in[i][0] = raw_data[i];
     	data_in[i][1] = 0.0;
     }
+
+    const double df = FS/PADDED_SIZE;
+    const double k = exp(-0.5 * W_0_2);
+    const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
     
-    //FFTW prefers that you don't multithread planning at all.
     //Calculate the FFT for the Data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
 		FFTW_FORWARD, FFTW_ESTIMATE);
@@ -54,17 +54,22 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 		FFTW_BACKWARD, FFTW_ESTIMATE);
 
-	//Main For loop. 
+	double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
+	// FOURIER_WAVELENGTH_FACTOR *= (n*dt)/pow(2, (n/FS)/2 - 1);
+	printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
 	for (int i = 0; i < J; ++i)
 	{
 		//Calculate the scale and frequency at the specific Scale
 		double scale = s0 * pow(2, i * dj);
+
+		// frequency[i] = scale * (DATA_SIZE * M_PI)/(FS * W_0);
 		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 		//Normalization Factor needes to be recomputed at every scale.
 		double normal = sqrt((2 * M_PI * scale)/(dt));
 
-		//Caluclate the Fourier Morlet at the specific scale for the entire spectrum. 
+		//Caluclate the Fourier Morlet at the specific scale. 
+
 		for (int j = 0; j < PADDED_SIZE; ++j)
 		{
 			value = FourierMorlet(j*df, scale, k, cSigma, normal);
@@ -93,7 +98,6 @@ int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J,
 
     // free(filter);
     // fclose(debug_file);
-	//end of parallizable loop
 
     return(0);
 }

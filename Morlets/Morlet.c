@@ -12,7 +12,7 @@ void FillData(double * data)
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
-	printf("FS  %d   Pitch %.f   Discrete Period = %d \n",FS,FREQ,one_peri);
+	printf("FS  %.2f   Pitch %.f   Discrete Period = %d \n",FS,FREQ,one_peri);
 
 	for (int i = 0; i < DATA_SIZE; ++i)
 	{
@@ -44,7 +44,7 @@ void TestCases(double *data, int flag)
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
-	printf("FS  %d   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
 	
 	switch(flag)
 	{
@@ -113,13 +113,12 @@ int WriteFile(double *data, double *frequency, int x, int y, char filename[])
 
     FILE* out_file=fopen(filename,"w");
     if (out_file == NULL) return -1;
-    double value;
+
     //Xticks
     fprintf(out_file, "%d\t", x);
     for (int i = 0; i < y; ++i)
     {
-    	value = i/FS;
-    	fprintf(out_file, "%f\t", value);
+    	fprintf(out_file, "%f\t", i/FS);
     }
     fprintf(out_file, "\n");
 
