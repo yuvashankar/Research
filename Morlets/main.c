@@ -4,17 +4,12 @@
 
 int main(void)
 {
-    //Size of Data
-    int n = DATA_SIZE;
     double *data, *result, *frequency;
 
-    //Open the Output file
-    // FILE* out_file=fopen("DATA.log","w");
-    // assert(out_file != NULL);
-    
+    //Size of Data
+    int n = DATA_SIZE;
     double dj, dt, s0, J;
     dj = 0.25;
-
     dt = 1.0/FS;
     s0 = 2 * dt;
 
@@ -39,8 +34,7 @@ int main(void)
     int writeFlag = WriteFile(result, frequency, J, n, "DATA.log");
 
     
-
+    //sanitation engineering
     free(data); free(result); free(frequency);
-    // fclose(out_file);
     return 0;
 }
