@@ -22,7 +22,7 @@ int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, doubl
     // assert(filter != NULL);
 
 	//Calculate Padding Required
-	const int pad = floor(log(DATA_SIZE)/log(2.0) + 0.499);
+	const int pad = floor(log(n)/log(2.0) + 0.499);
     const double PADDED_SIZE = pow(2, pad + 1);
 
     //FFTW allocations.
@@ -38,7 +38,7 @@ int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, doubl
     	data_in[i][1] = 0.0;
     }
 
-    const double df = FS/PADDED_SIZE;
+    const double df = sampling_frequency/PADDED_SIZE;
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
     
@@ -55,19 +55,19 @@ int Wavelet(double* raw_data, double sampling_frequency, int n, double dj, doubl
 		FFTW_BACKWARD, FFTW_ESTIMATE);
 
 	double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
-	// FOURIER_WAVELENGTH_FACTOR *= (n*dt)/pow(2, (n/FS)/2 - 1);
+	// FOURIER_WAVELENGTH_FACTOR *= (n*dt)/pow(2, (n/sampling_frequency)/2 - 1);
 	printf("Fourier Wavelength Factor = %f\n", FOURIER_WAVELENGTH_FACTOR);
 	for (int i = 0; i < J; ++i)
 	{
 		//Calculate the scale and frequency at the specific Scale
 		double scale = s0 * pow(2, i * dj);
 
-		// frequency[i] = scale * (DATA_SIZE * M_PI)/(FS * W_0);
+		// frequency[i] = scale * (DATA_SIZE * M_PI)/(sampling_frequency * W_0);
 		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
 		//Normalization Factor needes to be recomputed at every scale.
 		// double normal = sqrt((2 * M_PI * scale)/(dt));
-		double normal = sqrt(2 * M_PI * scale * FS);
+		double normal = sqrt(2 * M_PI * scale * sampling_frequency);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 
@@ -111,7 +111,7 @@ double FourierMorlet(double w, double scale, double k, double cSigma,
 	////These are all needed by Fourier Morlet i'm going to move 
 	////them out to optimize the code
 	// const double k = exp(-0.5 * W_0_2);
-	// const double normal = sqrt((2 * M_PI * scale)/(1.0/FS));
+	// const double normal = sqrt((2 * M_PI * scale)/(1.0/sampling_frequency));
 	// const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
 	double out = exp( -0.5 * (W_0_2 - 2*W_0*w + w2)) - k * exp(-0.5 * w2);
 
