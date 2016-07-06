@@ -8,14 +8,14 @@ int Wavelet(double* raw_data,  double* frequency,
 {
 	
 	//Variable Declarations
-	int i;
+	int i, j;
 	int start = (int)floor( log2( (W_0 * minimum_frequency)
 									 /(8 * M_PI * s0) )
 									 /dj);
 	// printf("outside J = %d\n", J);
-	#pragma omp parallel num_threads(2) private(i) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
+	#pragma omp parallel num_threads(2) private(i, j) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
 	{
-		int j;
+		// int j;
 		double value;
 		// double *filter; //Un-comment to look at each filter
 		fftw_plan plan_forward, plan_backward;
@@ -49,7 +49,7 @@ int Wavelet(double* raw_data,  double* frequency,
 
 		
 		//populate the data vector. 
-	    #pragma omp for
+	    // #pragma omp for
 	    for (i = 0; i < n; ++i)
 	    {
 	    	data_in[i][0] = raw_data[i];
@@ -74,7 +74,7 @@ int Wavelet(double* raw_data,  double* frequency,
 		}
 	    // printf("J = %d\n", J);
 		#pragma omp for
-		for (i = 0; i < J; ++i)
+		for (i = start; i < J; ++i)
 		{
 			//Calculate the scale and frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
