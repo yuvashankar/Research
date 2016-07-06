@@ -9,7 +9,6 @@
 #include "processEEG.h"
 #include <assert.h>
 
-
 int main(int argc, char const *argv[])
 {
     //Variable Declarations
@@ -20,20 +19,21 @@ int main(int argc, char const *argv[])
         filteredTriggerNumber,
         readFlag;
 
-    int32_t* rawStatus,
-        buffer,
-        filteredBuffer;
+    int32_t* rawStatus;
+
+    int * buffer,
+        * filteredBuffer;
 
     double sampleFrequency,
-        samplesToRead,
-        offset2sec;
+           samplesToRead,
+           offset2sec;
 
     long long numberOfRecords,
-        numberOfTriggers,
-        offset;
+              numberOfTriggers,
+              offset;
 
     double * data,
-        *tempBuffer;
+           * tempBuffer;
 
     long long * triggerList;
     
@@ -47,22 +47,29 @@ int main(int argc, char const *argv[])
     handle = edfHeader.handle;
     sampleFrequency = ((double)edfHeader.signalparam[1].smp_in_datarecord /
                        (double)edfHeader.datarecord_duration) * EDFLIB_TIME_DIMENSION;
+    
     numberOfChannels = edfHeader.edfsignals;
+
     numberOfRecords = edfHeader.signalparam[numberOfChannels - 1].smp_in_file;
+
     channel = numberOfChannels - 1;
+
     samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
     //Allocate Necessary Memory
-    rawStatus = (int*) malloc(numberOfRecords*sizeof(int));
-    triggerList = (long long*) malloc(MAXIMUM_TRIGGERS * sizeof(long long));
-    tempBuffer = (double*) malloc(samplesToRead * sizeof(double));
+    rawStatus = (int*) malloc(numberOfRecords * sizeof(int));
+    assert(rawStatus);
+    
     buffer = (int *) malloc(numberOfTriggers * sizeof(int));
     filteredBuffer = (int *) malloc(numberOfTriggers * sizeof(int));
-    assert(rawStatus);
-    assert(triggerList);
-    assert(tempBuffer);
-    assert (buffer);
-    assert(filteredBuffer);
+    assert (buffer != NULL); assert(filteredBuffer);
+    
+    triggerList = (long long*) malloc(MAXIMUM_TRIGGERS * sizeof(long long));
+    tempBuffer = (double*) malloc(samplesToRead * sizeof(double));
+    assert(triggerList); assert(tempBuffer);
+    
+    
+    
 
     //Read the status Signal
     readFlag = edfread_digital_samples(handle, channel, numberOfRecords, rawStatus);

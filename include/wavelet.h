@@ -1,4 +1,4 @@
-//Header file for Morlet.c
+//Header file for Wavelet.c
 //By: Vinay Yuvashankar
 //Email: yuvashv@mcmaster.ca
 
@@ -19,7 +19,6 @@
 //Sample Rate
 #define FS 1000.0
 
-
 #define MAX_FREQUENCY 128.0
 #define MIN_FREQUENCY 0.5
 
@@ -30,9 +29,12 @@
 
 #define DATA_SIZE 3000
 
-//Morlet Functions
 void FillData(double * data);
 void TestCases(double *data, int flag);
+
+int AllocateMemory(double *data, double *result, double *frequency, 
+	double n, double sampling_frequency, 
+	double max_frequency, double dj, double s0);
 
 int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
@@ -41,9 +43,8 @@ int WriteTestCases(double *data, int length, char filename[]);
 double FourierMorlet(double w, double scale, double k, double cSigma,
 	double normal);
 
-// int Wavelet(double* raw_data, double dt, int n, double dj, double s0, int J, double* result, double* frequency);
-int Wavelet(double* raw_data, double sampling_frequency, int n, 
-	double dj, double s0, int J, 
-	double* result, double* frequency);
+int Wavelet(double* raw_data,  double* frequency, 
+	double sampling_frequency, int n, double dj, double s0, int J, double minimum_frequency,
+	double* result);
 
 double Magnitude (double x, double y);
