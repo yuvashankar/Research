@@ -9,97 +9,109 @@ int Wavelet(double* raw_data,  double* frequency,
 	
 	//Variable Declarations
 	double value;
-
-	// double *filter; //Un-comment to look at each filter
-	fftw_plan plan_forward, plan_backward;
-	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
-
-	//An ouptut file for debugging. 
-	// FILE *debug_file=fopen("debug.log","w");
-	// assert(debug_file != NULL);
-	//Memory Allocations
-    // filter = malloc(PADDED_SIZE * J * sizeof(double));
-    // assert(filter != NULL);
-
-	//Calculate Padding Required
-	const int pad = floor(log(n)/log(2.0) + 0.499);
-    const double PADDED_SIZE = pow(2, pad + 1);
-
-    //FFTW allocations.
-    data_in = 			 fftw_alloc_complex(PADDED_SIZE); 
-    fft_data = 			 fftw_alloc_complex(PADDED_SIZE);
-    filter_convolution = fftw_alloc_complex(PADDED_SIZE);
-    fftw_result = 		 fftw_alloc_complex(PADDED_SIZE);
-
-    //populate the data vector. 
-    for (int i = 0; i < n; ++i)
-    {
-    	data_in[i][0] = raw_data[i];
-    	data_in[i][1] = 0.0;
-    }
-
-    //Things needed for FourierMorlet Calculated only once.
-    const double df = sampling_frequency/PADDED_SIZE;
-    const double k = exp(-0.5 * W_0_2);
-    const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-    
-    //Calculate the FFT for the Data
-	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
-		FFTW_FORWARD, FFTW_ESTIMATE);
-	fftw_execute(plan_forward);
-
-	//Copy the data into filter Convolution
-	memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
-
-	//Preapre for the plan backwards
-	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
-		FFTW_BACKWARD, FFTW_ESTIMATE);
+	int i, j;
 
 	
-	double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
-
-	int start = (int)floor( log2( (W_0 * minimum_frequency)/(8 * M_PI * s0) )/dj);
-	// printf("Start J = %d\n", start);
-
-	
-	for (int i = start; i < J; ++i)
+	#pragma omp parallel num_threads(2) private(i, j, value) shared (result, raw_data, n, dj, s0, frequency, sampling_frequency, minimum_frequency, J) default(none)
 	{
-		//Calculate the scale and frequency at the specific Scale
-		double scale = s0 * pow(2, i * dj);
-		frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
+		// double *filter; //Un-comment to look at each filter
+		fftw_plan plan_forward, plan_backward;
+		fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
-		//Normalization Factor needes to be recomputed at every scale.
-		double normal = sqrt(2 * M_PI * scale * sampling_frequency);
+		//An ouptut file for debugging. 
+		// FILE *debug_file=fopen("debug.log","w");
+		// assert(debug_file != NULL);
+		//Memory Allocations
+	    // filter = malloc(PADDED_SIZE * J * sizeof(double));
+	    // assert(filter != NULL);
+		//Calculate Padding Required
+		const int pad = floor(log(n)/log(2.0) + 0.499);
+	    const double PADDED_SIZE = pow(2, pad + 1);
 
-		//Caluclate the Fourier Morlet at the specific scale. 
-		for (int j = 0; j < PADDED_SIZE; ++j)
+	    //Things needed for FourierMorlet Calculated only once.
+	    const double df = sampling_frequency/PADDED_SIZE;
+	    const double k = exp(-0.5 * W_0_2);
+	    const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
+	    const double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
+
+
+	    //FFTW allocations.
+	    data_in = 			 fftw_alloc_complex(PADDED_SIZE); 
+	    fft_data = 			 fftw_alloc_complex(PADDED_SIZE);
+	    filter_convolution = fftw_alloc_complex(PADDED_SIZE);
+	    fftw_result = 		 fftw_alloc_complex(PADDED_SIZE);
+		
+		//populate the data vector. 
+	    #pragma omp for
+	    for (i = 0; i < n; ++i)
+	    {
+	    	data_in[i][0] = raw_data[i];
+	    	data_in[i][1] = 0.0;
+	    }
+	    
+	    //FFTW allocations only one thread can do this. 
+	    #pragma omp critical 
+	    {
+	    	//Calculate the FFT for the Data
+			plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
+				FFTW_FORWARD, FFTW_ESTIMATE);
+			fftw_execute(plan_forward);
+
+			//Copy the data into filter Convolution
+			memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
+
+			//Preapre for the plan backwards
+			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
+				FFTW_BACKWARD, FFTW_ESTIMATE);
+	    }
+	    
+		
+		
+
+		int start = (int)floor( log2( (W_0 * minimum_frequency)/(8 * M_PI * s0) )/dj);
+		// printf("Start J = %d\n", start);
+
+		#pragma omp for
+		for (i = start; i < J; ++i)
 		{
-			value = FourierMorlet(j*df, scale, k, cSigma, normal);
+			//Calculate the scale and frequency at the specific Scale
+			double scale = s0 * pow(2, i * dj);
+			frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
 
-			filter_convolution[j][0] *= value;
-			filter_convolution[j][1] *= value;
+			//Normalization Factor needes to be recomputed at every scale.
+			double normal = sqrt(2 * M_PI * scale * sampling_frequency);
+
+			//Caluclate the Fourier Morlet at the specific scale. 
+			for (j = 0; j < PADDED_SIZE; ++j)
+			{
+				value = FourierMorlet(j*df, scale, k, cSigma, normal);
+
+				filter_convolution[j][0] *= value;
+				filter_convolution[j][1] *= value;
+			}
+
+			//Take the inverse FFT. 
+			fftw_execute(plan_backward);
+
+			//Calculate the power and store it in result
+			for (j = 0; j < n; ++j)
+			{
+				result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
+			}
+
+			//Copy the fft_data into a seperate filter_convolution 
+			memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 		}
 
-		//Take the inverse FFT. 
-		fftw_execute(plan_backward);
+		//FFTW sanitation engineering. 
+	    fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
+	    fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
+	    fftw_free(filter_convolution);
 
-		//Calculate the power and store it in result
-		for (int j = 0; j < n; ++j)
-		{
-			result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-		}
-
-		//Copy the fft_data into a seperate filter_convolution 
-		memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
+	    // free(filter);
+	    // fclose(debug_file);
 	}
-
-	//FFTW sanitation engineering. 
-    fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
-    fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
-    fftw_free(filter_convolution);
-
-    // free(filter);
-    // fclose(debug_file);
+	
 
     return(0);
 }
