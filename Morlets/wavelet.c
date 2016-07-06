@@ -8,16 +8,21 @@ int Wavelet(double* raw_data,  double* frequency,
 {
 	
 	//Variable Declarations
-	double value;
-	int i, j;
-
-	
-	#pragma omp parallel num_threads(2) private(i, j, value) shared (result, raw_data, n, dj, s0, frequency, sampling_frequency, minimum_frequency, J) default(none)
+	int i;
+	int start = (int)floor( log2( (W_0 * minimum_frequency)
+									 /(8 * M_PI * s0) )
+									 /dj);
+	// printf("outside J = %d\n", J);
+	#pragma omp parallel num_threads(2) private(i) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
 	{
+		int j;
+		double value;
 		// double *filter; //Un-comment to look at each filter
 		fftw_plan plan_forward, plan_backward;
 		fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
+
+		
 		//An ouptut file for debugging. 
 		// FILE *debug_file=fopen("debug.log","w");
 		// assert(debug_file != NULL);
@@ -40,6 +45,8 @@ int Wavelet(double* raw_data,  double* frequency,
 	    fft_data = 			 fftw_alloc_complex(PADDED_SIZE);
 	    filter_convolution = fftw_alloc_complex(PADDED_SIZE);
 	    fftw_result = 		 fftw_alloc_complex(PADDED_SIZE);
+
+
 		
 		//populate the data vector. 
 	    #pragma omp for
@@ -48,31 +55,26 @@ int Wavelet(double* raw_data,  double* frequency,
 	    	data_in[i][0] = raw_data[i];
 	    	data_in[i][1] = 0.0;
 	    }
-	    
+
 	    //FFTW allocations only one thread can do this. 
-	    #pragma omp critical 
-	    {
-	    	//Calculate the FFT for the Data
-			plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
-				FFTW_FORWARD, FFTW_ESTIMATE);
-			fftw_execute(plan_forward);
+	    #pragma omp critical (make_plan)
+		{
+		//Calculate the FFT for the Data
+		plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
+			FFTW_FORWARD, FFTW_ESTIMATE);
+		fftw_execute(plan_forward);
 
-			//Copy the data into filter Convolution
-			memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
+		//Copy the data into filter Convolution
+		memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 
-			//Preapre for the plan backwards
-			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
-				FFTW_BACKWARD, FFTW_ESTIMATE);
-	    }
-	    
-		
-		
-
-		int start = (int)floor( log2( (W_0 * minimum_frequency)/(8 * M_PI * s0) )/dj);
-		// printf("Start J = %d\n", start);
-
+		//Preapre for the plan backwards
+		plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
+			FFTW_BACKWARD, FFTW_ESTIMATE);
+	
+		}
+	    // printf("J = %d\n", J);
 		#pragma omp for
-		for (i = start; i < J; ++i)
+		for (i = 0; i < J; ++i)
 		{
 			//Calculate the scale and frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
@@ -104,7 +106,7 @@ int Wavelet(double* raw_data,  double* frequency,
 		}
 
 		//FFTW sanitation engineering. 
-	    fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
+		fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
 	    fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
 	    fftw_free(filter_convolution);
 
