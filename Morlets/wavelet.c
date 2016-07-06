@@ -9,35 +9,35 @@ int Wavelet(double* raw_data,  double* frequency,
 	
 	//Variable Declarations
 	int i, j;
+
+	//The this defines the lower bound, it helps speed up computations by not dealing with
 	int start = (int)floor( log2( (W_0 * minimum_frequency)
 									 /(8 * M_PI * s0) )
 									 /dj);
+	//Calculate Padding Required
+	const int pad = floor(log(n)/log(2.0) + 0.499);
+    const double PADDED_SIZE = pow(2, pad + 1);
+
+    //Things needed for FourierMorlet Calculated only once.
+    const double df = sampling_frequency/PADDED_SIZE;
+    const double k = exp(-0.5 * W_0_2);
+    const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
+    const double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
+
 	// printf("outside J = %d\n", J);
 	#pragma omp parallel num_threads(2) private(i, j) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
 	{
-		// int j;
 		double value;
 		// double *filter; //Un-comment to look at each filter
 		fftw_plan plan_forward, plan_backward;
 		fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
-
-		
 		//An ouptut file for debugging. 
 		// FILE *debug_file=fopen("debug.log","w");
 		// assert(debug_file != NULL);
 		//Memory Allocations
 	    // filter = malloc(PADDED_SIZE * J * sizeof(double));
 	    // assert(filter != NULL);
-		//Calculate Padding Required
-		const int pad = floor(log(n)/log(2.0) + 0.499);
-	    const double PADDED_SIZE = pow(2, pad + 1);
-
-	    //Things needed for FourierMorlet Calculated only once.
-	    const double df = sampling_frequency/PADDED_SIZE;
-	    const double k = exp(-0.5 * W_0_2);
-	    const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-	    const double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
 
 
 	    //FFTW allocations.
