@@ -1,5 +1,5 @@
-#Plot Output.txt as a spectrograph
-
+#Plot Output.txt as a spectrographs
+set terminal X11
 plot "debug.log" u 1:2 w l, \
 "debug.log" u 1:3 w l, \
 "debug.log" u 1:4 w l, \

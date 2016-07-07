@@ -1,3 +1,4 @@
+set term x11
 set pm3d map
 
 set logscale z 10
@@ -11,3 +12,4 @@ set title "Wavelet Power Spectrum of sin(4{/Symbol w}) + sin(16{/Symbol w}) in l
 
 #set yrange [0.5:128]
 splot "DATA.log" matrix nonuniform with pm3d t ''
+pause -1 "Hit Return to continue"

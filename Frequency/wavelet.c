@@ -98,8 +98,8 @@ int Wavelet(double* raw_data,  double* frequency,
 			//Calculate the power and store it in result
 			for (j = 0; j < n; ++j)
 			{
-				result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-				// result[i*n + j] = fftw_result[j][0];
+				// result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
+				result[i*n + j] = fftw_result[j][0];
 			}
 
 			//Copy the fft_data into a seperate filter_convolution 
