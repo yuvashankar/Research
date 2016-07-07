@@ -25,7 +25,7 @@ int Wavelet(double* raw_data,  double* frequency,
     const double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
 
 	// printf("outside J = %d\n", J);
-	#pragma omp parallel num_threads(2) private(i, j) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
+	#pragma omp parallel num_threads(1) private(i, j) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
 	{
 		double value;
 		// double *filter; //Un-comment to look at each filter
@@ -104,6 +104,8 @@ int Wavelet(double* raw_data,  double* frequency,
 			//Copy the fft_data into a seperate filter_convolution 
 			memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 		}
+
+		WriteTestCases(result, n, "debug.log");
 
 		//FFTW sanitation engineering. 
 		fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
@@ -197,9 +199,9 @@ void TestCases(double *data, int flag)
 		
 		//Multiple Sines at t = 1500
 		case 2:
-			for (int i = 1500; i < 1500 + 2*one_peri; ++i)
+			for (int i = DATA_SIZE/2; i < DATA_SIZE/2 + 2*one_peri; ++i)
 			{
-				data[i] = sin((i - 1500)* dw + w0) + sin((i - 1500)* 2* dw + w0);
+				data[i] = sin((i - DATA_SIZE/2)* dw + w0) + sin((i - DATA_SIZE/2)* 2* dw + w0);
 			}
 			break;
 		//Multiple Sines at all times
@@ -286,11 +288,16 @@ int WriteTestCases(double *data, int length, char filename[])
 
 	for (int i = 0; i < length; ++i)
     {
+    	// fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
+    	// 	data[length*0 + i] + 0., data[length*1 + i] + 5., data[length*2 + i] + 10, 
+    	// 	data[length*3 + i] + 15, data[length*4 + i] + 20, data[length*5 + i] + 25, 
+    	// 	data[length*6 + i] + 30, data[length*7 + i] + 35, data[length*8 + i] + 40, 
+    	// 	data[length*9 + i] + 45, data[length*10+ i] + 50);
     	fprintf(out_file, "%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i,
-    		data[length*0 + i] + 0., data[length*1 + i] + 5., data[length*2 + i] + 10, 
-    		data[length*3 + i] + 15, data[length*4 + i] + 20, data[length*5 + i] + 25, 
-    		data[length*6 + i] + 30, data[length*7 + i] + 35, data[length*8 + i] + 40, 
-    		data[length*9 + i] + 45, data[length*10+ i] + 50);
+    		data[length*40 + i] + 0., data[length*41 + i] + 5., data[length*42 + i] + 10, 
+    		data[length*43 + i] + 15, data[length*44 + i] + 20, data[length*45 + i] + 25, 
+    		data[length*46 + i] + 30, data[length*47 + i] + 35, data[length*48 + i] + 40, 
+    		data[length*49 + i] + 45, data[length*50+ i] + 50);
     }
     
     fclose(out_file);

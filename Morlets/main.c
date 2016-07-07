@@ -24,7 +24,7 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(frequency != NULL);
 
     //populate the data array
-    TestCases(data, 2);
+    TestCases(data, 1);
     
     //Compute wavelet analysis
     double execution_time = omp_get_wtime();
