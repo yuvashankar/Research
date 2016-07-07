@@ -7,9 +7,7 @@
 
 //Functions that are going to be used.
 int OpenFile(const char* fileName, struct edf_hdr_struct *header);
-
 long long FindTriggers(const int * statusInput, const long long numberOfElements, long long * outputBuffer);
-
 int FilterTriggers(const int code, 
     const int button, 
     const int numberOfRecords, 
