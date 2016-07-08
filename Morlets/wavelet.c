@@ -19,10 +19,13 @@ int Wavelet(double* raw_data,  double* frequency,
     const double PADDED_SIZE = pow(2, pad + 1);
 
     //Things needed for FourierMorlet Calculated only once.
-    const double df = sampling_frequency/PADDED_SIZE;
+    const double df = 4 * sampling_frequency/(PADDED_SIZE);
+
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-    const double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0);
+    // const double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0); //This is 4 x wrong
+    const double FOURIER_WAVELENGTH_FACTOR = (2 * M_PI)/W_0;
+    // const double FOURIER_WAVELENGTH_FACTOR = (4 * M_PI)/(W_0 + sqrt(2 + W_0_2));
 
 	// printf("outside J = %d\n", J);
 	#pragma omp parallel num_threads(1) private(i, j) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
@@ -91,6 +94,14 @@ int Wavelet(double* raw_data,  double* frequency,
 				filter_convolution[j][0] *= value;
 				filter_convolution[j][1] *= value;
 			}
+
+			//Heaviside Step Function whenever w0 < 0 the function is zero
+			for (int j = n/2; j < PADDED_SIZE; ++j)
+			{
+				filter_convolution[j][0] = 0.0;
+				filter_convolution[j][1] = 0.0;
+			}
+
 
 			//Take the inverse FFT. 
 			fftw_execute(plan_backward);
