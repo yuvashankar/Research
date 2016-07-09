@@ -13,6 +13,9 @@ int main(void)
 
     dt = 1.0/FS;
     s0 = 2 * dt;
+
+    // J = (int) log2((n * dt)/s0)/dj;
+    // J = 200;
     J = ceil( log2( (W_0 * MAX_FREQUENCY)/(8 * M_PI * s0) )/dj);
 
     printf("dt = %f, dj = %f, s0 = %f, J = %f\n", dt, dj, s0, J);

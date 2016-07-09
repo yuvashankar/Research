@@ -19,7 +19,13 @@ int Wavelet(double* raw_data,  double* frequency,
     const double PADDED_SIZE = pow(2, pad + 1);
 
     //Things needed for FourierMorlet Calculated only once.
-    const double df = 4 * sampling_frequency/(PADDED_SIZE);
+    // const double df = 4 * sampling_frequency/(PADDED_SIZE);
+    double dt = 1.0/FS;
+
+    // const double df = (2 * M_PI/W_0)/sampling_frequency;
+    // const double df = 4 * sampling_frequency/PADDED_SIZE;
+
+    printf("df  = %f\n", df);
 
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
@@ -77,7 +83,7 @@ int Wavelet(double* raw_data,  double* frequency,
 		}
 	    // printf("J = %d\n", J);
 		#pragma omp for
-		for (i = start; i < J; ++i)
+		for (i = 0; i < J; ++i)
 		{
 			//Calculate the scale and frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
@@ -87,7 +93,7 @@ int Wavelet(double* raw_data,  double* frequency,
 			double normal = sqrt(2 * M_PI * scale * sampling_frequency);
 
 			//Caluclate the Fourier Morlet at the specific scale. 
-			for (j = 0; j < PADDED_SIZE; ++j)
+			for (j = 0; j < PADDED_SIZE/2; ++j)
 			{
 				value = FourierMorlet(j*df, scale, k, cSigma, normal);
 
@@ -96,7 +102,7 @@ int Wavelet(double* raw_data,  double* frequency,
 			}
 
 			//Heaviside Step Function whenever w0 < 0 the function is zero
-			for (int j = n/2; j < PADDED_SIZE; ++j)
+			for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
 			{
 				filter_convolution[j][0] = 0.0;
 				filter_convolution[j][1] = 0.0;
