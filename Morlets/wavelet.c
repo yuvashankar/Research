@@ -2,7 +2,7 @@
 #include "wavelet.h"
 #include <omp.h>
 
-int Wavelet(double* raw_data,  double* frequency, 
+int Wavelet(double* raw_data,  double* period, 
 	double sampling_frequency, int n, double dj, double s0, int J, double minimum_frequency,
 	double* result)
 {
@@ -22,16 +22,15 @@ int Wavelet(double* raw_data,  double* frequency,
     // const double df = 4 * sampling_frequency/(PADDED_SIZE);
     double dt = 1.0/sampling_frequency;
 
-    const double dw = (2 * M_PI)/(PADDED_SIZE * dt);
+    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE);
 
     const double k = exp(-0.5 * W_0_2);
     const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-    // const double FOURIER_WAVELENGTH_FACTOR = (8 * M_PI)/(W_0); //This is 4 x wrong
-    // const double FOURIER_WAVELENGTH_FACTOR = (2 * M_PI)/W_0;
+    
     const double FOURIER_WAVELENGTH_FACTOR = (4 * M_PI)/(5.0 + sqrt(2 + 25.0));
 
 	// printf("outside J = %d\n", J);
-	#pragma omp parallel num_threads(1) private(i, j) shared (result, frequency, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
+	#pragma omp parallel num_threads(1) private(i, j) shared (result, period, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
 	{
 		double value;
 		// double *filter; //Un-comment to look at each filter
@@ -84,15 +83,15 @@ int Wavelet(double* raw_data,  double* frequency,
 		{
 			//Calculate the scale and frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
-			frequency[i] = scale * FOURIER_WAVELENGTH_FACTOR;
+			period[i] = 1.0/(scale * FOURIER_WAVELENGTH_FACTOR);
 
-			frequency[i] = 1.0/frequency[i];
+			// frequency[i] = 1.0/frequency[i];
 
 			//Normalization Factor needes to be recomputed at every scale.
 			double normal = sqrt(2 * M_PI * scale * sampling_frequency);
 
 			//Caluclate the Fourier Morlet at the specific scale. 
-			for (j = 0; j < PADDED_SIZE; ++j)
+			for (j = 0; j < PADDED_SIZE/2; ++j)
 			{
 				value = FourierMorlet(j*dw, scale, k, cSigma, normal);
 
@@ -149,10 +148,10 @@ double FourierMorlet(double w, double scale, double k, double cSigma,
 	// const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
 
 	// double out = exp( -0.5 * (W_0_2 - 2*W_0*w + w2)) - k * exp(-0.5 * w2);
+	// out = cSigma * QUAD_ROOT_PI * normal * out;
+
 	double exponent = -0.5 * (scale * w - W_0) * (scale * w - W_0);
 	double out = QUAD_ROOT_PI* normal * exp(exponent);
-
-	// out = cSigma * QUAD_ROOT_PI * normal * out;
 	return(out);
 }
 
@@ -266,7 +265,7 @@ int ReadFile(double data[], char filename[])
     return (counterVariable);
 }
 
-int WriteFile(double *data, double *frequency, int x, int y, char filename[])
+int WriteFile(double *data, double *period, int x, int y, char filename[])
 {
 
     FILE* out_file=fopen(filename,"w");
@@ -284,7 +283,7 @@ int WriteFile(double *data, double *frequency, int x, int y, char filename[])
 	for (int i = 0; i < x; ++i)
     {
     	//Feed Frequency
-    	fprintf(out_file, "%f\t", frequency[i]);
+    	fprintf(out_file, "%f\t", period[i]);
 
     	//Feed Data
         for (int j = 0; j < y; ++j)
