@@ -21,8 +21,8 @@ int main(int argc, char const *argv[])
         readFlag;
 
     int32_t* rawStatus,
-        buffer,
-        filteredBuffer;
+        *buffer,
+        *filteredBuffer;
 
     double sampleFrequency,
         samplesToRead,
@@ -52,17 +52,20 @@ int main(int argc, char const *argv[])
     channel = numberOfChannels - 1;
     samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
+    printf("Raw Status: %d, triggerList: %d, tempBuffer: %d, buffer: %d, filteredBuffer: %d\n", 
+        numberOfRecords, MAXIMUM_TRIGGERS, samplesToRead, numberOfTriggers, numberOfTriggers);
+
     //Allocate Necessary Memory
     rawStatus = (int*) malloc(numberOfRecords*sizeof(int));
     triggerList = (long long*) malloc(MAXIMUM_TRIGGERS * sizeof(long long));
     tempBuffer = (double*) malloc(samplesToRead * sizeof(double));
     buffer = (int *) malloc(numberOfTriggers * sizeof(int));
     filteredBuffer = (int *) malloc(numberOfTriggers * sizeof(int));
-    assert(rawStatus);
-    assert(triggerList);
-    assert(tempBuffer);
-    assert (buffer);
-    assert(filteredBuffer);
+    assert(rawStatus != NULL);
+    assert(triggerList!= NULL);
+    assert(tempBuffer!= NULL);
+    assert (buffer!= NULL);
+    assert(filteredBuffer != NULL);
 
     //Read the status Signal
     readFlag = edfread_digital_samples(handle, channel, numberOfRecords, rawStatus);
