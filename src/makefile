@@ -1,14 +1,14 @@
 IDIR =../include
 CC=gcc
-CFLAGS=-I$(IDIR)
+CFLAGS=-I$(IDIR) -Wall -lfftw3 -fopenmp -g -O2
 
 ODIR=obj
 LDIR =../lib
 
-_DEPS = edflib.h
+_DEPS = edflib.h wavelet.h processEEG.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o edflib.o OpenFile.o FindTriggers.o FilterTriggers.o
+_OBJ = main.o edflib.o OpenFile.o FindTriggers.o FilterTriggers.o wavelet.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)
@@ -20,4 +20,4 @@ processEEG: $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ *.log

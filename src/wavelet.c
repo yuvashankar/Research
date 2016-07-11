@@ -75,7 +75,7 @@ int Wavelet(double* raw_data,  double* period,
 		}
 	    
 		#pragma omp for
-		for (i = start; i < J; ++i)
+		for (i = 0; i < J; ++i)
 		{
 			//Calculate the scale and corrosponding frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
