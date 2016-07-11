@@ -3,7 +3,7 @@
 #include <omp.h>
 
 int Wavelet(double* raw_data,  double* period, 
-	double sampling_frequency, int n, double dj, double s0, int J, double minimum_frequency,
+	double sampling_frequency, int n, double dj, double s0, int J, double maximum_frequency,
 	double* result)
 {
 	
@@ -11,33 +11,29 @@ int Wavelet(double* raw_data,  double* period,
 	int i, j;
 
 	//The this defines the lower bound, it helps speed up computations by not dealing with
-	int start = (int)floor( log2( (W_0 * minimum_frequency)
-									 /(8 * M_PI * s0) )
-									 /dj);
+	// int start = (int)floor( log2( (W_0 * minimum_frequency)
+	// 								 /(8 * M_PI * s0) )
+	// 								 /dj);
+
+	// double start = floor(1.0/(minimum_frequency * FOURIER_WAVELENGTH_FACTOR)); 
+	// double start = (int) floor(abs(log2( (minimum_frequency/FS)/s0 )/dj));
+	int start = (int) floor( log2( 1.0/(s0 * maximum_frequency * FOURIER_WAVELENGTH_FACTOR) ) /dj);
+
 	//Calculate Padding Required
 	const int pad = floor(log(n)/log(2.0) + 0.499);
     const double PADDED_SIZE = pow(2, pad + 1);
 
-    //Things needed for FourierMorlet Calculated only once.
-    // const double df = 4 * sampling_frequency/(PADDED_SIZE);
-    double dt = 1.0/sampling_frequency;
-
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE);
 
-    const double k = exp(-0.5 * W_0_2);
-    const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-    
-    const double FOURIER_WAVELENGTH_FACTOR = (4 * M_PI)/(5.0 + sqrt(2 + 25.0));
-
-	// printf("outside J = %d\n", J);
-	#pragma omp parallel num_threads(1) private(i, j) shared (result, period, raw_data, dj, s0, sampling_frequency, minimum_frequency, J, n, start) default(none)
+	#pragma omp parallel num_threads(2) private(i, j) shared (result, period, raw_data, dj, s0, sampling_frequency, maximum_frequency, J, n, start) default(none)
 	{
 		double value;
-		// double *filter; //Un-comment to look at each filter
+		
 		fftw_plan plan_forward, plan_backward;
 		fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 
 		//An ouptut file for debugging. 
+		// double *filter; //Un-comment to look at each filter
 		// FILE *debug_file=fopen("debug.log","w");
 		// assert(debug_file != NULL);
 		//Memory Allocations
@@ -77,15 +73,13 @@ int Wavelet(double* raw_data,  double* period,
 			FFTW_BACKWARD, FFTW_ESTIMATE);
 	
 		}
-	    // printf("J = %d\n", J);
+	    
 		#pragma omp for
-		for (i = 0; i < J; ++i)
+		for (i = start; i < J; ++i)
 		{
-			//Calculate the scale and frequency at the specific Scale
+			//Calculate the scale and corrosponding frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
 			period[i] = 1.0/(scale * FOURIER_WAVELENGTH_FACTOR);
-
-			// frequency[i] = 1.0/frequency[i];
 
 			//Normalization Factor needes to be recomputed at every scale.
 			double normal = sqrt(2 * M_PI * scale * sampling_frequency);
@@ -93,7 +87,7 @@ int Wavelet(double* raw_data,  double* period,
 			//Caluclate the Fourier Morlet at the specific scale. 
 			for (j = 0; j < PADDED_SIZE/2; ++j)
 			{
-				value = FourierMorlet(j*dw, scale, k, cSigma, normal);
+				value = FourierMorlet(j*dw, scale, normal);
 
 				filter_convolution[j][0] *= value;
 				filter_convolution[j][1] *= value;
@@ -114,7 +108,7 @@ int Wavelet(double* raw_data,  double* period,
 			for (j = 0; j < n; ++j)
 			{
 				result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-				// result[i*n + j] = fftw_result[j][0];
+				
 			}
 
 			//Copy the fft_data into a seperate filter_convolution 
@@ -136,8 +130,7 @@ int Wavelet(double* raw_data,  double* period,
     return(0);
 }
 
-double FourierMorlet(double w, double scale, double k, double cSigma,
-	double normal)
+double FourierMorlet(double w, double scale, double normal)
 {
 	// w = w/scale;
 	// const double w2 = w * w;
