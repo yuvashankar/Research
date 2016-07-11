@@ -52,20 +52,11 @@ int main(int argc, char const *argv[])
     channel = numberOfChannels - 1;
     samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
-    printf("Raw Status: %d, triggerList: %d, tempBuffer: %d, buffer: %d, filteredBuffer: %d\n", 
-        numberOfRecords, MAXIMUM_TRIGGERS, samplesToRead, numberOfTriggers, numberOfTriggers);
-
     //Allocate Necessary Memory
-    rawStatus = (int*) malloc(numberOfRecords*sizeof(int));
-    triggerList = (long long*) malloc(MAXIMUM_TRIGGERS * sizeof(long long));
-    tempBuffer = (double*) malloc(samplesToRead * sizeof(double));
-    buffer = (int *) malloc(numberOfTriggers * sizeof(int));
-    filteredBuffer = (int *) malloc(numberOfTriggers * sizeof(int));
-    assert(rawStatus != NULL);
-    assert(triggerList!= NULL);
-    assert(tempBuffer!= NULL);
-    assert (buffer!= NULL);
-    assert(filteredBuffer != NULL);
+    rawStatus =         (int*) malloc( numberOfRecords*sizeof(int) );
+    triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
+    tempBuffer =     (double*) malloc( samplesToRead * sizeof(double) );
+    assert(rawStatus != NULL); assert(triggerList!= NULL); assert(tempBuffer!= NULL);
 
     //Read the status Signal
     readFlag = edfread_digital_samples(handle, channel, numberOfRecords, rawStatus);
@@ -75,20 +66,27 @@ int main(int argc, char const *argv[])
     numberOfTriggers = FindTriggers(rawStatus, numberOfRecords, triggerList);
     assert (numberOfTriggers != -1);
 
+    //Allocating Read Buffer This has to be done after I find all of the triggers. 
+    buffer =         (int *) malloc( numberOfTriggers * sizeof(int) );
+    filteredBuffer = (int *) malloc( numberOfTriggers * sizeof(int) );
+    assert (buffer!= NULL); assert(filteredBuffer != NULL);
+
+    //Read the status channel and put it in the buffer
     for (int i = 0; i < numberOfRecords; ++i)
     {
         edfseek(handle, channel, triggerList[i], EDFSEEK_SET);
         edfread_digital_samples(handle, channel, 1, &buffer[i]);
     }
+
     //Filter the Triggers to what you want.
     filteredTriggerNumber = FilterTriggers(1, 2, numberOfTriggers, triggerList,
         buffer, filteredBuffer);
-    printf("%d\n", filteredTriggerNumber);
+    printf("Filtered Trigger Number: %d\n", filteredTriggerNumber);
 
     //Allocate the necessary memory to copy all of the data into a contigious directory. 
-    printf(" Will allocate %f Mbs of Memory\n", filteredTriggerNumber*samplesToRead*numberOfChannels*sizeof(double)/1048576);
-    data = (double*) malloc (filteredTriggerNumber*samplesToRead*numberOfChannels*sizeof(double));
-    assert(data);
+    printf("Will allocate %f Mbs of Memory\n", filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double)/1048576);
+    data = (double*) malloc( filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double) );
+    assert(data!= NULL);
 
     //Load Data from Buffer onto the Data File.
     int dataOffset = 0;
@@ -96,7 +94,7 @@ int main(int argc, char const *argv[])
     {
         for (int j = 0; j <= (numberOfChannels-1) ; j++)
         {
-            edfseek(handle, j, triggerList[i], EDFSEEK_SET);
+            edfseek(handle, j, filteredBuffer[i], EDFSEEK_SET);
             readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
             assert(readFlag != -1);
 
@@ -104,7 +102,15 @@ int main(int argc, char const *argv[])
             memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
         }
     }
+    printf("File Read into Memory\n");
 
+    // FILE *debug_file = fopen("debug.log", "w");
+    // assert(debug_file != NULL);
+    // for (int i = 0; i < samplesToRead; ++i)
+    // {
+    //     fprintf(debug_file, "%d\t%f\n", i, data[i]);
+    // }
+    // fclose(debug_file);
 
     //clean up and close up
     edfclose_file(handle);
