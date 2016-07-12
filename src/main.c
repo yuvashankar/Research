@@ -34,8 +34,7 @@ int main(int argc, char const *argv[])
     long long numberOfRecords,
         numberOfTriggers;
 
-    double *data,
-        *tempBuffer,
+    double *tempBuffer,
         *result, //Needed by Wavelet
         *period;
 
@@ -44,7 +43,7 @@ int main(int argc, char const *argv[])
     struct edf_hdr_struct edfHeader;
 
     //Debug File ... just in case. 
-    FILE *debug_file = fopen("debug.log", "w");
+    FILE *debug_file = fopen("Main_debug.log", "w");
     assert(debug_file != NULL);
 
     //Opening and reading the file into the edfHeader input the first argument is the input file.
@@ -63,6 +62,7 @@ int main(int argc, char const *argv[])
     //Allocate Necessary Memory
     rawStatus =         (int32_t*) malloc( numberOfRecords*sizeof(int32_t) );
     triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
+    
     tempBuffer =     (double*) malloc( samplesToRead * sizeof(double) );
     assert(rawStatus != NULL); assert(triggerList!= NULL); assert(tempBuffer!= NULL);
 
@@ -93,48 +93,33 @@ int main(int argc, char const *argv[])
     printf("Filtered Trigger Number: %d\n", filteredTriggerNumber);
 
     //Allocate the necessary memory to copy all of the data into a contigious directory. 
-    printf("Will allocate %f Mbs of Memory\n", filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double)/1048576);
-    data = (double*) malloc( filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double) );
-    assert(data!= NULL);
-
-    //Load Data from Buffer onto the Data File.
-    int dataOffset = 0;
-    for (long long i = 0; i < filteredTriggerNumber; ++i)
-    {
-        for (int j = 0; j <= (numberOfChannels-1) ; j++)
-        {
-            edfseek(handle, j, filteredBuffer[i], EDFSEEK_SET);
-            readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
-            assert(readFlag != -1);
-
-            dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
-            memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
-        }
-    }
-    printf("File Read into Memory\n");
-
-
-    for (int i = 0; i < samplesToRead; ++i)
-    {
-        tempBuffer[i] = data[i];
-        fprintf(debug_file, "%f\t%f\n", i/sampleFrequency, tempBuffer[i]);
-
-    }
-
+    // printf("Will allocate %f Mbs of Memory\n", filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double)/1048576);
+    // data = (double*) malloc( filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double) );
+    // assert(data!= NULL);
+    
     //Begin Wavelet Analysis
     dj = 0.25;
     dt = 1.0/sampleFrequency;
     s0 = 2 * dt;
 
     // J = (int) ceil(log2 ( 1.0/(s0 * MIN_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) )/dj);
-    J = log( (samplesToRead * dt)/s0 )/dj;
+    J = log2( (samplesToRead * dt)/s0 )/dj;
 
     //Wavelet Memory Allocations
-    result = malloc(J * samplesToRead * sizeof(double));
-    period = malloc(J * sizeof(double));
+    result = (double*) malloc(J * samplesToRead * sizeof(double));
+    period = (double*) malloc(J * sizeof(double));
     assert(result != NULL); assert(period != NULL);
 
-    waveletFlag = Wavelet(data, period ,
+    // TestCases(tempBuffer, 1);
+    edfseek(handle, 0, filteredBuffer[0], EDFSEEK_SET);
+    readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
+    
+    for (int i = 0; i < samplesToRead; ++i)
+    {
+        fprintf(debug_file, "%d\t%f\n", i, tempBuffer[i]);
+    }
+
+    waveletFlag = Wavelet(tempBuffer, period ,
         sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
         result);
     assert(waveletFlag!= -1);
@@ -142,7 +127,33 @@ int main(int argc, char const *argv[])
     writeFlag = WriteFile(result, period, J, samplesToRead, "DATA.log");
     assert(writeFlag != -1);
 
-    
+    printf("Wavelet Analysis Done!\n");
+
+
+    // printf("Beginning Wavelet Analysis\n");
+    // //Load Data from Buffer onto the Data File.
+    // int dataOffset = 0;
+    // // for (long long i = 0; i < filteredTriggerNumber; ++i)
+    // for (long long i = 0; i < 1; ++i)
+    // {
+    //     // for (int j = 0; j <= (numberOfChannels-1) ; j++)
+    //     for (int j = 0; j <= 1; ++j)
+    //     {
+    //         edfseek(handle, j, filteredBuffer[i], EDFSEEK_SET);
+    //         readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
+    //         assert(readFlag != -1);
+
+
+
+    //         // dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
+    //         // memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
+    //     }
+    // }
+
+
+
+
+
 
 
 
@@ -156,7 +167,7 @@ int main(int argc, char const *argv[])
     free(filteredBuffer);
     free(rawStatus);
     free(triggerList);
-    free(data);
+    // free(data);
     free(tempBuffer);
 
     fclose(debug_file);
