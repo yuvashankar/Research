@@ -18,7 +18,7 @@
 #define W_0_2 25.0
 
 //Sample Rate
-#define FS 1000.0
+#define FS 2048.0
 
 #define MAX_FREQUENCY 128.0
 #define MIN_FREQUENCY 0.5
@@ -26,9 +26,9 @@
 //Measuring Frequency
 #define FREQ 4.0
 
-#define MAX_DATA_SIZE 10000000   
+#define MAX_DATA_SIZE 10000000 
 
-#define DATA_SIZE 3000
+#define DATA_SIZE 6144
 
 void FillData(double * data);
 void TestCases(double *data, int flag);
