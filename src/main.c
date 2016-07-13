@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
         writeFlag,
         J; //needed by Wavelet
 
-    int32_t* rawStatus,
+    int* rawStatus, 
         *buffer,
         *filteredBuffer;
 
@@ -64,7 +64,7 @@ int main(int argc, char const *argv[])
     samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
     //Allocate Necessary Memory
-    rawStatus =     (int32_t*) malloc( numberOfRecords *  sizeof(int32_t) );
+    rawStatus =     (int*) malloc( numberOfRecords *  sizeof(int) );
     triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
     
     tempBuffer =     (double*) malloc( samplesToRead * sizeof(double) );
@@ -82,8 +82,8 @@ int main(int argc, char const *argv[])
     printf("Found the triggers\n");
 
     //Allocating Read Buffer
-    buffer =         (int32_t *) malloc( numberOfTriggers * sizeof(int32_t) );
-    filteredBuffer = (int32_t *) malloc( numberOfTriggers * sizeof(int32_t) );
+    buffer =         (int *) malloc( numberOfTriggers * sizeof(int) );
+    filteredBuffer = (int *) malloc( numberOfTriggers * sizeof(int) );
     assert (buffer!= NULL); assert(filteredBuffer != NULL);
     printf("Malloc'd buffer and Filtered Buffer\n");
 
