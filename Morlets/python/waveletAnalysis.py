@@ -18,7 +18,7 @@ __author__ = 'Evgeniya Predybaylo'
 # ------------------------------------------------------------------------------------------------------------------
 
 # READ THE DATA
-sst = np.loadtxt('DATA.dat')  # input SST time series
+sst = np.loadtxt('Main_debug.log')  # input SST time series
 
 #----------C-O-M-P-U-T-A-T-I-O-N------S-T-A-R-T-S------H-E-R-E------------------------------------------------------
 
@@ -28,9 +28,9 @@ sst = np.loadtxt('DATA.dat')  # input SST time series
 variance = np.std(sst, ddof=1) ** 2
 sst = (sst - np.mean(sst)) / np.std(sst, ddof=1)
 n = len(sst)
-dt = 0.25
-time = np.arange(len(sst)) * dt + 1871.0  # construct time array
-xlim = ([1870, 2000])  # plotting range
+dt = 1.0/2048.0
+time = np.arange(len(sst)) * dt  # construct time array
+xlim = ([0, len(sst)*dt])  # plotting range
 pad = 1  # pad the time series with zeroes (recommended)
 dj = 0.25  # this will do 4 sub-octaves per octave
 s0 = 2 * dt  # this says start at a scale of 6 months

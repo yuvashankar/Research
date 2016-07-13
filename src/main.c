@@ -52,15 +52,17 @@ int main(int argc, char const *argv[])
 
     //File Information
     handle = edfHeader.handle;
-    sampleFrequency = ((double)edfHeader.signalparam[1].smp_in_datarecord /
-                       (double)edfHeader.datarecord_duration) * EDFLIB_TIME_DIMENSION;
+    sampleFrequency = ( (double)edfHeader.signalparam[1].smp_in_datarecord /
+                        (double)edfHeader.datarecord_duration               ) * EDFLIB_TIME_DIMENSION;
     numberOfChannels = edfHeader.edfsignals;
     numberOfRecords = edfHeader.signalparam[numberOfChannels - 1].smp_in_file;
-    channel = numberOfChannels - 1;
+    channel = numberOfChannels - 1; //The status channel.
     samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
+    printf("Sampling Rate: %f, N = %f, \n", sampleFrequency, numberOfRecords);
+
     //Allocate Necessary Memory
-    rawStatus =         (int32_t*) malloc( numberOfRecords*sizeof(int32_t) );
+    rawStatus =     (int32_t*) malloc( numberOfRecords *  sizeof(int32_t) );
     triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
     
     tempBuffer =     (double*) malloc( samplesToRead * sizeof(double) );
@@ -116,7 +118,7 @@ int main(int argc, char const *argv[])
     
     for (int i = 0; i < samplesToRead; ++i)
     {
-        fprintf(debug_file, "%d\t%f\n", i, tempBuffer[i]);
+        fprintf(debug_file, "%f\n", tempBuffer[i]);
     }
 
     waveletFlag = Wavelet(tempBuffer, period ,
