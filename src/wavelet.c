@@ -115,7 +115,7 @@ int Wavelet(double* raw_data,  double* period,
 			memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 		}
 
-		WriteTestCases(result, n, "debug.log");
+		// WriteTestCases(result, n, "debug.log");
 
 		//FFTW sanitation engineering. 
 		fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);

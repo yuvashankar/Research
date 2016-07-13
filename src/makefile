@@ -8,7 +8,7 @@ LDIR =../lib
 _DEPS = edflib.h wavelet.h processEEG.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o edflib.o OpenFile.o FindTriggers.o FilterTriggers.o wavelet.o
+_OBJ = main.o edflib.o OpenFile.o FindTriggers.o FilterTriggers.o wavelet.o CleanData.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)

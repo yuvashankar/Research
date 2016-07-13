@@ -10,7 +10,7 @@
 #include "wavelet.h"
 #include <assert.h>
 
-#include <gsl/gsl_statistics.h>
+
 
 int main(int argc, char const *argv[])
 {
@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
     assert( openFlag == 0 );
     printf("Opened the EDF File\n");
 
-    //File Information
+    //Get File Information
     handle = edfHeader.handle;
     sampleFrequency = ( (double)edfHeader.signalparam[1].smp_in_datarecord /
                         (double)edfHeader.datarecord_duration               ) * EDFLIB_TIME_DIMENSION;
@@ -66,7 +66,6 @@ int main(int argc, char const *argv[])
     //Allocate Necessary Memory
     rawStatus =     (int*) malloc( numberOfRecords *  sizeof(int) );
     triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
-    
     tempBuffer =     (double*) malloc( samplesToRead * sizeof(double) );
     assert(rawStatus != NULL); assert(triggerList!= NULL); assert(tempBuffer!= NULL);
     printf("Malloc'd rawStatus, triggerList, tempBuffer\n");
@@ -124,14 +123,16 @@ int main(int argc, char const *argv[])
     readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
     printf("Read into tempBuffer\n");
 
-    double mean = gsl_stats_mean(tempBuffer, 1, samplesToRead);
-    double sDeviation = gsl_stats_sd_m(tempBuffer, 1, samplesToRead, mean);
+    CleanData(tempBuffer, samplesToRead);
 
-    //Compute the Z-Score or Standard Score
-    for (int i = 0; i < samplesToRead; ++i)
-    {
-        tempBuffer[i] = (tempBuffer[i] - mean)/sDeviation;
-    }
+    // double mean = gsl_stats_mean(tempBuffer, 1, samplesToRead);
+    // double sDeviation = gsl_stats_sd_m(tempBuffer, 1, samplesToRead, mean);
+
+    // //Compute the Z-Score or Standard Score
+    // for (int i = 0; i < samplesToRead; ++i)
+    // {
+    //     tempBuffer[i] = (tempBuffer[i] - mean)/sDeviation;
+    // }
     
     printf("Beginning Wavelet Analysis\n");
     waveletFlag = Wavelet(tempBuffer, period ,
@@ -186,7 +187,7 @@ int main(int argc, char const *argv[])
     free(tempBuffer);
 
     fclose(debug_file);
-    printf("Memory Cleaned and i'm done\n");
+    printf("Memory Cleaned and I'm done\n");
 
     return 0;
 }
