@@ -10,6 +10,8 @@
 #include "wavelet.h"
 #include <assert.h>
 
+#include <gsl/gsl_statistics.h>
+
 int main(int argc, char const *argv[])
 {
     //Variable Declarations
@@ -45,10 +47,12 @@ int main(int argc, char const *argv[])
     //Debug File ... just in case. 
     FILE *debug_file = fopen("Main_debug.log", "w");
     assert(debug_file != NULL);
+    printf("Opened Main Debug File\n");
 
     //Opening and reading the file into the edfHeader input the first argument is the input file.
     openFlag = OpenFile(argv[1], &edfHeader);
     assert( openFlag == 0 );
+    printf("Opened the EDF File\n");
 
     //File Information
     handle = edfHeader.handle;
@@ -59,27 +63,29 @@ int main(int argc, char const *argv[])
     channel = numberOfChannels - 1; //The status channel.
     samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
-    printf("Sampling Rate: %f, N = %f, \n", sampleFrequency, numberOfRecords);
-
     //Allocate Necessary Memory
     rawStatus =     (int32_t*) malloc( numberOfRecords *  sizeof(int32_t) );
     triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
     
     tempBuffer =     (double*) malloc( samplesToRead * sizeof(double) );
     assert(rawStatus != NULL); assert(triggerList!= NULL); assert(tempBuffer!= NULL);
+    printf("Malloc'd rawStatus, triggerList, tempBuffer\n");
 
     //Read the status Signal --> Output to rawStatus
     readFlag = edfread_digital_samples(handle, channel, numberOfRecords, rawStatus);
     assert (readFlag != 1);
+    printf("Read into Raw Status\n");
 
     //Find and parse the file and find the triggers -->  Output to TriggerList
     numberOfTriggers = FindTriggers(rawStatus, numberOfRecords, triggerList);
     assert (numberOfTriggers != -1);
+    printf("Found the triggers\n");
 
     //Allocating Read Buffer
     buffer =         (int32_t *) malloc( numberOfTriggers * sizeof(int32_t) );
     filteredBuffer = (int32_t *) malloc( numberOfTriggers * sizeof(int32_t) );
     assert (buffer!= NULL); assert(filteredBuffer != NULL);
+    printf("Malloc'd buffer and Filtered Buffer\n");
 
     //Read the status channel when there is a trigger and put it in the buffer
     for (int i = 0; i < numberOfRecords; ++i)
@@ -88,11 +94,12 @@ int main(int argc, char const *argv[])
         readFlag = edfread_digital_samples(handle, channel, 1, &buffer[i]);
         assert(readFlag != -1);
     }
+    printf("Populated buffer array\n");
 
     //Filter the Triggers to what you want.
     filteredTriggerNumber = FilterTriggers(1, 2, numberOfTriggers, triggerList,
         buffer, filteredBuffer);
-    printf("Filtered Trigger Number: %d\n", filteredTriggerNumber);
+    printf("Filtered Triggers\n");
 
     //Allocate the necessary memory to copy all of the data into a contigious directory. 
     // printf("Will allocate %f Mbs of Memory\n", filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double)/1048576);
@@ -100,7 +107,7 @@ int main(int argc, char const *argv[])
     // assert(data!= NULL);
     
     //Begin Wavelet Analysis
-    dj = 0.25;
+    dj = 0.0625;
     dt = 1.0/sampleFrequency;
     s0 = 2 * dt;
 
@@ -111,16 +118,22 @@ int main(int argc, char const *argv[])
     result = (double*) malloc(J * samplesToRead * sizeof(double));
     period = (double*) malloc(J * sizeof(double));
     assert(result != NULL); assert(period != NULL);
+    printf("Malloc'd Result and period\n");
 
-    // TestCases(tempBuffer, 1);
     edfseek(handle, 0, filteredBuffer[0], EDFSEEK_SET);
     readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
-    
+    printf("Read into tempBuffer\n");
+
+    double mean = gsl_stats_mean(tempBuffer, 1, samplesToRead);
+    double sDeviation = gsl_stats_sd_m(tempBuffer, 1, samplesToRead, mean);
+
+    //Compute the Z-Score or Standard Score
     for (int i = 0; i < samplesToRead; ++i)
     {
-        fprintf(debug_file, "%f\n", tempBuffer[i]);
+        tempBuffer[i] = (tempBuffer[i] - mean)/sDeviation;
     }
-
+    
+    printf("Beginning Wavelet Analysis\n");
     waveletFlag = Wavelet(tempBuffer, period ,
         sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
         result);
@@ -158,7 +171,7 @@ int main(int argc, char const *argv[])
 
 
 
-
+    printf("Freeing Memory and closing files\n");
     //clean up and close up
     edfclose_file(handle);
 
@@ -173,6 +186,7 @@ int main(int argc, char const *argv[])
     free(tempBuffer);
 
     fclose(debug_file);
+    printf("Memory Cleaned and i'm done\n");
 
     return 0;
 }
