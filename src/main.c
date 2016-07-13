@@ -44,12 +44,10 @@ int main(int argc, char const *argv[])
     //Debug File ... just in case. 
     FILE *debug_file = fopen("Main_debug.log", "w");
     assert(debug_file != NULL);
-    printf("Opened Main Debug File\n");
 
     //Opening and reading the file into the edfHeader input the first argument is the input file.
     openFlag = OpenFile(argv[1], &edfHeader);
     assert( openFlag == 0 );
-    printf("Opened the EDF File\n");
 
     //Get File Information
     handle = edfHeader.handle;
@@ -64,19 +62,15 @@ int main(int argc, char const *argv[])
     rawStatus =         (int*) malloc( numberOfRecords  * sizeof      (int) );
     triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
     tempBuffer =     (double*) malloc( samplesToRead    * sizeof   (double) );
-
     assert(rawStatus != NULL); assert(triggerList!= NULL); assert(tempBuffer!= NULL);
-    printf("Malloc'd rawStatus, triggerList, tempBuffer\n");
 
     //Read the status Signal --> Output to rawStatus
     readFlag = edfread_digital_samples(handle, channel, numberOfRecords, rawStatus);
     assert (readFlag != 1);
-    printf("Read into Raw Status\n");
 
     //Find and parse the file and find the triggers -->  Output to TriggerList
     numberOfTriggers = FindTriggers(rawStatus, numberOfRecords, triggerList);
     assert (numberOfTriggers != -1);
-    printf("Found the triggers\n");
 
     //Allocating Read Buffer
     buffer =         (int *) malloc( numberOfTriggers * sizeof(int) );
@@ -93,7 +87,6 @@ int main(int argc, char const *argv[])
         buffer[i] = value;
         assert(readFlag != -1);
     }
-    printf("Populated buffer array\n");
 
     //Filter the Triggers to what you want.
     filteredTriggerNumber = FilterTriggers(1, 2, numberOfTriggers, triggerList,
@@ -117,7 +110,6 @@ int main(int argc, char const *argv[])
     result = (double*) malloc(J * samplesToRead * sizeof(double));
     period = (double*) malloc(J *                 sizeof(double));
     assert(result != NULL); assert(period != NULL);
-    printf("Malloc'd Result and period\n");
 
     printf("Beginning Wavelet Analysis\n");
 
