@@ -9,6 +9,8 @@ int Wavelet(double* raw_data,  double* period,
 	
 	//Variable Declarations
 	int i, j;
+	fftw_complex *data_in, *fft_data;
+	fftw_plan plan_forward;
 
 	//The this defines the lower bound, it helps speed up computations by not dealing with
 	// int start = (int)floor( log2( (W_0 * minimum_frequency)
@@ -25,12 +27,34 @@ int Wavelet(double* raw_data,  double* period,
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE);
 
-	#pragma omp parallel num_threads(2) private(i, j) shared (result, period, raw_data, dj, s0, sampling_frequency, maximum_frequency, J, n, start) default(none)
+    data_in = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+
+	//populate the data vector. 
+	for (i = 0; i < n; ++i)
+    {
+    	data_in[i][0] = raw_data[i];
+    	data_in[i][1] = 0.0;
+    }
+
+	//Calculate the FFT for the Data
+	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
+		FFTW_FORWARD, FFTW_ESTIMATE);
+	fftw_execute(plan_forward);
+
+	//Heaviside Step Function whenever w0 < 0 the function is zero
+	for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
+	{
+		fft_data[j][0] = 0.0;
+		fft_data[j][1] = 0.0;
+	}
+
+	#pragma omp parallel num_thread(2) private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
 	{
 		double value;
 		
-		fftw_plan plan_forward, plan_backward;
-		fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
+		fftw_plan plan_backward;
+		fftw_complex *filter_convolution, *fftw_result;
 
 		//An ouptut file for debugging. 
 		// double *filter; //Un-comment to look at each filter
@@ -40,38 +64,12 @@ int Wavelet(double* raw_data,  double* period,
 	    // filter = malloc(PADDED_SIZE * J * sizeof(double));
 	    // assert(filter != NULL);
 
-
-	    //FFTW allocations.
-	    data_in = 			 fftw_alloc_complex(PADDED_SIZE); 
-	    fft_data = 			 fftw_alloc_complex(PADDED_SIZE);
-	    filter_convolution = fftw_alloc_complex(PADDED_SIZE);
-	    fftw_result = 		 fftw_alloc_complex(PADDED_SIZE);
-
-
+		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+		fftw_result  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 		
-		//populate the data vector. 
-	    // #pragma omp for
-	    for (i = 0; i < n; ++i)
-	    {
-	    	data_in[i][0] = raw_data[i];
-	    	data_in[i][1] = 0.0;
-	    }
-
 	    //FFTW allocations only one thread can do this. 
 	    #pragma omp critical (make_plan)
 		{
-			//Calculate the FFT for the Data
-			plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
-				FFTW_FORWARD, FFTW_ESTIMATE);
-			fftw_execute(plan_forward);
-
-			//Heaviside Step Function whenever w0 < 0 the function is zero
-			for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
-			{
-				fft_data[j][0] = 0.0;
-				fft_data[j][1] = 0.0;
-			}
-
 			//Preapre for the plan backwards
 			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 				FFTW_BACKWARD, FFTW_ESTIMATE);	
@@ -109,17 +107,17 @@ int Wavelet(double* raw_data,  double* period,
 		WriteTestCases(result, n, "debug.log");
 
 		//FFTW sanitation engineering. 
-		fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
-	    fftw_free(data_in); fftw_free(fft_data); fftw_free(fftw_result);
+		fftw_destroy_plan(plan_backward);
+	    fftw_free(fftw_result);
 	    fftw_free(filter_convolution);
 
 	    // free(filter);
 	    // fclose(debug_file);
-	}
-	
-
+	} /*Open Mp*/
+	fftw_destroy_plan(plan_forward); 
+	fftw_free(data_in); fftw_free(fft_data); 
     return(0);
-}
+} /*Wavelet */
 
 double FourierMorlet(double w, double scale, double normal)
 {
