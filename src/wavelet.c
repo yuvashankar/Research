@@ -9,14 +9,7 @@ int Wavelet(double* raw_data,  double* period,
 	
 	//Variable Declarations
 	int i, j;
-
-	//The this defines the lower bound, it helps speed up computations by not dealing with
-	// int start = (int)floor( log2( (W_0 * minimum_frequency)
-	// 								 /(8 * M_PI * s0) )
-	// 								 /dj);
-
-	// double start = floor(1.0/(minimum_frequency * FOURIER_WAVELENGTH_FACTOR)); 
-	// double start = (int) floor(abs(log2( (minimum_frequency/FS)/s0 )/dj));
+	
 	int start = (int) floor( log2( 1.0/(s0 * maximum_frequency * FOURIER_WAVELENGTH_FACTOR) ) /dj);
 
 	//Calculate Padding Required

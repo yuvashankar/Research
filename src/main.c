@@ -155,16 +155,16 @@ int main(int argc, char const *argv[])
     //clean up and close up
     edfclose_file(handle);
 
-    free(result);
     free(period);
-
-    free(buffer);
+    free(result);
+    
     free(filteredBuffer);
-    free(rawStatus);
-    free(triggerList);
-    // free(data);
+    free(buffer);
+    
     free(tempBuffer);
-
+    free(triggerList);
+    free(rawStatus);
+    // free(data);
     fclose(debug_file);
     printf("Memory Cleaned and I'm done\n");
 

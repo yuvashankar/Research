@@ -28,7 +28,8 @@
 
 #define MAX_DATA_SIZE 10000000 
 
-#define DATA_SIZE 6144
+// #define DATA_SIZE 6144
+#define DATA_SIZE 30000
 
 void FillData(double * data);
 void TestCases(double *data, int flag);

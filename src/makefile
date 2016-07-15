@@ -1,6 +1,6 @@
 IDIR =../include
 CC=gcc
-CFLAGS=-I$(IDIR) -Wall -lfftw3 -lgsl -fopenmp -g -O2
+CFLAGS=-I$(IDIR) -Wall -lfftw3 -lgsl -fopenmp -g -O2 -DNDEBUG
 
 ODIR=obj
 LDIR =../lib

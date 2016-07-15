@@ -13,7 +13,7 @@ int main(void)
     int J; 
     double dj, dt, s0;
 
-    dj = 0.25;
+    dj = 0.0625;
 
     dt = 1.0/FS;
     s0 = 2 * dt;
@@ -28,20 +28,20 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(period != NULL);
 
     //populate the data array
-    // TestCases(data, 2);
-    int dataSize = ReadFile(data, "Main_debug.dat");
-    printf("Data Size = %d\n", dataSize);
+    TestCases(data, 2);
+    int dataSize = n;
+    // int dataSize = ReadFile(data, "Main_debug.dat");
+    // printf("Data Size = %d\n", dataSize);
 
     double mean = gsl_stats_mean(data, 1, dataSize);
     double sDeviation = gsl_stats_sd_m(data, 1, dataSize, mean);
-    printf("Mean = %f, Standard Deviation = %f\n", mean, sDeviation);
+    // printf("Mean = %f, Standard Deviation = %f\n", mean, sDeviation);
 
+    //Compute the Z-Score or Standard Score
     for (int i = 0; i < dataSize; ++i)
     {
         data[i] = (data[i] - mean)/sDeviation;
     }
-
-
 
     //Compute wavelet analysis
     double execution_time = omp_get_wtime();

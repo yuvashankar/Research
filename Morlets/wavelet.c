@@ -60,18 +60,21 @@ int Wavelet(double* raw_data,  double* period,
 	    //FFTW allocations only one thread can do this. 
 	    #pragma omp critical (make_plan)
 		{
-		//Calculate the FFT for the Data
-		plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
-			FFTW_FORWARD, FFTW_ESTIMATE);
-		fftw_execute(plan_forward);
+			//Calculate the FFT for the Data
+			plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
+				FFTW_FORWARD, FFTW_ESTIMATE);
+			fftw_execute(plan_forward);
 
-		//Copy the data into filter Convolution
-		memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
+			//Heaviside Step Function whenever w0 < 0 the function is zero
+			for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
+			{
+				fft_data[j][0] = 0.0;
+				fft_data[j][1] = 0.0;
+			}
 
-		//Preapre for the plan backwards
-		plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
-			FFTW_BACKWARD, FFTW_ESTIMATE);
-	
+			//Preapre for the plan backwards
+			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
+				FFTW_BACKWARD, FFTW_ESTIMATE);	
 		}
 	    
 		#pragma omp for
@@ -88,18 +91,9 @@ int Wavelet(double* raw_data,  double* period,
 			for (j = 0; j < PADDED_SIZE/2; ++j)
 			{
 				value = FourierMorlet(j*dw, scale, normal);
-
-				filter_convolution[j][0] *= value;
-				filter_convolution[j][1] *= value;
+				filter_convolution[j][0] = fft_data[j][0] * value;
+				filter_convolution[j][1] = fft_data[j][1] * value;
 			}
-
-			//Heaviside Step Function whenever w0 < 0 the function is zero
-			for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
-			{
-				filter_convolution[j][0] = 0.0;
-				filter_convolution[j][1] = 0.0;
-			}
-
 
 			//Take the inverse FFT. 
 			fftw_execute(plan_backward);
@@ -110,9 +104,6 @@ int Wavelet(double* raw_data,  double* period,
 				result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
 				
 			}
-
-			//Copy the fft_data into a seperate filter_convolution 
-			memcpy(filter_convolution, fft_data, (PADDED_SIZE * sizeof(fftw_complex)));
 		}
 
 		WriteTestCases(result, n, "debug.log");
