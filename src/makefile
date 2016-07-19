@@ -1,6 +1,9 @@
 IDIR =../include
 CC=gcc
-CFLAGS=-I$(IDIR) -Wall -lfftw3 -lgsl -fopenmp -g -O2 -DNDEBUG
+CFLAGS=-I$(IDIR) -Wall -g -O2 -std=c99 -I../../bin/include -I/usr/include/openmpi-x86_64 -I/usr/local/cuda/include
+
+LDFLAGS = -L../../bin/lib
+LDLIBS = -lfftw3 -lgsl -lgslcblas -lm -fopenmp
 
 ODIR=obj
 LDIR =../lib
