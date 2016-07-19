@@ -1,10 +1,8 @@
 #include "wavelet.h"
-#include <math.h>
+#include "math.h"
 #include <omp.h>
-#include <mpi.h>
-//#include <mpi/mpi.h>
+
 #include <gsl/gsl_statistics.h>
-#include <cuda.h>
 
 int main(void)
 {
@@ -30,8 +28,7 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(period != NULL);
 
     //populate the data array
-    // TestCases(data, 2);
-    int dataSize = ReadFile(data, "Main_debug.dat");
+    int dataSize = ReadFile(data, "Sample_EEG_data.dat");
     printf("Data Size = %d\n", dataSize);
 
     double mean = gsl_stats_mean(data, 1, dataSize);
@@ -43,8 +40,6 @@ int main(void)
     {
         data[i] = (data[i] - mean)/sDeviation;
     }
-
-
 
     //Compute wavelet analysis
     double execution_time = omp_get_wtime();
