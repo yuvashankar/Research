@@ -21,6 +21,7 @@ int main(int argc, char const *argv[])
         readFlag,
         waveletFlag,
         writeFlag,
+        samplesToRead,
         J; //needed by Wavelet
 
     int* rawStatus, 
@@ -28,8 +29,6 @@ int main(int argc, char const *argv[])
         *filteredBuffer;
 
     double sampleFrequency,
-        samplesToRead,
-        triggerLocation,
         dj, dt, s0;
 
     long long numberOfRecords,
@@ -37,7 +36,8 @@ int main(int argc, char const *argv[])
 
     double *tempBuffer,
         *result, //Needed by Wavelet
-        *period;
+        *period,
+        *wavelet_result;
 
     long long * triggerList;
     
@@ -113,7 +113,9 @@ int main(int argc, char const *argv[])
     // J = log2( (samplesToRead * dt)/s0 )/dj;
 
     //Wavelet Memory Allocations
+    wavelet_result = (double*) malloc(J * samplesToRead * sizeof(double));
     result = (double*) malloc(J * samplesToRead * sizeof(double));
+
     period = (double*) malloc(J *                 sizeof(double));
     assert(result != NULL); assert(period != NULL);
 
@@ -123,24 +125,39 @@ int main(int argc, char const *argv[])
     {
         edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
         readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
+        
+        //Preform a Z-Score on the read data. 
+        CleanData(tempBuffer, samplesToRead);
+
+        //Preform the Wavelet Analysis
+        waveletFlag = Wavelet(tempBuffer, period ,
+            sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
+            wavelet_result);
+        assert(waveletFlag!= -1);
+
+        RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
+
+        //Add together all of the ERSPs of all of the different trials
+        for (int j = 0; j < J; ++j)
+        {
+            for (int k = 0; k < samplesToRead; ++k)
+            {
+                result[j * samplesToRead + k] += wavelet_result[j * samplesToRead + k];
+            }
+        }
     }
 
-    
-    
+    //Finish up the ERSP calculation. you have to divide it outside of the for loop so that we're not holding onto
+    //77 2D matricies. 
+    for (int i = 0; i < J; ++i)
+    {
+        for (int j = 0; j < samplesToRead; ++j)
+        {
+            result[j * samplesToRead + j]  = result[j * samplesToRead + j]/filteredTriggerNumber;
+        }
+    }
 
-    //Need to know where the event occurs to filter the Data. 
-    triggerLocation = PRE_EVENT_TIME * sampleFrequency;
-    CleanData(tempBuffer, triggerLocation, samplesToRead);
-
-    
-    waveletFlag = Wavelet(tempBuffer, period ,
-        sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
-        result);
-    assert(waveletFlag!= -1);
-    
-    RemoveBaseline(result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
-
-    
+    printf("Writing to File\n");
 
     writeFlag = WriteFile(result, period, J, samplesToRead, "DATA.log");
     assert(writeFlag != -1);

@@ -13,7 +13,7 @@ Output:
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
 
-void CleanData(double * data, double triggerLoc, double n)
+void CleanData(double * data, double n)
 {
 	double mean = gsl_stats_mean(data, 1, n);
     double sDeviation = gsl_stats_sd_m(data, 1, n, mean);
