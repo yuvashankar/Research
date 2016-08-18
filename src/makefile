@@ -1,9 +1,8 @@
 IDIR =../include
 CC=gcc
-CFLAGS=-I$(IDIR) -Wall -g -O2 -std=c99 -I../../bin/include -I/usr/include/openmpi-x86_64 -I/usr/local/cuda/include
+CFLAGS=-I$(IDIR) -Wall -g -O2 -std=c99 -fopenmp
 
-LDFLAGS = -L../../bin/lib
-LDLIBS = -lfftw3 -lgsl -lgslcblas -lm -fopenmp
+LDLIBS = -lfftw3 -lgsl -lgslcblas -lm
 
 ODIR=obj
 LDIR =../lib
@@ -11,14 +10,14 @@ LDIR =../lib
 _DEPS = edflib.h wavelet.h processEEG.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o edflib.o OpenFile.o FindTriggers.o FilterTriggers.o wavelet.o CleanData.o
+_OBJ = main.o edflib.o OpenFile.o FindTriggers.o FilterTriggers.o wavelet.o CleanData.o ERSP.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 processEEG: $(OBJ)
-	gcc -o $@ $^ $(CFLAGS)
+	gcc -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 .PHONY: clean
 

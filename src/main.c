@@ -8,6 +8,7 @@
 
 #include "processEEG.h"
 #include <assert.h>
+#include <hdf5.h>
 
 int main(int argc, char const *argv[])
 {
@@ -28,6 +29,7 @@ int main(int argc, char const *argv[])
 
     double sampleFrequency,
         samplesToRead,
+        triggerLocation,
         dj, dt, s0;
 
     long long numberOfRecords,
@@ -51,8 +53,8 @@ int main(int argc, char const *argv[])
 
     //Get File Information
     handle = edfHeader.handle;
-    sampleFrequency = ( (double)edfHeader.signalparam[1].smp_in_datarecord /
-                        (double)edfHeader.datarecord_duration               ) * EDFLIB_TIME_DIMENSION;
+    sampleFrequency = ( ( double )edfHeader.signalparam[1].smp_in_datarecord /
+                        ( double )edfHeader.datarecord_duration               ) * EDFLIB_TIME_DIMENSION;
     numberOfChannels = edfHeader.edfsignals;
     numberOfRecords = edfHeader.signalparam[numberOfChannels - 1].smp_in_file;
     channel = numberOfChannels - 1; //The status channel.
@@ -117,18 +119,25 @@ int main(int argc, char const *argv[])
     readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
     printf("Read into tempBuffer\n");
 
-    CleanData(tempBuffer, samplesToRead);
+    //Need to know where the event occurs to filter the Data. 
+    triggerLocation = PRE_EVENT_TIME * sampleFrequency;
+    CleanData(tempBuffer, triggerLocation, samplesToRead);
 
     
     waveletFlag = Wavelet(tempBuffer, period ,
         sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
         result);
     assert(waveletFlag!= -1);
+    printf("Wavelet Analysis Done!\n");
+    
+    RemoveBaseline(result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
+
+    
 
     writeFlag = WriteFile(result, period, J, samplesToRead, "DATA.log");
     assert(writeFlag != -1);
 
-    printf("Wavelet Analysis Done!\n");
+    
 
 
     // printf("Beginning Wavelet Analysis\n");

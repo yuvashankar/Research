@@ -211,6 +211,12 @@ void TestCases(double *data, int flag)
 			{
 				data[i] = sin(i*dw + w0) + sin(i*2*dw + w0);
 			}
+		//Single sine at t = 1500;
+		case 4: 
+			for (int i = DATA_SIZE/2; i < DATA_SIZE/2 + 2 * one_peri; ++i)
+			{
+				data[i] = sin( (i - DATA_SIZE/2) * dw + w0 );
+			}
 	}
 }
 

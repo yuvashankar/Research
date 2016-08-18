@@ -20,4 +20,7 @@ int FilterTriggers(const int code,
     const int * readBuffer, 
     int * outputBuffer);
 
-void CleanData(double * data, double n);
+void CleanData(double * data, double triggerLoc, double n);
+
+void RemoveBaseline(double* data, double num_of_samples, int J, 
+	int trials, double sampling_frequency);

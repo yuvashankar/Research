@@ -24,11 +24,11 @@
 #define MIN_FREQUENCY 0.5
 
 //Measuring Frequency
-#define FREQ 4.0
+#define FREQ 20.0
 
 #define MAX_DATA_SIZE 10000000 
 
-#define DATA_SIZE 6144
+#define DATA_SIZE 3000
 
 void FillData(double * data);
 void TestCases(double *data, int flag);
