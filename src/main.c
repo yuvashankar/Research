@@ -9,6 +9,7 @@
 #include "processEEG.h"
 #include <assert.h>
 #include <hdf5.h>
+#include <float.h>
 
 int main(int argc, char const *argv[])
 {
@@ -114,10 +115,10 @@ int main(int argc, char const *argv[])
 
     //Wavelet Memory Allocations
     wavelet_result = (double*) malloc(J * samplesToRead * sizeof(double));
-    result = (double*) malloc(J * samplesToRead * sizeof(double));
+    result =         (double*) malloc(J * samplesToRead * sizeof(double));
 
     period = (double*) malloc(J *                 sizeof(double));
-    assert(result != NULL); assert(period != NULL);
+    assert(result != NULL); assert(period != NULL); assert(wavelet_result != NULL);
 
     printf("Beginning Wavelet Analysis\n");
 
@@ -130,36 +131,49 @@ int main(int argc, char const *argv[])
         CleanData(tempBuffer, samplesToRead);
 
         //Preform the Wavelet Analysis
-        waveletFlag = Wavelet(tempBuffer, period ,
+        waveletFlag = Wavelet(tempBuffer, period,
             sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
             wavelet_result);
         assert(waveletFlag!= -1);
 
-        RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
+        // RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
 
-        //Add together all of the ERSPs of all of the different trials
-        for (int j = 0; j < J; ++j)
-        {
-            for (int k = 0; k < samplesToRead; ++k)
-            {
-                result[j * samplesToRead + k] += wavelet_result[j * samplesToRead + k];
-            }
-        }
+        // //Add together all of the ERSPs of all of the different trials
+        // for (int j = 0; j < J*samplesToRead; ++j)
+        // {
+        //     result[j] = wavelet_result[j];
+        //     if (result[i] <= 0)
+        //     {
+        //         result[i] = 1;
+        //     } 
+        //     else if (result[i] > DBL_MAX)
+        //     {
+        //         result[i] = DBL_MAX;
+        //     }
+        // }
     }
 
-    //Finish up the ERSP calculation. you have to divide it outside of the for loop so that we're not holding onto
-    //77 2D matricies. 
-    for (int i = 0; i < J; ++i)
-    {
-        for (int j = 0; j < samplesToRead; ++j)
-        {
-            result[j * samplesToRead + j]  = result[j * samplesToRead + j]/filteredTriggerNumber;
-        }
-    }
+    printf("Finished main loop\n");
+    // //Finish up the ERSP calculation. you have to divide it outside of the for loop so that we're not holding onto
+    // //77 2D matricies. 
+    // for (int i = 0; i < J*samplesToRead; ++i)
+    // {
+    //     result[i]  = result[i]/filteredTriggerNumber;
+    //     if (result[i] <= 0)
+    //     {
+    //         result[i] = 1;
+    //     } 
+    //     else if (result[i] > DBL_MAX)
+    //     {
+    //         result[i] = DBL_MAX;
+    //     }
+            
+        
+    // }
 
     printf("Writing to File\n");
 
-    writeFlag = WriteFile(result, period, J, samplesToRead, "DATA.log");
+    writeFlag = WriteFile(wavelet_result, period, J, samplesToRead, "DATA.log");
     assert(writeFlag != -1);
 
     
