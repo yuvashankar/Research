@@ -80,11 +80,15 @@ int main(int argc, char const *argv[])
     assert (buffer!= NULL); assert(filteredBuffer != NULL);
     printf("Malloc'd buffer and Filtered Buffer\n");
 
+
+
     //Read the status channel when there is a trigger and put it in the buffer
     for (int i = 0; i < numberOfRecords; ++i)
     {
         int value; 
         edfseek(handle, channel, triggerList[i], EDFSEEK_SET);
+        
+        //Sometimes this function will fail, I need to put a failsafe so that seg faults don't occur. 
         readFlag = edfread_digital_samples(handle, channel, 1, &value);
         buffer[i] = value;
         assert(readFlag != -1);
@@ -115,9 +119,14 @@ int main(int argc, char const *argv[])
 
     printf("Beginning Wavelet Analysis\n");
 
-    edfseek(handle, 0, filteredBuffer[0], EDFSEEK_SET);
-    readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
-    printf("Read into tempBuffer\n");
+    for (int i = 0; i < filteredTriggerNumber; ++i)
+    {
+        edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
+        readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
+    }
+
+    
+    
 
     //Need to know where the event occurs to filter the Data. 
     triggerLocation = PRE_EVENT_TIME * sampleFrequency;
@@ -128,7 +137,6 @@ int main(int argc, char const *argv[])
         sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
         result);
     assert(waveletFlag!= -1);
-    printf("Wavelet Analysis Done!\n");
     
     RemoveBaseline(result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
 

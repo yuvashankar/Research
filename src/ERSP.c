@@ -11,28 +11,32 @@
 void RemoveBaseline(double* data, double num_of_samples, int J, 
 	int trials, double sampling_frequency)
 {
-	int m;
+	int m, sampleNumber;
+
 	double * pre_stimulus; 
 
 	//Basically the cardinal of t = 0 to the stimulus.
 	m = PRE_EVENT_TIME * sampling_frequency;
+	sampleNumber = (int) num_of_samples;
 
 	pre_stimulus = malloc( m * sizeof(double) );
+
 
 	//For every frequency of the datablock. 
 	for (int i = 0; i < J; ++i)
 	{
+		
 		//Copy the pre trial results from each frequency block into pre_stimulus.
-		memcpy(&pre_stimulus, &data[i*(int)num_of_samples], m);
-
+		memcpy(pre_stimulus, &data[ i* sampleNumber ], m);
+		
 		//Calculate the mean and the standard deviation
 		double mean = gsl_stats_mean(pre_stimulus, 1, m);
     	double sDeviation = gsl_stats_sd_m(pre_stimulus, 1, m, mean);
-
+    	// printf("mean: %f, SD = %f\n", mean, sDeviation);
     	//Remove the baseline from the calculation.
 	    for (int j = 0; j < num_of_samples; ++j)
 	    {
-	        data[i*(int)num_of_samples + j] = (data[i*(int)num_of_samples + j] - mean)/sDeviation;
+	        data[i*sampleNumber + j] = (data[i*sampleNumber + j] - mean)/sDeviation;
 	    }
 
 	}
