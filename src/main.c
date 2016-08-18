@@ -114,9 +114,9 @@ int main(int argc, char const *argv[])
     // J = log2( (samplesToRead * dt)/s0 )/dj;
 
     //Wavelet Memory Allocations
-    wavelet_result = (double*) malloc(J * samplesToRead * sizeof(double));
+    
     result =         (double*) malloc(J * samplesToRead * sizeof(double));
-
+    wavelet_result = (double*) malloc(J * samplesToRead * sizeof(double));
     period = (double*) malloc(J *                 sizeof(double));
     assert(result != NULL); assert(period != NULL); assert(wavelet_result != NULL);
 
@@ -125,6 +125,7 @@ int main(int argc, char const *argv[])
     for (int i = 0; i < filteredTriggerNumber; ++i)
     {
         edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
+        printf("location of filtered buffer: %d\n", filteredBuffer[i]);
         readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
         
         //Preform a Z-Score on the read data. 
@@ -136,40 +137,10 @@ int main(int argc, char const *argv[])
             wavelet_result);
         assert(waveletFlag!= -1);
 
-        // RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
+        RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
 
-        // //Add together all of the ERSPs of all of the different trials
-        // for (int j = 0; j < J*samplesToRead; ++j)
-        // {
-        //     result[j] = wavelet_result[j];
-        //     if (result[i] <= 0)
-        //     {
-        //         result[i] = 1;
-        //     } 
-        //     else if (result[i] > DBL_MAX)
-        //     {
-        //         result[i] = DBL_MAX;
-        //     }
-        // }
     }
-
     printf("Finished main loop\n");
-    // //Finish up the ERSP calculation. you have to divide it outside of the for loop so that we're not holding onto
-    // //77 2D matricies. 
-    // for (int i = 0; i < J*samplesToRead; ++i)
-    // {
-    //     result[i]  = result[i]/filteredTriggerNumber;
-    //     if (result[i] <= 0)
-    //     {
-    //         result[i] = 1;
-    //     } 
-    //     else if (result[i] > DBL_MAX)
-    //     {
-    //         result[i] = DBL_MAX;
-    //     }
-            
-        
-    // }
 
     printf("Writing to File\n");
 
@@ -205,6 +176,7 @@ int main(int argc, char const *argv[])
 
     free(period);
     free(result);
+    free(wavelet_result);
     
     free(filteredBuffer);
     free(buffer);
