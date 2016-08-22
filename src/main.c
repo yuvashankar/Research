@@ -124,8 +124,8 @@ int main(int argc, char const *argv[])
 
     for (int i = 0; i < filteredTriggerNumber; ++i)
     {
-        edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
-        printf("location of filtered buffer: %d\n", filteredBuffer[i]);
+        edfseek(handle, 0, filteredBuffer[0], EDFSEEK_SET);
+        
         readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
         
         //Preform a Z-Score on the read data. 
@@ -137,38 +137,32 @@ int main(int argc, char const *argv[])
             wavelet_result);
         assert(waveletFlag!= -1);
 
-        RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
+        int error = RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
+        if (error)
+        {
+            printf("Problem at: %d, i = %d\n", filteredBuffer[i], i);
+        }
+
+        //Sum the trials up. 
+        for (int j = 0; j < J * samplesToRead; ++j)
+        {
+            result[j] = result[j] + wavelet_result[j];
+        }
 
     }
-    printf("Finished main loop\n");
+
+    //and divide by n
+    for (int i = 0; i < J * samplesToRead; ++i)
+    {
+        result[i] = result[i]/filteredTriggerNumber;
+    }
+
+    printf("Wavelet Analysis done\n");
 
     printf("Writing to File\n");
 
-    writeFlag = WriteFile(wavelet_result, period, J, samplesToRead, "DATA.log");
+    writeFlag = WriteFile(result, period, J, samplesToRead, "DATA.log");
     assert(writeFlag != -1);
-
-    
-
-
-    // printf("Beginning Wavelet Analysis\n");
-    // //Load Data from Buffer onto the Data File.
-    // int dataOffset = 0;
-    // // for (long long i = 0; i < filteredTriggerNumber; ++i)
-    // for (long long i = 0; i < 1; ++i)
-    // {
-    //     // for (int j = 0; j <= (numberOfChannels-1) ; j++)
-    //     for (int j = 0; j <= 1; ++j)
-    //     {
-    //         edfseek(handle, j, filteredBuffer[i], EDFSEEK_SET);
-    //         readFlag = edfread_physical_samples(handle, j, samplesToRead, tempBuffer);
-    //         assert(readFlag != -1);
-
-
-
-    //         // dataOffset = (int) ((numberOfChannels-1)*i + (i+j) ) * samplesToRead;
-    //         // memcpy(&data[dataOffset], tempBuffer, samplesToRead * sizeof(double));
-    //     }
-    // }
 
     printf("Freeing Memory and closing files\n");
     //clean up and close up
