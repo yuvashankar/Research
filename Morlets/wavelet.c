@@ -49,7 +49,7 @@ int Wavelet(double* raw_data,  double* period,
 		fft_data[j][1] = 0.0;
 	}
 
-	#pragma omp parallel num_thread(2) private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
+	#pragma omp parallel private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
 	{
 		double value;
 		
@@ -216,6 +216,12 @@ void TestCases(double *data, int flag)
 			for (int i = DATA_SIZE/2; i < DATA_SIZE/2 + 2 * one_peri; ++i)
 			{
 				data[i] = sin( (i - DATA_SIZE/2) * dw + w0 );
+			}
+		//Single sine all the way through. 
+		case 5:
+			for (int i = 0; i < DATA_SIZE; ++i)
+			{
+				data[i] = cos( i * dw + w0 );
 			}
 	}
 }

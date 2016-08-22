@@ -9,7 +9,7 @@
 #include <string.h>
 #include <math.h>
 #include <fftw3.h>
-# define M_PI        3.14159265358979323846    /* pi */
+// # define M_PI        3.14159265358979323846    /* pi */
 //Global Constants
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
 #define FOURIER_WAVELENGTH_FACTOR (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0_2))
