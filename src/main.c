@@ -126,6 +126,14 @@ int main(int argc, char const *argv[])
 
         //Preform a Z-Score on the read data. 
         CleanData(tempBuffer, samplesToRead);
+        if (i == 15)
+        {
+            for (int j = 0; j < DATA_SIZE; ++j)
+            {
+                fprintf(debug_file, "%d\t%f\n", j, tempBuffer[j]);
+            }
+            
+        }
 
         //Preform the Wavelet Analysis
         waveletFlag = Wavelet(tempBuffer, period,
@@ -143,10 +151,6 @@ int main(int argc, char const *argv[])
         for (int j = 0; j < J * samplesToRead; ++j)
         {
             result[j] = result[j] + wavelet_result[j];
-            if (result[j] >= 0.8 * DBL_MAX)
-            {
-                printf("bic\t");
-            }
         }
     }
 
