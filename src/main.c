@@ -99,11 +99,6 @@ int main(int argc, char const *argv[])
     filteredTriggerNumber = FilterTriggers(1, 2, numberOfTriggers, triggerList,
         buffer, filteredBuffer);
     printf("Number of Filtered Triggers Found: %d\n", filteredTriggerNumber);
-
-    //Allocate the necessary memory to copy all of the data into a contigious directory. 
-    // printf("Will allocate %f Mbs of Memory\n", filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double)/1048576);
-    // data = (double*) malloc( filteredTriggerNumber * samplesToRead * numberOfChannels * sizeof(double) );
-    // assert(data!= NULL);
     
     //Begin Wavelet Analysis
     dj = 0.0625;
@@ -114,17 +109,16 @@ int main(int argc, char const *argv[])
     // J = log2( (samplesToRead * dt)/s0 )/dj;
 
     //Wavelet Memory Allocations
-    
     result =         (double*) malloc(J * samplesToRead * sizeof(double));
     wavelet_result = (double*) malloc(J * samplesToRead * sizeof(double));
-    period = (double*) malloc(J *                 sizeof(double));
+    period =         (double*) malloc(J *                 sizeof(double));
     assert(result != NULL); assert(period != NULL); assert(wavelet_result != NULL);
 
     printf("Beginning Wavelet Analysis\n");
 
     for (int i = 0; i < filteredTriggerNumber; ++i)
     {
-        edfseek(handle, 0, filteredBuffer[0], EDFSEEK_SET);
+        edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
         
         readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
         
@@ -140,7 +134,7 @@ int main(int argc, char const *argv[])
         int error = RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
         if (error)
         {
-            printf("Problem at: %d, i = %d\n", filteredBuffer[i], i);
+            // printf("Problem at: %d, i = %d\n", filteredBuffer[i], i);
         }
 
         //Sum the trials up. 
@@ -148,7 +142,6 @@ int main(int argc, char const *argv[])
         {
             result[j] = result[j] + wavelet_result[j];
         }
-
     }
 
     //and divide by n
