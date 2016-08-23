@@ -118,9 +118,9 @@ int main(int argc, char const *argv[])
 
     for (int i = 0; i < filteredTriggerNumber; ++i)
     {
-        edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
+        // edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
         
-        readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
+        // readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
         
         //Preform a Z-Score on the read data. 
         CleanData(tempBuffer, samplesToRead);

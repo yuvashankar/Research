@@ -47,7 +47,7 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
     	//Remove the baseline from the calculation.
 	    for (int j = 0; j < num_of_samples; ++j)
 	    {
-	        data[i*num_of_samples + j] = (data[i*num_of_samples + j] - mean)/sDeviation;
+	        data[i*num_of_samples + j] = log((data[i*num_of_samples + j] - mean)/sDeviation);
 	    }
 
 	}
