@@ -122,6 +122,8 @@ int main(int argc, char const *argv[])
         
         // readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
         
+        TestCases(tempBuffer, 3);
+
         //Preform a Z-Score on the read data. 
         CleanData(tempBuffer, samplesToRead);
 
@@ -141,6 +143,10 @@ int main(int argc, char const *argv[])
         for (int j = 0; j < J * samplesToRead; ++j)
         {
             result[j] = result[j] + wavelet_result[j];
+            if (result[j] >= 0.8 * DBL_MAX)
+            {
+                printf("bic\t");
+            }
         }
     }
 
