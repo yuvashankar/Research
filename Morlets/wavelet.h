@@ -48,3 +48,8 @@ int Wavelet(double* raw_data,  double* frequency,
 	double* result);
 
 double Magnitude (double x, double y);
+
+void CleanData(double * data, double n);
+
+int RemoveBaseline(double* data, int num_of_samples, int J, 
+	int trials, double sampling_frequency);
