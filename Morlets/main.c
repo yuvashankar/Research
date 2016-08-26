@@ -1,6 +1,6 @@
 #include "wavelet.h"
 #include <math.h>
-#include <omp.h>
+
 #include <gsl/gsl_statistics.h>
 
 
@@ -15,12 +15,6 @@ int main(void)
 
     int J;
 
-
-
-    fftw_complex *data_in, *data_fft;
-
-    fftw_plan plan_forward;
-
     // //Size of Data
     int n = DATA_SIZE;
     
@@ -33,10 +27,10 @@ int main(void)
     data = malloc( n * sizeof(double) );
     wavelet_result = malloc( J * n * sizeof(double) );
     period = malloc(J * sizeof(double));
-    
+
     
     //populate the data array
-    TestCases(data, 5);
+    TestCases(data, 3);
     // CleanData(data, DATA_SIZE);
 
     Wavelet(data, period,
@@ -48,12 +42,9 @@ int main(void)
 
     fclose(out_file);
 
-    fftw_free(data_fft);
-    fftw_free(data_in);
-    fftw_destroy_plan(plan_forward);
-
     free(data);
     free(wavelet_result);
+    free(period);
 
 
     return 0;
