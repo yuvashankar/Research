@@ -128,9 +128,9 @@ double FourierMorlet(double w, double scale, double normal)
 	// const double k = exp(-0.5 * W_0_2);
 	// const double normal = sqrt((2 * M_PI * scale)/(1.0/sampling_frequency));
 	// const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-
+	// double out = exp( -0.5 * (W_0 - w) * (W_0 - w)) - k * exp(-0.5 * w * w);
 	// double out = exp( -0.5 * (W_0_2 - 2*W_0*w + w2)) - k * exp(-0.5 * w2);
-	// out = cSigma * QUAD_ROOT_PI * normal * out;
+	// out = cSigma * QUAD_ROOT_PI * out;
 
 	double exponent = -0.5 * (scale * w - W_0) * (scale * w - W_0);
 	double out = QUAD_ROOT_PI* normal * exp(exponent);
