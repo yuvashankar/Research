@@ -8,6 +8,8 @@
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
 
+#define ZERO_TEST 0.00001
+
 int RemoveBaseline(double* data, int num_of_samples, int J, 
 	int trials, double sampling_frequency)
 {
@@ -29,25 +31,31 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
 	for (int i = 0; i < J; ++i)
 	{
 		//Copy the pre trial results from each frequency block into pre_stimulus.
-		memcpy(pre_stimulus, &data[ i * num_of_samples ], m);
+		// memcpy(pre_stimulus, &data[ i * num_of_samples ], m); 
+		//I don't trust memcpy... this is slower.. but atleast I understand it. 
+		for (int j = 0; j < m; ++j)
+		{
+			pre_stimulus[j] = data[i * num_of_samples + j];
+		}
 		
 		//Calculate the mean and the standard deviation
 		double mean = gsl_stats_mean(pre_stimulus, 1, m);
     	double sDeviation = gsl_stats_sd_m(pre_stimulus, 1, m, mean);
     	
     	// //This must be a problem for the lower scales because we deal with higher frequencies than that.
-    	if (sDeviation == 0)
+    	if (abs(sDeviation) < ZERO_TEST)
     	{
     		//preventing a division by zero here. 
     		sDeviation = 1;
     		div_by_zero = 1;
-    	} 
+    	}
+
     	// printf("mean: %f, SD = %f i = %d\n ", mean, sDeviation, i);
 
     	//Remove the baseline from the calculation.
 	    for (int j = 0; j < num_of_samples; ++j)
 	    {
-	        data[i*num_of_samples + j] = log((data[i*num_of_samples + j] - mean)/sDeviation);
+	        data[i*num_of_samples + j] = (data[i*num_of_samples + j] - mean) / sDeviation;
 	    }
 
 	}
