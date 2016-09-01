@@ -185,17 +185,18 @@ void TestCases(double *data, int flag)
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
-	
+	int t = 2 * FS;
 	switch(flag)
 	{
-		//Impulse
+		//Impulse at T = 2 seconds
 		case 1:
+			
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{
 				data[i] = 0.0;
 			}
 
-			data[1500] = 1.0;
+			data[t] = 1.0;
 			break;
 		
 		//Multiple Sines at t = 1500

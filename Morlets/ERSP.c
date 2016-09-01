@@ -11,7 +11,8 @@
 #define ZERO_TEST 0.00001
 
 int RemoveBaseline(double* data, int num_of_samples, int J, 
-	int trials, double sampling_frequency)
+	int trials, double sampling_frequency, 
+	double* output)
 {
 	int m;
 	
@@ -42,22 +43,14 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
 		double mean = gsl_stats_mean(pre_stimulus, 1, m);
     	double sDeviation = gsl_stats_sd_m(pre_stimulus, 1, m, mean);
     	
-    	// //This must be a problem for the lower scales because we deal with higher frequencies than that.
-    	if (abs(sDeviation) < ZERO_TEST)
+    	//This ensures that there is no division by zero. 
+    	if (abs(sDeviation) > ZERO_TEST)
     	{
-    		//preventing a division by zero here. 
-    		sDeviation = 1;
-    		div_by_zero = 1;
+		    for (int j = 0; j < num_of_samples; ++j)
+		    {
+		        output[i*num_of_samples + j] = (data[i*num_of_samples + j] - mean) / sDeviation;
+		    }
     	}
-
-    	// printf("mean: %f, SD = %f i = %d\n ", mean, sDeviation, i);
-
-    	//Remove the baseline from the calculation.
-	    for (int j = 0; j < num_of_samples; ++j)
-	    {
-	        data[i*num_of_samples + j] = (data[i*num_of_samples + j] - mean) / sDeviation;
-	    }
-
 	}
 
 	free(pre_stimulus);
