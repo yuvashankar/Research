@@ -28,35 +28,49 @@ int main(void)
     baseline_out = malloc (J * n * sizeof(double));
     period = malloc(J * sizeof(double));
     assert(data != NULL); assert(result != NULL); assert(period != NULL);
+    assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     //populate the data array
     TestCases(data, 1);
 
     // printf("Data Size: %d\n", DATA_SIZE);
     CleanData(data, DATA_SIZE);
+    int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
+    int bic = 77;
 
-    for (int i = 0; i < 77; ++i)
+    for (int i = 0; i < bic; ++i)
     {
-        //Compute wavelet analysis
-        Wavelet(data, period,
+        if (i == 1)
+        {
+            //Compute wavelet analysis
+            Wavelet(data, period,
             FS, n, dj, s0, J, MAX_FREQUENCY,
             wavelet_result);
+        }
+        
+        
 
         RemoveBaseline(wavelet_result, DATA_SIZE, J, 1, FS, baseline_out);
 
-        for (int j = 0; j < J * n ; ++j)
+        for (int j = start; j < J; ++j)
         {
-            result[j] += baseline_out[j];
+            for (int k = 0; k < n; ++k)
+            {
+                result[j * n + k] += wavelet_result[j * n + k];
+            }
         }
     }
 
-    for (int i = 0; i < J * n; ++i)
+    for (int i = start; i < J; ++i)
     {
-        result[i] = result[i]/77;
+        for (int j = 0; j < n; ++j)
+        {
+            result[i * n + j] = result[i * n + j] / bic;
+        }
     }
 
     //Write to file
-    WriteFile(result, period, J, n, "DATA.log");
+    WriteFile(wavelet_result, period, J, n, "DATA.log");
 
     
     //sanitation engineering

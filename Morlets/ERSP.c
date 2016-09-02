@@ -2,16 +2,16 @@
 //Using the results from Grandchamp et al. to calculate the ESRP
 //Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials
 //Romain Grandchamp1,2* and Arnaud Delorme
-// Implemented by Vinay Yuvashanakar
-// McMaster University
+//Implemented by Vinay Yuvashanakar
+//McMaster University
 
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
 
 #define ZERO_TEST 0.00001
 
-int RemoveBaseline(double* data, int num_of_samples, int J, 
-	int trials, double sampling_frequency, 
+int RemoveBaseline(double* data, int num_of_samples, int J,
+	int trials, double sampling_frequency,
 	double* output)
 {
 	int m;
@@ -20,16 +20,20 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
 	int div_by_zero = 0;
 	double * pre_stimulus;
 
-
-	//Basically the cardinal of t = 0 to the stimulus.
+	//Basically the cardinal of t = 0 to the stimulus
 	m = PRE_EVENT_TIME * sampling_frequency;
 	
 
 	pre_stimulus = malloc( m * sizeof(double) );
 
+	double dj, dt, s0;
+	dj = 0.125;
+	dt = 1.0/FS;
+	s0 = 2 * dt;
 
+	int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
 	//For every frequency of the datablock. 
-	for (int i = 0; i < J; ++i)
+	for (int i = start; i < J; ++i)
 	{
 		//Copy the pre trial results from each frequency block into pre_stimulus.
 		// memcpy(pre_stimulus, &data[ i * num_of_samples ], m); 
@@ -48,12 +52,11 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
     	{
 		    for (int j = 0; j < num_of_samples; ++j)
 		    {
-		        output[i*num_of_samples + j] = (data[i*num_of_samples + j] - mean) / sDeviation;
+		        output[ i * num_of_samples + j] = (data[ i * num_of_samples + j] - mean) / sDeviation;
 		    }
     	}
 	}
 
 	free(pre_stimulus);
-
 	return(div_by_zero);
 }

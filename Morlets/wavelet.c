@@ -49,8 +49,8 @@ int Wavelet(double* raw_data,  double* period,
 		fft_data[j][1] = 0.0;
 	}
 
-	#pragma omp parallel private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
-	{
+	// #pragma omp parallel private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
+	// {
 		double value;
 		
 		fftw_plan plan_backward;
@@ -68,14 +68,14 @@ int Wavelet(double* raw_data,  double* period,
 		fftw_result  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 		
 	    //FFTW allocations only one thread can do this. 
-	    #pragma omp critical (make_plan)
-		{
+	 //    #pragma omp critical (make_plan)
+		// {
 			//Preapre for the plan backwards
 			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 				FFTW_BACKWARD, FFTW_ESTIMATE);	
-		}
+		// }
 	    
-		#pragma omp for
+		// #pragma omp for
 		for (i = start; i < J; ++i)
 		{
 			//Calculate the scale and corrosponding frequency at the specific Scale
@@ -113,7 +113,7 @@ int Wavelet(double* raw_data,  double* period,
 
 	    // free(filter);
 	    // fclose(debug_file);
-	} /*Open Mp*/
+	// } /*Open Mp*/
 	fftw_destroy_plan(plan_forward); 
 	fftw_free(data_in); fftw_free(fft_data); 
     return(0);
