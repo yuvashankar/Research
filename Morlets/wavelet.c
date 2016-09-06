@@ -216,6 +216,8 @@ void TestCases(double *data, int flag)
 			{
 				data[i] = cos( i * dw + w0 );
 			}
+		case 6:
+			ReadFile(data, "Sample_EEG_data.dat");
 	}
 }
 

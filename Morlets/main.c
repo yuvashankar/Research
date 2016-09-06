@@ -31,7 +31,7 @@ int main(void)
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     //populate the data array
-    TestCases(data, 2);
+    TestCases(data, 6);
 
     // printf("Data Size: %d\n", DATA_SIZE);
     CleanData(data, DATA_SIZE);
@@ -40,15 +40,10 @@ int main(void)
 
     for (int i = 0; i < bic; ++i)
     {
-        // if (i == 0)
-        // {
-            //Compute wavelet analysis
-            Wavelet(data, period,
-            FS, n, dj, s0, J, MAX_FREQUENCY,
-            wavelet_result);
-        // }
-        
-        
+        //Compute wavelet analysis
+        Wavelet(data, period,
+        FS, n, dj, s0, J, MAX_FREQUENCY,
+        wavelet_result);
 
         RemoveBaseline(wavelet_result, DATA_SIZE, J, 1, FS, baseline_out);
 
