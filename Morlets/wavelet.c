@@ -12,13 +12,6 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_complex *data_in, *fft_data;
 	fftw_plan plan_forward;
 
-	//The this defines the lower bound, it helps speed up computations by not dealing with
-	// int start = (int)floor( log2( (W_0 * minimum_frequency)
-	// 								 /(8 * M_PI * s0) )
-	// 								 /dj);
-
-	// double start = floor(1.0/(minimum_frequency * FOURIER_WAVELENGTH_FACTOR)); 
-	// double start = (int) floor(abs(log2( (minimum_frequency/FS)/s0 )/dj));
 	int start = (int) floor( log2( 1.0/(s0 * maximum_frequency * FOURIER_WAVELENGTH_FACTOR) ) /dj);
 
 	//Calculate Padding Required
@@ -27,7 +20,7 @@ int Wavelet(double* raw_data,  double* period,
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE);
 
-    data_in = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+    data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 
 	//populate the data vector. 
@@ -100,11 +93,10 @@ int Wavelet(double* raw_data,  double* period,
 			for (j = 0; j < n; ++j)
 			{
 				result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-				
 			}
 		}
 
-		WriteTestCases(result, n, "debug.log");
+		// WriteTestCases(result, n, "debug.log");
 
 		//FFTW sanitation engineering. 
 		fftw_destroy_plan(plan_backward);
@@ -115,7 +107,7 @@ int Wavelet(double* raw_data,  double* period,
 	    // fclose(debug_file);
 	// } /*Open Mp*/
 	fftw_destroy_plan(plan_forward); 
-	fftw_free(data_in); fftw_free(fft_data); 
+	fftw_free(fft_data); fftw_free(data_in);  
     return(0);
 } /*Wavelet */
 

@@ -40,13 +40,13 @@ int main(void)
 
     for (int i = 0; i < bic; ++i)
     {
-        if (i == 1)
-        {
+        // if (i == 0)
+        // {
             //Compute wavelet analysis
             Wavelet(data, period,
             FS, n, dj, s0, J, MAX_FREQUENCY,
             wavelet_result);
-        }
+        // }
         
         
 
@@ -57,6 +57,7 @@ int main(void)
             for (int k = 0; k < n; ++k)
             {
                 result[j * n + k] += wavelet_result[j * n + k];
+                // wavelet_result[j * n + k] = 0.0;
             }
         }
     }
