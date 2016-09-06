@@ -31,7 +31,7 @@ int main(void)
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     //populate the data array
-    TestCases(data, 1);
+    TestCases(data, 2);
 
     // printf("Data Size: %d\n", DATA_SIZE);
     CleanData(data, DATA_SIZE);
@@ -56,8 +56,7 @@ int main(void)
         {
             for (int k = 0; k < n; ++k)
             {
-                result[j * n + k] += wavelet_result[j * n + k];
-                // wavelet_result[j * n + k] = 0.0;
+                result[j * n + k] += baseline_out[j * n + k];
             }
         }
     }
