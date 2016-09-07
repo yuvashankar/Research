@@ -31,7 +31,7 @@ int main(void)
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     //populate the data array
-    TestCases(data, 1);
+    TestCases(data, 6);
   // printf("Data Size: %d\n", DATA_SIZE);
     CleanData(data, DATA_SIZE);
     int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
@@ -44,7 +44,7 @@ int main(void)
         FS, n, dj, s0, J, MAX_FREQUENCY,
         wavelet_result);
 
-        RemoveBaseline(wavelet_result, DATA_SIZE, J, 1, FS, baseline_out);
+        RemoveBaseline(wavelet_result, DATA_SIZE, J, bic, FS, baseline_out);
 
         for (int j = start; j < J; ++j)
         {
@@ -66,7 +66,6 @@ int main(void)
     //Write to file
     WriteFile(result, period, J, n, "DATA.log");
 
-    
     //sanitation engineering
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     return 0;
