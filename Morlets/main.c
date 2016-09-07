@@ -31,9 +31,8 @@ int main(void)
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     //populate the data array
-    TestCases(data, 6);
-
-    // printf("Data Size: %d\n", DATA_SIZE);
+    TestCases(data, 1);
+  // printf("Data Size: %d\n", DATA_SIZE);
     CleanData(data, DATA_SIZE);
     int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
     int bic = 77;
@@ -65,7 +64,7 @@ int main(void)
     }
 
     //Write to file
-    WriteFile(wavelet_result, period, J, n, "DATA.log");
+    WriteFile(result, period, J, n, "DATA.log");
 
     
     //sanitation engineering

@@ -204,20 +204,21 @@ void TestCases(double *data, int flag)
 			{
 				data[i] = sin(i*dw + w0) + sin(i*2*dw + w0);
 			}
+			break;
 		//Single sine at t = 1.0s;
 		case 4: 
 			for (int i = DATA_SIZE/3; i < DATA_SIZE/3 + 2 * one_peri; ++i)
 			{
 				data[i] = sin( (i - DATA_SIZE/2) * dw + w0 );
 			}
+			break;
 		//Single sine all the way through. 
 		case 5:
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{
 				data[i] = cos( i * dw + w0 );
 			}
-		case 6:
-			ReadFile(data, "Sample_EEG_data.dat");
+			break;
 	}
 }
 
