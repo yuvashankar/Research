@@ -23,4 +23,5 @@ int FilterTriggers(const int code,
 void CleanData(double * data, double n);
 
 int RemoveBaseline(double* data, int num_of_samples, int J, 
-	int trials, double sampling_frequency);
+	int trials, double sampling_frequency, 
+	double* output);

@@ -36,9 +36,10 @@ int main(int argc, char const *argv[])
         numberOfTriggers;
 
     double *tempBuffer,
-        *result, //Needed by Wavelet
-        *period,
-        *wavelet_result;
+        *result, //The Final Result
+        *period, //The Corrosponding Frequencies
+        *wavelet_result, //What Wavelet spits out
+        *baseline_out; //What Baseline spits out
 
     long long * triggerList;
     
@@ -106,11 +107,13 @@ int main(int argc, char const *argv[])
     s0 = 2 * dt;
 
     J = (int) ceil(log2 ( 1.0/(s0 * MIN_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) )/dj);
+    int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
     // J = log2( (samplesToRead * dt)/s0 )/dj;
 
     //Wavelet Memory Allocations
     result =         (double*) malloc(J * samplesToRead * sizeof(double));
     wavelet_result = (double*) malloc(J * samplesToRead * sizeof(double));
+    baseline_out =   (double*) malloc(J * samplesToRead * sizeof(double));
     period =         (double*) malloc(J *                 sizeof(double));
     assert(result != NULL); assert(period != NULL); assert(wavelet_result != NULL);
 
@@ -131,27 +134,23 @@ int main(int argc, char const *argv[])
             wavelet_result);
         assert(waveletFlag!= -1);
 
-        int error = RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
-        if (error)
+        RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency, baseline_out);
+        // int error = RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
+        for (int j = start; j < J; ++j)
         {
-            // printf("Problem at: %d, i = %d\n", filteredBuffer[i], i);
-        }
-
-        //Sum the trials up. 
-        for (int j = 0; j < J * samplesToRead; ++j)
-        {
-            result[j] = result[j] + wavelet_result[j];
-            if (result[j] >= 0.8 * DBL_MAX)
+            for (int k = 0; k < samplesToRead; ++k)
             {
-                printf("bic\n");
+                result[j * samplesToRead + k] += baseline_out[j * samplesToRead + k];
             }
-        }
+        }   
     }
 
-    //and divide by n
-    for (int i = 0; i < J * samplesToRead; ++i)
+    for (int i = start; i < J; ++i)
     {
-        result[i] = result[i]/filteredTriggerNumber;
+        for (int j = 0; j < samplesToRead; ++j)
+        {
+            result[i * samplesToRead + j] = result[i * samplesToRead + j] / filteredTriggerNumber;
+        }
     }
 
     printf("Wavelet Analysis done\n");
