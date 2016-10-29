@@ -43,6 +43,8 @@ int WriteTestCases(double *data, int length, char filename[]);
 
 double FourierMorlet(double w, double scale, double normal);
 
+double CompleteFourierMorlet(double w, double scale);
+
 int Wavelet(double* raw_data,  double* frequency, 
 	double sampling_frequency, int n, double dj, double s0, int J, double maximum_frequency,
 	double* result);

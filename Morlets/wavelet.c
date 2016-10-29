@@ -44,6 +44,7 @@ int Wavelet(double* raw_data,  double* period,
 
 	// #pragma omp parallel private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
 	// {
+		
 		double value;
 		
 		fftw_plan plan_backward;
@@ -126,6 +127,18 @@ double FourierMorlet(double w, double scale, double normal)
 
 	double exponent = -0.5 * (scale * w - W_0) * (scale * w - W_0);
 	double out = QUAD_ROOT_PI* normal * exp(exponent);
+	return(out);
+}
+
+double CompleteFourierMorlet(double w, double scale)
+{
+	double w_0 = 6.0;
+	double c_sigma = pow( (1.0 + exp(-w_0*w_0) - 2.0 * exp(-0.75 * w_0 * w_0)), -0.5 );
+	double k_sigma = exp( -0.5 * w_0 * w_0 );
+
+	double out = exp( -0.5 * ( w_0 - scale * w ) * (w_0 - scale * w) ) 
+					- k_sigma * (exp ( -0.5 * scale * w * w));
+	out = c_sigma * QUAD_ROOT_PI * out;
 	return(out);
 }
 
