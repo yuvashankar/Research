@@ -13,6 +13,6 @@ set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
 set title "Test Plot"
 
-set yrange [0.5:128]
+#set yrange [0.5:128]
 splot "DATA.log" matrix nonuniform with pm3d t ''
 pause -1 "Hit Return to continue"

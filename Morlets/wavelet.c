@@ -41,68 +41,50 @@ int Wavelet(double* raw_data,  double* period,
 	// 	fft_data[j][0] = 0.0;
 	// 	fft_data[j][1] = 0.0;
 	// }
-
-	// #pragma omp parallel private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
-	// {
 		
-		double value;
-		
-		fftw_plan plan_backward;
-		fftw_complex *filter_convolution, *fftw_result;
+	double value;
+	
+	fftw_plan plan_backward;
+	fftw_complex *filter_convolution, *fftw_result;
 
-		//An ouptut file for debugging. 
-		// double *filter; //Un-comment to look at each filter
-		// FILE *debug_file=fopen("debug.log","w");
-		// assert(debug_file != NULL);
-		//Memory Allocations
-	    // filter = malloc(PADDED_SIZE * J * sizeof(double));
-	    // assert(filter != NULL);
+	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+	fftw_result  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+	
+		//Preapre for the plan backwards
+		plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
+			FFTW_BACKWARD, FFTW_ESTIMATE);	
+    
+	for (i = start; i < J; ++i)
+	{
+		//Calculate the scale and corrosponding frequency at the specific Scale
+		double scale = s0 * pow(2, i * dj);
+		period[i] = (W_0)/(scale * 2 * M_PI);
 
-		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
-		fftw_result  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
-		
-	    //FFTW allocations only one thread can do this. 
-	 //    #pragma omp critical (make_plan)
-		// {
-			//Preapre for the plan backwards
-			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
-				FFTW_BACKWARD, FFTW_ESTIMATE);	
-		// }
-	    
-		// #pragma omp for
-		for (i = start; i < J; ++i)
+		//Normalization Factor needes to be recomputed at every scale.
+		double normal = sqrt(2 * M_PI * scale * sampling_frequency);
+
+		//Caluclate the Fourier Morlet at the specific scale. 
+		for (j = 0; j < PADDED_SIZE; ++j)
 		{
-			//Calculate the scale and corrosponding frequency at the specific Scale
-			double scale = s0 * pow(2, i * dj);
-			// period[i] = 1.0/(scale * FOURIER_WAVELENGTH_FACTOR);
-
-			period[i] = (scale)/(W_0);
-
-			//Normalization Factor needes to be recomputed at every scale.
-			double normal = sqrt(2 * M_PI * scale * sampling_frequency);
-
-			//Caluclate the Fourier Morlet at the specific scale. 
-			for (j = 0; j < PADDED_SIZE; ++j)
-			{
-				value = FourierMorlet(j*dw, scale, normal);
-				filter_convolution[j][0] = fft_data[j][0] * value;
-				filter_convolution[j][1] = fft_data[j][1] * value;
-			}
-
-			//Take the inverse FFT. 
-			fftw_execute(plan_backward);
-
-			//Calculate the power and store it in result
-			for (j = 0; j < n; ++j)
-			{
-				result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
-			}
+			value = FourierMorlet(j*dw, scale, normal);
+			filter_convolution[j][0] = fft_data[j][0] * value;
+			filter_convolution[j][1] = fft_data[j][1] * value;
 		}
 
-		//FFTW sanitation engineering. 
-		fftw_destroy_plan(plan_backward);
-	    fftw_free(fftw_result);
-	    fftw_free(filter_convolution);
+		//Take the inverse FFT. 
+		fftw_execute(plan_backward);
+
+		//Calculate the power and store it in result
+		for (j = 0; j < n; ++j)
+		{
+			result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
+		}
+	}
+
+	//FFTW sanitation engineering. 
+	fftw_destroy_plan(plan_backward);
+    fftw_free(fftw_result);
+    fftw_free(filter_convolution);
 
 	fftw_destroy_plan(plan_forward); 
 	fftw_free(fft_data); fftw_free(data_in);  
