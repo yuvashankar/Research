@@ -18,7 +18,7 @@ int Wavelet(double* raw_data,  double* period,
 	const int pad = floor(log(n)/log(2.0) + 0.499);
     const double PADDED_SIZE = pow(2, pad + 1);
 
-    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE);
+    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
@@ -35,12 +35,12 @@ int Wavelet(double* raw_data,  double* period,
 		FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
-	//Heaviside Step Function whenever w0 < 0 the function is zero
-	for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
-	{
-		fft_data[j][0] = 0.0;
-		fft_data[j][1] = 0.0;
-	}
+	// // Heaviside Step Function whenever w0 < 0 the function is zero
+	// for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
+	// {
+	// 	fft_data[j][0] = 0.0;
+	// 	fft_data[j][1] = 0.0;
+	// }
 
 	// #pragma omp parallel private(i, j) shared (result, period, dj, s0, sampling_frequency, J, n, start, fft_data) default(none)
 	// {
@@ -74,13 +74,15 @@ int Wavelet(double* raw_data,  double* period,
 		{
 			//Calculate the scale and corrosponding frequency at the specific Scale
 			double scale = s0 * pow(2, i * dj);
-			period[i] = 1.0/(scale * FOURIER_WAVELENGTH_FACTOR);
+			// period[i] = 1.0/(scale * FOURIER_WAVELENGTH_FACTOR);
+
+			period[i] = (scale)/(W_0);
 
 			//Normalization Factor needes to be recomputed at every scale.
 			double normal = sqrt(2 * M_PI * scale * sampling_frequency);
 
 			//Caluclate the Fourier Morlet at the specific scale. 
-			for (j = 0; j < PADDED_SIZE/2; ++j)
+			for (j = 0; j < PADDED_SIZE; ++j)
 			{
 				value = FourierMorlet(j*dw, scale, normal);
 				filter_convolution[j][0] = fft_data[j][0] * value;
@@ -97,16 +99,11 @@ int Wavelet(double* raw_data,  double* period,
 			}
 		}
 
-		// WriteTestCases(result, n, "debug.log");
-
 		//FFTW sanitation engineering. 
 		fftw_destroy_plan(plan_backward);
 	    fftw_free(fftw_result);
 	    fftw_free(filter_convolution);
 
-	    // free(filter);
-	    // fclose(debug_file);
-	// } /*Open Mp*/
 	fftw_destroy_plan(plan_forward); 
 	fftw_free(fft_data); fftw_free(data_in);  
     return(0);
