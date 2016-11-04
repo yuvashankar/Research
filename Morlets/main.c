@@ -11,15 +11,16 @@ int main(void)
     //Size of Data
     int n = DATA_SIZE;
     int J; 
-    double dj, dt, s0;
+    double dt, s0;
 
-    dj = 0.125;
+    // dj = 0.125;
 
     dt = 1.0/FS;
     s0 = 2 * dt;
 
-    J = (int) ceil(log2 ( 1.0/(s0 * MIN_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) )/dj);
-    printf("dt = %f, dj = %f, s0 = %f, J = %d\n", dt, dj, s0, J);
+    // J = (int) ceil(log2 ( 1.0/(s0 * MIN_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) )/dj);
+    J = FrequencyToScale(MIN_FREQUENCY, s0);
+    // printf("dt = %f, dj = %f, s0 = %f, J = %d\n", dt, dj, s0, J);
 
     //Memory Allocations
     data = malloc(n * sizeof(double));
@@ -34,10 +35,10 @@ int main(void)
     TestCases(data, 6);
   // printf("Data Size: %d\n", DATA_SIZE);
     CleanData(data, DATA_SIZE);
-    int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
+    // int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
     // int bic = 77;
 
-    Wavelet(data, period, FS, n, dj, s0, J, MAX_FREQUENCY, wavelet_result);
+    Wavelet(data, period, FS, n, s0, J, MAX_FREQUENCY, wavelet_result);
 
     // for (int i = 0; i < bic; ++i)
     // {

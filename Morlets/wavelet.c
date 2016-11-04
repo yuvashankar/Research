@@ -3,7 +3,7 @@
 #include <omp.h>
 
 int Wavelet(double* raw_data,  double* period, 
-	double sampling_frequency, int n, double dj, double s0, int J, double maximum_frequency,
+	double sampling_frequency, int n, double s0, int J, double maximum_frequency,
 	double* result)
 {
 	
@@ -12,7 +12,10 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_complex *data_in, *fft_data;
 	fftw_plan plan_forward;
 
-	int start = (int) floor( log2( 1.0/(s0 * maximum_frequency * FOURIER_WAVELENGTH_FACTOR) ) /dj);
+	// int start = (int) floor( log2( 1.0/(s0 * maximum_frequency * FOURIER_WAVELENGTH_FACTOR) ) /D_J);
+	// int start = (int) floor( log2( W_0/( s0 * (2 * M_PI) * maximum_frequency ) )/DATA_SIZE );
+	int start = FrequencyToScale(maximum_frequency, s0);
+	// printf("%d\n", start);
 
 	//Calculate Padding Required
 	const int pad = floor(log(n)/log(2.0) + 0.499);
@@ -32,7 +35,7 @@ int Wavelet(double* raw_data,  double* period,
 
 	//Calculate the FFT for the Data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
-		FFTW_FORWARD, FFTW_ESTIMATE);
+									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
 	// // Heaviside Step Function whenever w0 < 0 the function is zero
@@ -57,7 +60,7 @@ int Wavelet(double* raw_data,  double* period,
 	for (i = start; i < J; ++i)
 	{
 		//Calculate the scale and corrosponding frequency at the specific Scale
-		double scale = s0 * pow(2, i * dj);
+		double scale = s0 * pow(2, i * D_J);
 		period[i] = (W_0)/(scale * 2 * M_PI);
 
 		//Normalization Factor needes to be recomputed at every scale.
@@ -90,6 +93,16 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_free(fft_data); fftw_free(data_in);  
     return(0);
 } /*Wavelet */
+
+int FrequencyToScale(double frequency, double s0)
+{
+	int scale;
+	// int scale = (int) floor( log2( W_0/( s0 * (2 * M_PI) * maximum_frequency ) )/D_J );
+	scale = W_0/(s0 * (2 * M_PI) * frequency);
+	scale = log2(scale);
+	scale = floor(scale/D_J);
+	return(scale);
+}
 
 double FourierMorlet(double w, double scale, double normal)
 {
