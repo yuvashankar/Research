@@ -18,9 +18,8 @@ int main(void)
     dt = 1.0/FS;
     s0 = 2 * dt;
 
-    // J = (int) ceil(log2 ( 1.0/(s0 * MIN_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) )/dj);
     J = FrequencyToScale(MIN_FREQUENCY, s0);
-    // printf("dt = %f, dj = %f, s0 = %f, J = %d\n", dt, dj, s0, J);
+    printf("J = %d\n", J);
 
     //Memory Allocations
     data = malloc(n * sizeof(double));

@@ -14,7 +14,8 @@ int Wavelet(double* raw_data,  double* period,
 
 	// int start = (int) floor( log2( 1.0/(s0 * maximum_frequency * FOURIER_WAVELENGTH_FACTOR) ) /D_J);
 	// int start = (int) floor( log2( W_0/( s0 * (2 * M_PI) * maximum_frequency ) )/DATA_SIZE );
-	int start = FrequencyToScale(maximum_frequency, s0);
+	// int start = FrequencyToScale(maximum_frequency, s0);
+	int start = 0;
 	// printf("%d\n", start);
 
 	//Calculate Padding Required
@@ -69,7 +70,7 @@ int Wavelet(double* raw_data,  double* period,
 		//Caluclate the Fourier Morlet at the specific scale. 
 		for (j = 0; j < PADDED_SIZE; ++j)
 		{
-			value = FourierMorlet(j*dw, scale, normal);
+			value = CompleteFourierMorlet(j*dw, scale);
 			filter_convolution[j][0] = fft_data[j][0] * value;
 			filter_convolution[j][1] = fft_data[j][1] * value;
 		}
@@ -96,11 +97,11 @@ int Wavelet(double* raw_data,  double* period,
 
 int FrequencyToScale(double frequency, double s0)
 {
-	int scale;
-	// int scale = (int) floor( log2( W_0/( s0 * (2 * M_PI) * maximum_frequency ) )/D_J );
-	scale = W_0/(s0 * (2 * M_PI) * frequency);
-	scale = log2(scale);
-	scale = floor(scale/D_J);
+	int scale = (int) floor( log2( W_0/( s0 * (2 * M_PI) * frequency ) )/D_J );
+	// int scale;
+	// scale = W_0/(s0 * (2 * M_PI) * frequency);
+	// scale = log2(scale);
+	// scale = floor(scale/D_J);
 	return(scale);
 }
 
