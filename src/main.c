@@ -92,8 +92,8 @@ int main(int argc, char const *argv[])
         
         //Sometimes this function will fail, I need to put a failsafe so that seg faults don't occur. 
         readFlag = edfread_digital_samples(handle, channel, 1, &value);
-        buffer[i] = value;
         assert(readFlag != -1);
+        buffer[i] = value;
     }
 
     //Filter the Triggers to what you want.
@@ -130,7 +130,7 @@ int main(int argc, char const *argv[])
 
         //Preform the Wavelet Analysis
         waveletFlag = Wavelet(tempBuffer, period,
-            sampleFrequency, samplesToRead, dj, s0, J, MAX_FREQUENCY,
+            sampleFrequency, samplesToRead, s0, J, MAX_FREQUENCY,
             wavelet_result);
         assert(waveletFlag!= -1);
 

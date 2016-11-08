@@ -11,6 +11,6 @@ set ylabel "Frequency (Hz)"
 set title " ESRP of channel 4"
 
 set yrange [0.5:128]
-#splot "DATA.log" matrix nonuniform with pm3d t ''
-splot "Main_debug.log" matrix nonuniform with pm3d t ''
+splot "DATA.log" matrix nonuniform with pm3d t ''
+#splot "Main_debug.log" matrix nonuniform with pm3d t ''
 pause -1 "Hit Return to continue"
