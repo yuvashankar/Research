@@ -24,7 +24,7 @@ int main(void)
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     //populate the data array
-    TestCases(data, 6);
+    TestCases(data, 2);
 
     Wavelet(data, period, FS, n, s0, J, MAX_FREQUENCY, wavelet_result);
 

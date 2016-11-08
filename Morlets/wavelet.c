@@ -15,7 +15,7 @@ int Wavelet(double* raw_data,  double* period,
 	//Calculate Padding Required
 	const int pad = floor(log(n)/log(2.0) + 0.499);
     const double PADDED_SIZE = pow(2, pad + 1);
-    
+
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
@@ -82,10 +82,6 @@ int Wavelet(double* raw_data,  double* period,
 int FrequencyToScale(double frequency, double s0)
 {
 	int scale = (int) floor( log2( W_0/( s0 * (2 * M_PI) * frequency ) )/D_J );
-	// int scale;
-	// scale = W_0/(s0 * (2 * M_PI) * frequency);
-	// scale = log2(scale);
-	// scale = floor(scale/D_J);
 	return(scale);
 }
 

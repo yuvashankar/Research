@@ -14,8 +14,9 @@
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
 #define FOURIER_WAVELENGTH_FACTOR (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0_2))
 
-#define W_0 5.0
-#define W_0_2 25.0
+#define W_0 6.0
+#define W_0_2 36.0
+#define D_J 0.125
 
 //Sample Rate
 #define FS 2048.0
@@ -24,7 +25,7 @@
 #define MIN_FREQUENCY 0.5
 
 //Measuring Frequency
-#define FREQ 20.0
+#define FREQ 16.0
 
 #define MAX_DATA_SIZE 10000000 
 
@@ -41,12 +42,14 @@ int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
 int WriteTestCases(double *data, int length, char filename[]);
 
+int FrequencyToScale(double frequency, double s0);
+
 double FourierMorlet(double w, double scale, double normal);
 
 double CompleteFourierMorlet(double w, double scale);
 
 int Wavelet(double* raw_data,  double* frequency, 
-	double sampling_frequency, int n, double dj, double s0, int J, double maximum_frequency,
+	double sampling_frequency, int n, double s0, int J, double maximum_frequency,
 	double* result);
 
 double Magnitude (double x, double y);
