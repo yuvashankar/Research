@@ -12,22 +12,16 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_complex *data_in, *fft_data;
 	fftw_plan plan_forward;
 
-	// int start = (int) floor( log2( 1.0/(s0 * maximum_frequency * FOURIER_WAVELENGTH_FACTOR) ) /D_J);
-	// int start = (int) floor( log2( W_0/( s0 * (2 * M_PI) * maximum_frequency ) )/DATA_SIZE );
-	// int start = FrequencyToScale(maximum_frequency, s0);
-	int start = 0;
-	// printf("%d\n", start);
-
 	//Calculate Padding Required
 	const int pad = floor(log(n)/log(2.0) + 0.499);
     const double PADDED_SIZE = pow(2, pad + 1);
-
+    
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 
-	//populate the data vector. 
+	//populate the FFTW data vector. 
 	for (i = 0; i < n; ++i)
     {
     	data_in[i][0] = raw_data[i];
@@ -38,13 +32,6 @@ int Wavelet(double* raw_data,  double* period,
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
 									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
-
-	// // Heaviside Step Function whenever w0 < 0 the function is zero
-	// for (int j = PADDED_SIZE/2; j < PADDED_SIZE; ++j)
-	// {
-	// 	fft_data[j][0] = 0.0;
-	// 	fft_data[j][1] = 0.0;
-	// }
 		
 	double value;
 	
@@ -52,20 +39,17 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_complex *filter_convolution, *fftw_result;
 
 	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
-	fftw_result  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
 	
-		//Preapre for the plan backwards
-		plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
-			FFTW_BACKWARD, FFTW_ESTIMATE);	
+	//Preapre for the plan backwards
+	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
+		FFTW_BACKWARD, FFTW_ESTIMATE);	
     
-	for (i = start; i < J; ++i)
+	for (i = 0; i < J; ++i)
 	{
 		//Calculate the scale and corrosponding frequency at the specific Scale
 		double scale = s0 * pow(2, i * D_J);
 		period[i] = (W_0)/(scale * 2 * M_PI);
-
-		//Normalization Factor needes to be recomputed at every scale.
-		double normal = sqrt(2 * M_PI * scale * sampling_frequency);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
 		for (j = 0; j < PADDED_SIZE; ++j)
