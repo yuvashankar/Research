@@ -24,12 +24,24 @@ int main(void)
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     //populate the data array
-    TestCases(data, 2);
+    TestCases(data, 5);
+    // CleanData(data, DATA_SIZE);
 
-    Wavelet(data, period, FS, n, s0, J, MAX_FREQUENCY, wavelet_result);
+
+    // Wavelet(data, period, FS, n, s0, J, MAX_FREQUENCY, wavelet_result);
+
+    RemoveBaseline(data, n, J,
+        1, FS,
+        baseline_out);
+
+    FILE* out_file = fopen("debug.log", "w");
+    for (int i = 0; i < DATA_SIZE; ++i)
+    {
+        fprintf(out_file, "%d\t%f\t%f\n", i, data[i], baseline_out[i]);
+    }
 
     //Write to file
-    WriteFile(wavelet_result, period, J, n, "DATA.log");
+    // WriteFile(baseline_out, period, J, n, "DATA.log");
 
     //sanitation engineering
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
