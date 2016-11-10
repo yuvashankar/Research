@@ -6,6 +6,8 @@
 
 int main(void)
 {
+
+
     double *data, *result, *wavelet_result, *baseline_out, *period;
 
     //Initialize the necessary constants.
@@ -20,6 +22,7 @@ int main(void)
     wavelet_result = malloc( J * n * sizeof(double));
     baseline_out = malloc (J * n * sizeof(double));
     period = malloc(J * sizeof(double));
+    
     assert(data != NULL); assert(result != NULL); assert(period != NULL);
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 

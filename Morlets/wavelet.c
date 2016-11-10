@@ -13,18 +13,24 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-	const int pad = floor(log(n)/log(2.0) + 0.499);
-    const double PADDED_SIZE = pow(2, pad + 1);
+	const int pad = floor(log2(n) + 0.499);
+    const int PADDED_SIZE = (int) pow(2, pad + 1);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
-    data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
-	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+    data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
 	//populate the FFTW data vector. 
 	for (i = 0; i < n; ++i)
     {
     	data_in[i][0] = raw_data[i];
+    	data_in[i][1] = 0.0;
+    }
+
+    for (int i = n; i < PADDED_SIZE; ++i)
+    {
+    	data_in[i][0] = 0.0;
     	data_in[i][1] = 0.0;
     }
 
@@ -51,12 +57,21 @@ int Wavelet(double* raw_data,  double* period,
 		double scale = s0 * pow(2, i * D_J);
 		period[i] = (W_0)/(scale * 2 * M_PI);
 
+		filter_convolution[0][0] = fft_data[0][0] * CompleteFourierMorlet(0.0, scale);
+		filter_convolution[0][1] = fft_data[0][1] * CompleteFourierMorlet(0.0, scale);
+
+		filter_convolution[PADDED_SIZE/2][0] = 0.0;
+		filter_convolution[PADDED_SIZE/2][1] = 0.0;
+
 		//Caluclate the Fourier Morlet at the specific scale. 
-		for (j = 0; j < PADDED_SIZE; ++j)
+		for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 		{
-			value = CompleteFourierMorlet(j*dw, scale);
+			value = CompleteFourierMorlet( j*dw , scale);
 			filter_convolution[j][0] = fft_data[j][0] * value;
 			filter_convolution[j][1] = fft_data[j][1] * value;
+
+			filter_convolution[PADDED_SIZE- j][0] = 0.0;
+			filter_convolution[PADDED_SIZE- j][1] = 0.0;
 		}
 
 		//Take the inverse FFT. 
@@ -78,6 +93,16 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_free(fft_data); fftw_free(data_in);  
     return(0);
 } /*Wavelet */
+
+// int GenerateScales(double* scales, double minimum_frequency, double maximum_frequency)
+// {
+// 	double s0 = 2 * dt;
+// 	double min_scale = FrequencyToScale(minimum_frequency);
+// 	double max_scale = FrequencyToScale(maximum_frequency);
+
+// 	// double * scales = malloc(  )
+
+// }
 
 int FrequencyToScale(double frequency, double s0)
 {
@@ -205,7 +230,7 @@ void TestCases(double *data, int flag)
 				data[i] = cos( i * dw + w0 );
 				if (i >= DATA_SIZE/2 && i <= 2 * (DATA_SIZE)/3)
 				{
-					data[i] = 2 * cos(i * dw + 2 * w0);
+					data[i] = 2 * cos(i * dw + w0);
 				}
 			}
 			break;
