@@ -6,15 +6,14 @@
 
 int main(void)
 {
-
-
     double *data, *result, *wavelet_result, *baseline_out, *period;
 
     //Initialize the necessary constants.
     const int n = DATA_SIZE;
-    const int J = (log2(DATA_SIZE) + 1)/D_J;
+
     const double dt = 1.0/FS;
     const double s0 = 2 * dt;
+    const int J = FrequencyToScale(MIN_FREQUENCY, s0);
 
     //Memory Allocations
     data = malloc(n * sizeof(double));
@@ -33,9 +32,9 @@ int main(void)
 
     Wavelet(data, period, FS, n, s0, J, MAX_FREQUENCY, wavelet_result);
 
-    RemoveBaseline(wavelet_result, n, J,
-        1, FS,
-        baseline_out);
+    // RemoveBaseline(wavelet_result, n, J,
+    //     1, FS,
+    //     baseline_out);
 
     // FILE* out_file = fopen("debug.log", "w");
     // for (int i = 0; i < DATA_SIZE; ++i)
@@ -44,7 +43,7 @@ int main(void)
     // }
 
     //Write to file
-    WriteFile(baseline_out, period, J, n, "DATA.log");
+    WriteFile(wavelet_result, period, J, n, "DATA.log");
 
     //sanitation engineering
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);

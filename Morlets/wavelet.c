@@ -15,6 +15,8 @@ int Wavelet(double* raw_data,  double* period,
 	//Calculate Padding Required
 	const int pad = floor(log2(n) + 0.499);
     const int PADDED_SIZE = (int) pow(2, pad + 1);
+    const int start = FrequencyToScale(maximum_frequency, s0);
+    // printf("start = %d\n", start);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
@@ -51,11 +53,14 @@ int Wavelet(double* raw_data,  double* period,
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 		FFTW_BACKWARD, FFTW_ESTIMATE);	
     
-	for (i = 0; i < J; ++i)
+	for (i = start; i < J; ++i)
 	{
 		//Calculate the scale and corrosponding frequency at the specific Scale
 		double scale = s0 * pow(2, i * D_J);
 		period[i] = (W_0)/(scale * 2 * M_PI);
+
+		if (period[i] >= 120 && period[i] <= 140)
+			printf("scale = %f, i= %d\n", scale, i);
 
 		filter_convolution[0][0] = fft_data[0][0] * CompleteFourierMorlet(0.0, scale);
 		filter_convolution[0][1] = fft_data[0][1] * CompleteFourierMorlet(0.0, scale);
@@ -106,23 +111,16 @@ int Wavelet(double* raw_data,  double* period,
 
 int FrequencyToScale(double frequency, double s0)
 {
-	int scale = (int) floor( log2( W_0/( s0 * (2 * M_PI) * frequency ) )/D_J );
-	return(scale);
+	// double scale = log2( W_0/( s0 * (2 * M_PI) * frequency ) )/D_J;
+	// double scale = log2( ( W_0 * frequency ) / (2 * M_PI * s0) );
+	double scale = log2( W_0 / ( s0 * 2 * M_PI * frequency ) );
+	scale /= D_J;
+	int out = floor(scale);
+	return(out);
 }
 
 double FourierMorlet(double w, double scale, double normal)
 {
-	// w = w/scale;
-	// const double w2 = w * w;
-	////These are all needed by Fourier Morlet i'm going to move 
-	////them out to optimize the code
-	// const double k = exp(-0.5 * W_0_2);
-	// const double normal = sqrt((2 * M_PI * scale)/(1.0/sampling_frequency));
-	// const double cSigma = pow(1.0 + exp(-W_0_2) - 2*exp(-0.75*W_0_2), -0.5);
-	// double out = exp( -0.5 * (W_0 - w) * (W_0 - w)) - k * exp(-0.5 * w * w);
-	// double out = exp( -0.5 * (W_0_2 - 2*W_0*w + w2)) - k * exp(-0.5 * w2);
-	// out = cSigma * QUAD_ROOT_PI * out;
-
 	double exponent = -0.5 * (scale * w - W_0) * (scale * w - W_0);
 	double out = QUAD_ROOT_PI* normal * exp(exponent);
 	return(out);
