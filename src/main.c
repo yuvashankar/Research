@@ -123,7 +123,8 @@ int main(int argc, char const *argv[])
     {
         edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
         
-        readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
+        // readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
+        TestCases(tempBuffer, 3);
         
         //Preform a Z-Score on the read data. 
         CleanData(tempBuffer, samplesToRead);
@@ -135,7 +136,6 @@ int main(int argc, char const *argv[])
         assert(waveletFlag!= -1);
 
         RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency, baseline_out);
-        // int error = RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency);
         for (int j = start; j < J; ++j)
         {
             for (int k = 0; k < samplesToRead; ++k)

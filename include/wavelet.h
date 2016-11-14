@@ -9,7 +9,7 @@
 #include <string.h>
 #include <math.h>
 #include <fftw3.h>
-// # define M_PI        3.14159265358979323846    /* pi */
+
 //Global Constants
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
 #define FOURIER_WAVELENGTH_FACTOR (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0_2))
@@ -20,9 +20,14 @@
 
 //Sample Rate
 #define FS 2048.0
+#define DT 1.0/FS
+#define S0 2.0 * DT
 
 #define MAX_FREQUENCY 128.0
 #define MIN_FREQUENCY 0.5
+
+#define MIN_I FREQ_TO_SCALE(MAX_FREQUENCY)
+#define MAX_I FREQ_TO_SCALE(MIN_FREQUENCY)
 
 //Measuring Frequency
 #define FREQ 16.0
@@ -31,31 +36,30 @@
 
 #define DATA_SIZE 6144
 
+//Macros
+#define FREQ_TO_SCALE(x) floor( ( log2( (W_0) / (S0 * 2 * M_PI * x) ) )/D_J)
+#define SCALE_TO_FREQ(x) (W_0)/(x * 2 * M_PI)
+#define MAGNITUDE(x,y) (x * x) + (y * y)
+
 void FillData(double * data);
 void TestCases(double *data, int flag);
-
-int AllocateMemory(double *data, double *result, double *frequency, 
-	double n, double sampling_frequency, 
-	double max_frequency, double dj, double s0);
 
 int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
 int WriteTestCases(double *data, int length, char filename[]);
 
-int FrequencyToScale(double frequency, double s0);
-
 double FourierMorlet(double w, double scale, double normal);
 
 double CompleteFourierMorlet(double w, double scale);
 
-int Wavelet(double* raw_data,  double* frequency, 
-	double sampling_frequency, int n, double s0, int J, double maximum_frequency,
+int Wavelet(double* raw_data,  double* period, double* scales, 
+	double sampling_frequency, int n, int J,
 	double* result);
-
-double Magnitude (double x, double y);
 
 void CleanData(double * data, double n);
 
 int RemoveBaseline(double* data, int num_of_samples, int J, 
 	int trials, double sampling_frequency, 
 	double* output);
+
+double* GenerateScales(double minimum_frequency, double maximum_frequency);
