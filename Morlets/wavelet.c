@@ -59,9 +59,6 @@ int Wavelet(double* raw_data,  double* period,
 		double scale = S0 * pow(2, i * D_J);
 		period[i] = (W_0)/(scale * 2 * M_PI);
 
-		if (period[i] >= 120 && period[i] <= 140)
-			printf("scale = %f, i= %d\n", scale, i);
-
 		filter_convolution[0][0] = fft_data[0][0] * CompleteFourierMorlet(0.0, scale);
 		filter_convolution[0][1] = fft_data[0][1] * CompleteFourierMorlet(0.0, scale);
 
@@ -99,17 +96,25 @@ int Wavelet(double* raw_data,  double* period,
     return(0);
 } /*Wavelet */
 
-// double* GenerateScales(double minimum_frequency, double maximum_frequency)
-// {
-// 	double * scales;
-
-// 	// double S0 = 2 * DT;
-// 	double min_scale = FrequencyToScale(minimum_frequency);
-// 	double max_scale = FrequencyToScale(maximum_frequency);
-
+double* GenerateScales(double minimum_frequency, double maximum_frequency)
+{	
+	//Calculate the maximum and minimum scales needed, 
+	//remember big scale --> small freq and vice versa
+	int max_scale = FrequencyToScale(minimum_frequency);
+	int min_scale = FrequencyToScale(maximum_frequency);
 
 
-// }
+	double * scales = malloc ( (max_scale - min_scale) * sizeof(double) );
+	int count = max_scale - min_scale;
+
+	//Populate the scales array
+	for (int i = min_scale; i < max_scale; ++i)
+	{
+		scales[i] = S0 * pow(2, i * D_J);
+	}
+
+	return(scales);
+}
 
 int FrequencyToScale(double frequency)
 {

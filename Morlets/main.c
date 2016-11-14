@@ -8,6 +8,7 @@ int main(void)
 {
     double *data, *result, *wavelet_result, *baseline_out, *period;
 
+
     //Initialize the necessary constants.
     const int n = DATA_SIZE;
     const int J = FrequencyToScale(MIN_FREQUENCY);
@@ -21,6 +22,12 @@ int main(void)
     
     assert(data != NULL); assert(result != NULL); assert(period != NULL);
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
+
+    double * scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
+
+    int max_scale = FrequencyToScale( MIN_FREQUENCY );
+    int min_scale = FrequencyToScale( MAX_FREQUENCY );
+
 
     //populate the data array
     TestCases(data, 5);
@@ -44,5 +51,6 @@ int main(void)
 
     //sanitation engineering
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
+    free(scales);
     return 0;
 }
