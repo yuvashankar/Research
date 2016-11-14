@@ -11,7 +11,7 @@ int main(void)
 
     //Initialize the necessary constants.
     const int n = DATA_SIZE;
-    const int J = FrequencyToScale(MIN_FREQUENCY);
+    const int J = MAX_I - MIN_I;
 
     //Memory Allocations
     data = malloc(n * sizeof(double));
@@ -25,9 +25,11 @@ int main(void)
 
     double * scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
 
-    int max_scale = FrequencyToScale( MIN_FREQUENCY );
-    int min_scale = FrequencyToScale( MAX_FREQUENCY );
-
+    // for (int i = 0; i < J; ++i)
+    // {
+    //     double value = SCALE_TO_FREQ(scales[i]);
+    //     printf("Scale[%d] = %f, Frequency = %f\n", i, scales[i], value);
+    // }
 
     //populate the data array
     TestCases(data, 5);

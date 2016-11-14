@@ -15,7 +15,7 @@ int Wavelet(double* raw_data,  double* period,
 	//Calculate Padding Required
 	const int pad = floor(log2(n) + 0.499);
     const int PADDED_SIZE = (int) pow(2, pad + 1);
-    const int start = FrequencyToScale(maximum_frequency);
+    const int start = FREQ_TO_SCALE(maximum_frequency);
     // printf("start = %d\n", start);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
@@ -59,13 +59,16 @@ int Wavelet(double* raw_data,  double* period,
 		double scale = S0 * pow(2, i * D_J);
 		period[i] = (W_0)/(scale * 2 * M_PI);
 
-		filter_convolution[0][0] = fft_data[0][0] * CompleteFourierMorlet(0.0, scale);
-		filter_convolution[0][1] = fft_data[0][1] * CompleteFourierMorlet(0.0, scale);
+		//Caluclate the Fourier Morlet at the specific scale. 
+		value = CompleteFourierMorlet(0.0, scale);
+		assert(value == 0); //In order for the Morlet Transform this needs to be true always
+		filter_convolution[0][0] = fft_data[0][0] * value;
+		filter_convolution[0][1] = fft_data[0][1] * value;
 
 		filter_convolution[PADDED_SIZE/2][0] = 0.0;
 		filter_convolution[PADDED_SIZE/2][1] = 0.0;
 
-		//Caluclate the Fourier Morlet at the specific scale. 
+		
 		for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 		{
 			value = CompleteFourierMorlet( j*dw , scale);
@@ -82,7 +85,7 @@ int Wavelet(double* raw_data,  double* period,
 		//Calculate the power and store it in result
 		for (j = 0; j < n; ++j)
 		{
-			result[i * n + j] = Magnitude(fftw_result[j][0], fftw_result[j][1]);
+			result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
 		}
 	}
 
@@ -98,30 +101,23 @@ int Wavelet(double* raw_data,  double* period,
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {	
-	//Calculate the maximum and minimum scales needed, 
-	//remember big scale --> small freq and vice versa
-	int max_scale = FrequencyToScale(minimum_frequency);
-	int min_scale = FrequencyToScale(maximum_frequency);
+	// //Calculate the maximum and minimum scales needed, 
+	// //remember big scale --> small freq and vice versa
+	// int max_scale = FrequencyToScale(minimum_frequency);
+	// int min_scale = FrequencyToScale(maximum_frequency);
 
 
-	double * scales = malloc ( (max_scale - min_scale) * sizeof(double) );
-	int count = max_scale - min_scale;
+	double * scales = malloc ( (MAX_I - MIN_I) * sizeof(double) );
+	int count = MAX_I - MIN_I;
 
 	//Populate the scales array
-	for (int i = min_scale; i < max_scale; ++i)
+	for (int i = 0; i < count; ++i)
 	{
-		scales[i] = S0 * pow(2, i * D_J);
+		int counterVariable = MIN_I + i;
+		scales[i] = S0 * pow(2, counterVariable * D_J);
 	}
 
 	return(scales);
-}
-
-int FrequencyToScale(double frequency)
-{
-	double scale = log2( W_0 / ( S0 * 2 * M_PI * frequency ) );
-	scale /= D_J;
-	int out = floor(scale);
-	return(out);
 }
 
 double FourierMorlet(double w, double scale, double normal)
@@ -141,13 +137,6 @@ double CompleteFourierMorlet(double w, double scale)
 					- k_sigma * (exp ( -0.5 * scale * w * w));
 	out = c_sigma * QUAD_ROOT_PI * out;
 	return(out);
-}
-
-double Magnitude (double x, double y)
-{
-	double output = (x * x) + (y * y);
-	output = sqrt(output);
-	return (output);
 }
 
 void FillData(double * data)
