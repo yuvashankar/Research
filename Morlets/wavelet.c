@@ -56,7 +56,7 @@ int Wavelet(double* raw_data,  double* period,
 	for (i = start; i < J; ++i)
 	{
 		//Calculate the scale and corrosponding frequency at the specific Scale
-		double scale = s0 * pow(2, i * D_J);
+		double scale = S0 * pow(2, i * D_J);
 		period[i] = (W_0)/(scale * 2 * M_PI);
 
 		if (period[i] >= 120 && period[i] <= 140)
@@ -103,7 +103,7 @@ int Wavelet(double* raw_data,  double* period,
 // {
 // 	double * scales;
 
-// 	// double s0 = 2 * dt;
+// 	// double S0 = 2 * DT;
 // 	double min_scale = FrequencyToScale(minimum_frequency);
 // 	double max_scale = FrequencyToScale(maximum_frequency);
 
@@ -113,7 +113,7 @@ int Wavelet(double* raw_data,  double* period,
 
 int FrequencyToScale(double frequency)
 {
-	double scale = log2( W_0 / ( s0 * 2 * M_PI * frequency ) );
+	double scale = log2( W_0 / ( S0 * 2 * M_PI * frequency ) );
 	scale /= D_J;
 	int out = floor(scale);
 	return(out);
@@ -148,7 +148,7 @@ double Magnitude (double x, double y)
 void FillData(double * data)
 {
 	// Fit a FREQ signal at two points
-	// double dt = 1./FS;
+	// double DT = 1./FS;
 	double fsig = FREQ/FS;
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
@@ -180,7 +180,7 @@ void TestCases(double *data, int flag)
 {
 
 	// Fit a FREQ signal at two points
-	// double dt = 1./FS;
+	// double DT = 1./FS;
 	double fsig = FREQ/FS;
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED

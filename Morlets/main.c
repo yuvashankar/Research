@@ -10,9 +10,6 @@ int main(void)
 
     //Initialize the necessary constants.
     const int n = DATA_SIZE;
-
-    // const double dt = 1.0/FS;
-    // const double s0 = 2 * dt;
     const int J = FrequencyToScale(MIN_FREQUENCY);
 
     //Memory Allocations
