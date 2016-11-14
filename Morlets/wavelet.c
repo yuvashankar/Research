@@ -3,7 +3,7 @@
 #include <omp.h>
 
 int Wavelet(double* raw_data,  double* period, 
-	double sampling_frequency, int n, double s0, int J, double maximum_frequency,
+	double sampling_frequency, int n, int J, double maximum_frequency,
 	double* result)
 {
 	
@@ -15,7 +15,7 @@ int Wavelet(double* raw_data,  double* period,
 	//Calculate Padding Required
 	const int pad = floor(log2(n) + 0.499);
     const int PADDED_SIZE = (int) pow(2, pad + 1);
-    const int start = FrequencyToScale(maximum_frequency, s0);
+    const int start = FrequencyToScale(maximum_frequency);
     // printf("start = %d\n", start);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
@@ -99,20 +99,20 @@ int Wavelet(double* raw_data,  double* period,
     return(0);
 } /*Wavelet */
 
-// int GenerateScales(double* scales, double minimum_frequency, double maximum_frequency)
+// double* GenerateScales(double minimum_frequency, double maximum_frequency)
 // {
-// 	double s0 = 2 * dt;
+// 	double * scales;
+
+// 	// double s0 = 2 * dt;
 // 	double min_scale = FrequencyToScale(minimum_frequency);
 // 	double max_scale = FrequencyToScale(maximum_frequency);
 
-// 	// double * scales = malloc(  )
+
 
 // }
 
-int FrequencyToScale(double frequency, double s0)
+int FrequencyToScale(double frequency)
 {
-	// double scale = log2( W_0/( s0 * (2 * M_PI) * frequency ) )/D_J;
-	// double scale = log2( ( W_0 * frequency ) / (2 * M_PI * s0) );
 	double scale = log2( W_0 / ( s0 * 2 * M_PI * frequency ) );
 	scale /= D_J;
 	int out = floor(scale);

@@ -11,9 +11,9 @@ int main(void)
     //Initialize the necessary constants.
     const int n = DATA_SIZE;
 
-    const double dt = 1.0/FS;
-    const double s0 = 2 * dt;
-    const int J = FrequencyToScale(MIN_FREQUENCY, s0);
+    // const double dt = 1.0/FS;
+    // const double s0 = 2 * dt;
+    const int J = FrequencyToScale(MIN_FREQUENCY);
 
     //Memory Allocations
     data = malloc(n * sizeof(double));
@@ -30,7 +30,7 @@ int main(void)
     // CleanData(data, DATA_SIZE);
 
 
-    Wavelet(data, period, FS, n, s0, J, MAX_FREQUENCY, wavelet_result);
+    Wavelet(data, period, FS, n, J, MAX_FREQUENCY, wavelet_result);
 
     // RemoveBaseline(wavelet_result, n, J,
     //     1, FS,
