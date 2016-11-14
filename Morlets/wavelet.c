@@ -2,11 +2,10 @@
 #include "wavelet.h"
 #include <omp.h>
 
-int Wavelet(double* raw_data,  double* period, 
-	double sampling_frequency, int n, int J, double maximum_frequency,
+int Wavelet(double* raw_data,  double* period, double* scales, 
+	double sampling_frequency, int n, int J,
 	double* result)
 {
-	
 	//Variable Declarations
 	int i, j;
 	fftw_complex *data_in, *fft_data;
@@ -15,9 +14,6 @@ int Wavelet(double* raw_data,  double* period,
 	//Calculate Padding Required
 	const int pad = floor(log2(n) + 0.499);
     const int PADDED_SIZE = (int) pow(2, pad + 1);
-    const int start = FREQ_TO_SCALE(maximum_frequency);
-    // printf("start = %d\n", start);
-
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
@@ -30,13 +26,14 @@ int Wavelet(double* raw_data,  double* period,
     	data_in[i][1] = 0.0;
     }
 
+    //Force the rest of the data vector to zero just in case
     for (int i = n; i < PADDED_SIZE; ++i)
     {
     	data_in[i][0] = 0.0;
     	data_in[i][1] = 0.0;
     }
 
-	//Calculate the FFT for the Data
+	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
 									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
@@ -46,32 +43,31 @@ int Wavelet(double* raw_data,  double* period,
 	fftw_plan plan_backward;
 	fftw_complex *filter_convolution, *fftw_result;
 
-	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
-	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )*PADDED_SIZE );
+	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
+	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
 	
 	//Preapre for the plan backwards
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 		FFTW_BACKWARD, FFTW_ESTIMATE);	
     
-	for (i = start; i < J; ++i)
+	for (i = 0; i < J; ++i)
 	{
-		//Calculate the scale and corrosponding frequency at the specific Scale
-		double scale = S0 * pow(2, i * D_J);
-		period[i] = (W_0)/(scale * 2 * M_PI);
+		//Calculate the corrosponding frequency to the scale
+		period[i] = (W_0)/(scales[i] * 2 * M_PI);
 
 		//Caluclate the Fourier Morlet at the specific scale. 
-		value = CompleteFourierMorlet(0.0, scale);
-		assert(value == 0); //In order for the Morlet Transform this needs to be true always
+		value = CompleteFourierMorlet(0.0, scales[i]);
+		assert(value == 0); //In order for the Morlet Transform to be correct this needs to be true always
 		filter_convolution[0][0] = fft_data[0][0] * value;
 		filter_convolution[0][1] = fft_data[0][1] * value;
-
+		
 		filter_convolution[PADDED_SIZE/2][0] = 0.0;
 		filter_convolution[PADDED_SIZE/2][1] = 0.0;
 
 		
 		for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 		{
-			value = CompleteFourierMorlet( j*dw , scale);
+			value = CompleteFourierMorlet( j * dw , scales[i]);
 			filter_convolution[j][0] = fft_data[j][0] * value;
 			filter_convolution[j][1] = fft_data[j][1] * value;
 
@@ -101,12 +97,6 @@ int Wavelet(double* raw_data,  double* period,
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {	
-	// //Calculate the maximum and minimum scales needed, 
-	// //remember big scale --> small freq and vice versa
-	// int max_scale = FrequencyToScale(minimum_frequency);
-	// int min_scale = FrequencyToScale(maximum_frequency);
-
-
 	double * scales = malloc ( (MAX_I - MIN_I) * sizeof(double) );
 	int count = MAX_I - MIN_I;
 

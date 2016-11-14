@@ -25,18 +25,13 @@ int main(void)
 
     double * scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
 
-    // for (int i = 0; i < J; ++i)
-    // {
-    //     double value = SCALE_TO_FREQ(scales[i]);
-    //     printf("Scale[%d] = %f, Frequency = %f\n", i, scales[i], value);
-    // }
-
     //populate the data array
-    TestCases(data, 5);
+    TestCases(data, 6);
     // CleanData(data, DATA_SIZE);
 
-
-    Wavelet(data, period, FS, n, J, MAX_FREQUENCY, wavelet_result);
+    Wavelet(data, period, scales, 
+            FS, n, J,
+            wavelet_result);
 
     // RemoveBaseline(wavelet_result, n, J,
     //     1, FS,
