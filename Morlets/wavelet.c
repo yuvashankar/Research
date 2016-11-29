@@ -2,6 +2,8 @@
 #include "wavelet.h"
 #include <omp.h>
 
+#define TEST 0.00001
+
 int Wavelet(double* raw_data,  double* period, double* scales, 
 	double sampling_frequency, int n, int J,
 	double* result)
@@ -12,7 +14,7 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-	const int pad = floor(log2(n) + 0.499);
+	const int pad = ceil(log2(n));
     const int PADDED_SIZE = (int) pow(2, pad + 1);
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
@@ -37,61 +39,74 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
 									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
-		
-	double value;
-	
-	fftw_plan plan_backward;
-	fftw_complex *filter_convolution, *fftw_result;
 
-	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
-	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
-	
-	//Preapre for the plan backwards
-	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
-		FFTW_BACKWARD, FFTW_ESTIMATE);	
-    
-	for (i = 0; i < J; ++i)
+	// FILE* out_file = fopen("debug.log", "w");
+
+	#pragma omp parallel num_threads(2) private(i, j) shared (result, period, sampling_frequency, J, n, scales,  fft_data) default(none)
 	{
-		//Calculate the corrosponding frequency to the scale
-		period[i] = (W_0)/(scales[i] * 2 * M_PI);
+		double value;
 
-		//Caluclate the Fourier Morlet at the specific scale. 
-		value = CompleteFourierMorlet(0.0, scales[i]);
-		assert(value == 0); //In order for the Morlet Transform to be correct this needs to be true always
-		filter_convolution[0][0] = fft_data[0][0] * value;
-		filter_convolution[0][1] = fft_data[0][1] * value;
-		
-		filter_convolution[PADDED_SIZE/2][0] = 0.0;
-		filter_convolution[PADDED_SIZE/2][1] = 0.0;
+		fftw_plan plan_backward;
+		fftw_complex *filter_convolution, *fftw_result;
 
-		
-		for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
+		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
+		fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
+
+		#pragma omp critical (make_plan)
 		{
-			value = CompleteFourierMorlet( j * dw , scales[i]);
-			filter_convolution[j][0] = fft_data[j][0] * value;
-			filter_convolution[j][1] = fft_data[j][1] * value;
+			//Preapre for the plan backwards
+			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
+				FFTW_BACKWARD, FFTW_ESTIMATE);
+		}
+		
+	    #pragma omp for
+		for (i = 0; i < J; ++i)
+		{
+			//Calculate the corrosponding frequency to the scale
+			period[i] = (W_0)/(scales[i] * 2 * M_PI);
 
-			filter_convolution[PADDED_SIZE- j][0] = 0.0;
-			filter_convolution[PADDED_SIZE- j][1] = 0.0;
+			//Caluclate the Fourier Morlet at the specific scale. 
+			value = CompleteFourierMorlet(0.0, scales[i]);
+
+		    // for (int i = 0; i < PADDED_SIZE/2; ++i)
+		    // {
+		    //     fprintf(out_file, "%d\t%f\t%f\n", i, fft_data[i][0], fft_data[i][1]);
+		    // }
+
+		    
+			filter_convolution[0][0] = fft_data[0][0] * value;
+			filter_convolution[0][1] = fft_data[0][1] * value;
+			
+			filter_convolution[PADDED_SIZE/2][0] = 0.0;
+			filter_convolution[PADDED_SIZE/2][1] = 0.0;
+			
+			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
+			{
+				value = CompleteFourierMorlet( j * dw , scales[i]);
+				filter_convolution[j][0] = fft_data[j][0] * value;
+				filter_convolution[j][1] = fft_data[j][1] * value;
+
+				filter_convolution[PADDED_SIZE- j][0] = 0.0;
+				filter_convolution[PADDED_SIZE- j][1] = 0.0;
+			}
+
+			//Take the inverse FFT. 
+			fftw_execute(plan_backward);
+		    
+			//Calculate the power and store it in result
+			for (j = 0; j < n; ++j)
+			{
+				result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+			}
 		}
 
-		//Take the inverse FFT. 
-		fftw_execute(plan_backward);
-
-		//Calculate the power and store it in result
-		for (j = 0; j < n; ++j)
-		{
-			result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
-		}
+		//FFTW sanitation engineering. 
+		fftw_destroy_plan(plan_backward);
+	    fftw_free(fftw_result);
+	    fftw_free(filter_convolution);
 	}
-
-	//FFTW sanitation engineering. 
-	fftw_destroy_plan(plan_backward);
-    fftw_free(fftw_result);
-    fftw_free(filter_convolution);
-
 	fftw_destroy_plan(plan_forward); 
-	fftw_free(fft_data); fftw_free(data_in);  
+	fftw_free(fft_data); fftw_free(data_in);
     return(0);
 } /*Wavelet */
 
@@ -170,7 +185,12 @@ void TestCases(double *data, int flag)
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
-	int t = 2 * FS;
+
+	double frequency = MIN_FREQUENCY;
+	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
+	
+	int t = 2 * FS; //At 2 seconds. 
+
 	switch(flag)
 	{
 		//Impulse at T = 2 seconds
@@ -225,6 +245,19 @@ void TestCases(double *data, int flag)
 					data[i] = cos(i * (dw - 0.005) + w0);
 				}
 			}
+			break;
+		//Frequency Sweep
+		case 7:
+			for (int i = 0; i < DATA_SIZE; ++i)
+			{
+				// fsig = frequency/FS;
+				// dw = 2*M_PI*fsig;
+
+				data[i] = sin(w0 + 2 * M_PI * (MIN_FREQUENCY + (frequency_increment/2) * pow(i/FS, 2)) );
+
+				// frequency += frequency_increment; 
+			}
+			break;
 	}
 }
 

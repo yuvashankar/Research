@@ -1,8 +1,8 @@
 CC      = gcc
-CFLAGS  = -Wall -g -O2 -std=c99 -I../include
+CFLAGS  = -Wall -O2 -std=c99 -I../include -fopenmp
 
 LDLIBS  = -lfftw3 -lgsl -lgslcblas -lm -fopenmp
-OBJECTS = main.o wavelet.o CleanData.o ERSP.o
+OBJECTS = main.o wavelet.o CleanData.o ERSP.o convolution.o
 
 morlet: $(OBJECTS)
 	$(CC) -o $@  $(OBJECTS) $(LDLIBS)

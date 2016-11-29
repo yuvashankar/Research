@@ -4,7 +4,7 @@
 #include <assert.h>
 
 //Sample Rate
-#define FS 1000.0
+#define FS 2048.0
 
 //Measuring Frequency
 #define FREQ 19.0

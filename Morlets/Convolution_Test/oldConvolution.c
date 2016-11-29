@@ -3,12 +3,14 @@
 #include <stdlib.h>
 
 //Sample Rate
-#define FS 1000.0
+#define FS 2048.0
 
 //Measuring Frequency
-#define FREQ 19.
+#define FREQ 16.
 
-#define DATA_SIZE 3000
+#define w_0 6.0
+
+#define DATA_SIZE 6144
 
 #define MAX_CONV_SIZE 512
 
@@ -47,6 +49,7 @@ double Morlet(double x, double w0, double scale)
 {
     const double w02 = w0 * w0;
     const double sqPi = pow( M_PI, -.25 );
+    const double c_sigma = pow( (1.0 + exp(-w_0*w_0) - 2.0 * exp(-0.75 * w_0 * w_0)), -0.5 );
     const double k=exp( -.5 * w02 );
 
     double normal = 1./sqrt(scale);
@@ -62,6 +65,7 @@ double ComplexMorlet(double x, double w0, double scale)
 {
 	const double w02 = w0 * w0;
     const double sqPi = pow( M_PI, -.25 );
+    const double c_sigma = pow( (1.0 + exp(-w_0*w_0) - 2.0 * exp(-0.75 * w_0 * w_0)), -0.5 );
     const double k=exp( -.5 * w02 );
 
     double normal = 1./sqrt(scale);
@@ -69,7 +73,7 @@ double ComplexMorlet(double x, double w0, double scale)
     x = x * scale;
 
     // Now we take the complex part.
-    double more =  sqPi * exp(-.5 * x * x) * (sin( w0 * x ) -k ) * normal;
+    double more = sqPi * exp(-.5 * x * x) * (sin( w0 * x ) -k ) * normal;
     
     return(more);
 }
@@ -89,10 +93,10 @@ void createFilter(double frequency)
 	double t = 0;
 	for (int i = 0; i < conSize; ++i)
 	{
-		double scale = 22.0;
+		double scale = 0.5;
 		// //Use Scale of 0.5
-		conWindow[i] = Morlet (t, 5.0 , scale);
-		complexWindow[i] = ComplexMorlet (t, 5.0, scale);
+		conWindow[i] = Morlet (t, w_0 , scale);
+		complexWindow[i] = ComplexMorlet (t, w_0, scale);
 		// conWindow[i] = value;
 		t += dt;
 	}
