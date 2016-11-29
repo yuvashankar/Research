@@ -28,11 +28,8 @@ int main(void)
     //populate the data array
     TestCases(data, 4);
     // n = ReadFile(data, "sst_nino3.dat");
-    FILE* debug_out = fopen("debug.log", "w");
-    for (int i = 0; i < DATA_SIZE; ++i)
-    {
-        fprintf(debug_out, "%d\t%f\n", i, data[i]);
-    }
+    
+
 
     CleanData(data, DATA_SIZE);
 
@@ -40,7 +37,27 @@ int main(void)
     Wavelet(data, period, scales, 
         FS, n, J,
         wavelet_result);
+
+    double signalFrequency = 6.0/FS;
+    double dw = 2 * M_PI * signalFrequency;
+
+    int conSize = (int) 1./signalFrequency;
+    conSize *=4;
     
+    
+    // printf("CompleteComplexMorlet = %f\n", CompleteComplexMorlet(0.0, 1.0));
+    FILE* debug_out = fopen("debug.log", "w");
+    double mTime = 0.0;
+    for (int i = 0; i < DATA_SIZE; ++i)
+    {
+
+        double val1 = CompleteRealMorlet(mTime, 1.0);
+        double val2 = CompleteComplexMorlet(mTime, 1.0);
+        fprintf(debug_out, "%f\t%f\t%f\n", mTime, val1, val2);
+        mTime += DT;
+        
+    }
+    fclose(debug_out);
     
 
     // RemoveBaseline(wavelet_result, n, J,
