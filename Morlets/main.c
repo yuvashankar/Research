@@ -41,19 +41,25 @@ int main(void)
     double signalFrequency = 6.0/FS;
     double dw = 2 * M_PI * signalFrequency;
 
-    int conSize = (int) 1./signalFrequency;
-    conSize *=4;
+    // int conSize = (int) 1.0/signalFrequency;
+    double TEST_SCALE = 2.0;
+    double continuousPriode =  ( 2 * M_PI * TEST_SCALE) / ( W_0 ) ;
+    int discretePeriod = (int) continuousPriode*FS;
+
+    printf("Period = %d\n", discretePeriod);
     
+    double * conWindow = malloc(discretePeriod * sizeof(double));
+    double * complexWindow = malloc(discretePeriod * sizeof(double));
     
     // printf("CompleteComplexMorlet = %f\n", CompleteComplexMorlet(0.0, 1.0));
     // FILE* debug_out = fopen("debug.log", "w");
     double mTime = 0.0;
     
-    for (int i = 0; i < DATA_SIZE; ++i)
+    for (int i = 0; i < discretePeriod; ++i)
     {
-        double val1 = CompleteRealMorlet(mTime, 1.0);
-        double val2 = CompleteComplexMorlet(mTime, 1.0);
-        fprintf(debug_out, "%f\t%f\t%f\t%f\n", mTime, val1, val2, data[i]);
+        conWindow[i] = CompleteRealMorlet(mTime, TEST_SCALE);
+        complexWindow[i] = CompleteComplexMorlet(mTime, TEST_SCALE);
+        // fprintf(debug_out, "%f\t%f\t%f\n", mTime, conWindow[i], complexWindow[i]);
         mTime += DT;
     }
 

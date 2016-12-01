@@ -65,21 +65,16 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 			//Calculate the corrosponding frequency to the scale
 			period[i] = (W_0)/(scales[i] * 2 * M_PI);
 
-			//Caluclate the Fourier Morlet at the specific scale. 
+			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
-
-		    // for (int i = 0; i < PADDED_SIZE/2; ++i)
-		    // {
-		    //     fprintf(out_file, "%d\t%f\t%f\n", i, fft_data[i][0], fft_data[i][1]);
-		    // }
-
 		    
+
 			filter_convolution[0][0] = fft_data[0][0] * value;
 			filter_convolution[0][1] = fft_data[0][1] * value;
 			
 			filter_convolution[PADDED_SIZE/2][0] = 0.0;
 			filter_convolution[PADDED_SIZE/2][1] = 0.0;
-			
+			//Compute the Fourier Morlet Convolution in between
 			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 			{
 				value = CompleteFourierMorlet( j * dw , scales[i]);
@@ -105,6 +100,7 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 	    fftw_free(fftw_result);
 	    fftw_free(filter_convolution);
 	}
+	//Sanitation Engineering
 	fftw_destroy_plan(plan_forward); 
 	fftw_free(fft_data); fftw_free(data_in);
     return(0);

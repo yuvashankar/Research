@@ -26,28 +26,6 @@ double CompleteComplexMorlet(double x, double scale)
 	return(out);
 }
 
-double CreateFilter(double * conWindow, double* complexWindow, double w0)
-{
-	double signalFrequency = w0/FS;
-    double dw = 2 * M_PI * signalFrequency;
-
-    int conSize = (int) 1./signalFrequency;
-    conSize *=4;
-    
-    // printf("CompleteComplexMorlet = %f\n", CompleteComplexMorlet(0.0, 1.0));
-    // FILE* debug_out = fopen("debug.log", "w");
-    double mTime = 0.0;
-    
-    for (int i = 0; i < DATA_SIZE; ++i)
-    {
-        conWindow[i] = CompleteRealMorlet(mTime, 1.0);
-        complexWindow[i] = CompleteComplexMorlet(mTime, 1.0);
-        // fprintf(debug_out, "%f\t%f\t%f\t%f\n", mTime, val1, val2, data[i]);
-        mTime += DT;
-    }
-
-    return(conSize);
-}
 
 void Convolute(double *data, double *conWindow, double * complexWindow, double conSize,
 	double* result, double* complexResult)
