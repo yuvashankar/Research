@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -Wall -O2 -std=c99 -I../include -fopenmp
+CFLAGS  = -Wall -std=c99 -I../include -fopenmp
 
 LDLIBS  = -lfftw3 -lgsl -lgslcblas -lm -fopenmp
 OBJECTS = main.o wavelet.o CleanData.o ERSP.o convolution.o

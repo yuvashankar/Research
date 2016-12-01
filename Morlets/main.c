@@ -26,7 +26,7 @@ int main(void)
     double * scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
 
     //populate the data array
-    TestCases(data, 4);
+    TestCases(data, 5);
     // n = ReadFile(data, "sst_nino3.dat");
     
 
@@ -46,25 +46,22 @@ int main(void)
     
     
     // printf("CompleteComplexMorlet = %f\n", CompleteComplexMorlet(0.0, 1.0));
-    FILE* debug_out = fopen("debug.log", "w");
+    // FILE* debug_out = fopen("debug.log", "w");
     double mTime = 0.0;
+    
     for (int i = 0; i < DATA_SIZE; ++i)
     {
-
         double val1 = CompleteRealMorlet(mTime, 1.0);
         double val2 = CompleteComplexMorlet(mTime, 1.0);
-        fprintf(debug_out, "%f\t%f\t%f\n", mTime, val1, val2);
+        fprintf(debug_out, "%f\t%f\t%f\t%f\n", mTime, val1, val2, data[i]);
         mTime += DT;
-        
     }
-    fclose(debug_out);
-    
+
+    // fclose(debug_out);
 
     // RemoveBaseline(wavelet_result, n, J,
     //     1, FS,
     //     baseline_out);
-
-
 
     //Write to file
     WriteFile(wavelet_result, period, J, n, "DATA.log");
@@ -73,6 +70,6 @@ int main(void)
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     free(scales);
     t = omp_get_wtime() - t;
-    printf("Execution Time: %f\n", t/10);
+    printf("Execution Time: %f\n", t);
     return 0;
 }

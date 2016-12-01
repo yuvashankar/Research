@@ -230,10 +230,10 @@ void TestCases(double *data, int flag)
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{
 				data[i] = cos( i * dw + w0 );
-				if (i >= DATA_SIZE/2 && i <= 2 * (DATA_SIZE)/3)
-				{
-					data[i] = 2 * cos(i * dw + w0);
-				}
+				// if (i >= DATA_SIZE/2 && i <= 2 * (DATA_SIZE)/3)
+				// {
+				// 	data[i] = 2 * cos(i * dw + w0);
+				// }
 			}
 			break;
 		case 6:
