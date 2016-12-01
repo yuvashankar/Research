@@ -106,6 +106,24 @@ int Wavelet(double* raw_data,  double* period, double* scales,
     return(0);
 } /*Wavelet */
 
+int CalculatePadding(int array_size, int FLAG)
+{
+	const int pad = ceil(log2(array_size));
+	int out = array_size; 
+	switch(FLAG)
+	{
+		case 0: //No Padding what so ever. 
+			out = array_size;
+		case 1: //Zero - Padding and preforming a Radix-2 Operation
+			out = (int) pow(2, pad + 1);
+    		break;
+    	default: //Else return the array size
+    		out = array_size;
+    		break;
+	}
+	return(out);
+}
+
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {	
 	double * scales = malloc ( (MAX_I - MIN_I) * sizeof(double) );
