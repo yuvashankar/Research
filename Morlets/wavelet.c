@@ -14,8 +14,7 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-	// const int pad = ceil(log2(n));
-    const int PADDED_SIZE = CalculatePadding(n, 1);
+    const int PADDED_SIZE = CalculatePaddingSize(n, 1);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
@@ -43,7 +42,7 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 
 	// FILE* out_file = fopen("debug.log", "w");
 
-	#pragma omp parallel num_threads(2) private(i, j) shared (result, period, sampling_frequency, J, n, scales,  fft_data) default(none)
+	#pragma omp parallel num_threads(1) private(i, j) shared (result, period, sampling_frequency, J, n, scales,  fft_data) default(none)
 	{
 		double value;
 
@@ -107,10 +106,21 @@ int Wavelet(double* raw_data,  double* period, double* scales,
     return(0);
 } /*Wavelet */
 
-int CalculatePadding(int array_size, int FLAG)
+void PopulateArray(double* data, fftw_complex* fftw_data, int array_size, int padded_size, int FLAG)
+{
+	//populate the FFTW data vector uptill N. 
+	for (int i = 0; i < array_size; ++i)
+    {
+    	fftw_data[i][0] = data[i];
+    	fftw_data[i][1] = 0.0;
+    }
+
+}
+
+int CalculatePaddingSize(int array_size, int FLAG)
 {
 	const int pad = ceil(log2(array_size));
-	int out = array_size; 
+	int out = array_size;
 	switch(FLAG)
 	{
 		case 0: //No Padding what so ever. 
@@ -118,6 +128,9 @@ int CalculatePadding(int array_size, int FLAG)
 			break;
 		case 1: //Zero - Padding and preforming a Radix-2 Operation
 			out = (int) pow(2, pad + 1);
+    		break;
+    	case 2: //Duplicate array and ramp up and ramp down output
+    		out = 2 * array_size;
     		break;
     	default: //Else return the array size
     		out = array_size;
@@ -128,13 +141,13 @@ int CalculatePadding(int array_size, int FLAG)
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {	
-	double * scales = malloc ( (MAX_I - MIN_I) * sizeof(double) );
-	int count = MAX_I - MIN_I;
+	double * scales = malloc ( (MAX_I(minimum_frequency) - MIN_I(maximum_frequency)) * sizeof(double) );
+	int count = ( MAX_I(minimum_frequency) - MIN_I(maximum_frequency) );
 
 	//Populate the scales array
 	for (int i = 0; i < count; ++i)
 	{
-		int counterVariable = MIN_I + i;
+		int counterVariable = MIN_I(minimum_frequency) + i;
 		scales[i] = S0 * pow(2, counterVariable * D_J);
 	}
 
@@ -202,7 +215,7 @@ void TestCases(double *data, int flag)
 	int one_peri = (int)1./fsig;
 	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
 
-	double frequency = MIN_FREQUENCY;
+	// double frequency = MIN_FREQUENCY;
 	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
 	
 	int t = 2 * FS; //At 2 seconds. 
