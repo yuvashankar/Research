@@ -1,3 +1,4 @@
+
 //Header file for Wavelet.c
 //By: Vinay Yuvashankar
 //Email: yuvashv@mcmaster.ca
@@ -10,8 +11,12 @@
 #include <math.h>
 #include <fftw3.h>
 
+#include <omp.h>
+
 //Global Constants
-#define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision
+#define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision Pi^-0.25
+#define C_SIGMA 1.0000000000018794 //pow( (1.0 + exp(-W_0_2) - 2.0 * exp(-0.75 * W_0_2)), -0.5 )
+#define K_SIGMA 1.5229979744712628e-08
 #define FOURIER_WAVELENGTH_FACTOR (4.0 * M_PI)/(W_0 + sqrt(2.0 + W_0_2))
 
 #define W_0 6.0
@@ -24,15 +29,15 @@
 #define S0 2.0 * DT
 
 #define MAX_FREQUENCY 128.0
-#define MIN_FREQUENCY 0.5
+#define MIN_FREQUENCY 2.0
 
 #define MIN_I FREQ_TO_SCALE(MAX_FREQUENCY)
 #define MAX_I FREQ_TO_SCALE(MIN_FREQUENCY)
 
 //Measuring Frequency
-#define FREQ 16.0
+#define FREQ 30.0
 
-#define MAX_DATA_SIZE 10000000 
+#define MAX_DATA_SIZE 10000000
 
 #define DATA_SIZE 6144
 
@@ -63,3 +68,11 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
 	double* output);
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency);
+
+double CompleteRealMorlet (double x, double scale);
+double CompleteComplexMorlet(double x, double scale);
+
+void Convolute(double *data, double *conWindow, double * complexWindow, double conSize,
+	double* result, double* complexResult);
+
+int CalculatePadding(int array_size, int FLAG);
