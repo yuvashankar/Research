@@ -6,10 +6,12 @@
 
 int main(void)
 {
-    double *data, *result, *wavelet_result, *baseline_out, *period;
+    double *data, *result, *wavelet_result, *baseline_out, *period, *scales;
 
     double t = omp_get_wtime();
-    //Initialize the necessary constants.
+    for (int i = 0; i < 10; ++i)
+    {
+        //Initialize the necessary constants.
     int n = DATA_SIZE;
     const int J = MAX_I - MIN_I;
 
@@ -23,7 +25,7 @@ int main(void)
     assert(data != NULL); assert(result != NULL); assert(period != NULL);
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
-    double * scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
+    scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
 
     //populate the data array
     TestCases(data, 5);
@@ -37,6 +39,8 @@ int main(void)
     Wavelet(data, period, scales, 
         FS, n, J,
         wavelet_result);
+    }
+    
 
     // double signalFrequency = 6.0/FS;
     // double dw = 2 * M_PI * signalFrequency;

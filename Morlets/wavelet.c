@@ -131,12 +131,12 @@ double FourierMorlet(double w, double scale, double normal)
 double CompleteFourierMorlet(double w, double scale)
 {
 	// double W_0 = 6.0;
-	double c_sigma = pow( (1.0 + exp(-W_0_2) - 2.0 * exp(-0.75 * W_0_2)), -0.5 );
-	double k_sigma = exp( -0.5 * W_0_2 );
+	// double C_SIGMA = pow( (1.0 + exp(-W_0_2) - 2.0 * exp(-0.75 * W_0_2)), -0.5 );
+	// double K_SIGMA = exp( -0.5 * W_0_2 );
 
 	double out = exp( -0.5 * ( W_0 - scale * w ) * (W_0 - scale * w) ) 
-					- k_sigma * (exp ( -0.5 * scale * w * w));
-	out = c_sigma * QUAD_ROOT_PI * out;
+					- K_SIGMA * (exp ( -0.5 * scale * w * w));
+	out = C_SIGMA * QUAD_ROOT_PI * out;
 	return(out);
 }
 
