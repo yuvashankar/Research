@@ -32,21 +32,21 @@ void Convolute(double *data, double *conWindow, double * complexWindow, double c
 {
 	for (int i = 0; i < DATA_SIZE; ++i) //For every element in the data file
 	{
-		result[i] = 0.0;
+		realResult[i] = 0.0;
 		for (int j = -conSize; j < conSize; ++j) 
 		{
 			if ( (i - j) > 0)
 			{
 				if (j >= 0)
 				{
-					result[i] += data[i - j] * conWindow[j];
+					realResult[i] += data[i - j] * conWindow[j];
 					complexResult[i] += data[i - j] * complexWindow[j];
 				}
 					
 
 				if (j < 0)
 				{
-					result[i] += data[i - j] * conWindow[-j];
+					realResult[i] += data[i - j] * conWindow[-j];
 					complexResult[i] -= data[i - j] * complexWindow[-j];
 				}
 					

@@ -14,8 +14,9 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-	const int pad = ceil(log2(n));
-    const int PADDED_SIZE = (int) pow(2, pad + 1);
+	// const int pad = ceil(log2(n));
+    const int PADDED_SIZE = CalculatePadding(n, 1);
+
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
@@ -114,6 +115,7 @@ int CalculatePadding(int array_size, int FLAG)
 	{
 		case 0: //No Padding what so ever. 
 			out = array_size;
+			break;
 		case 1: //Zero - Padding and preforming a Radix-2 Operation
 			out = (int) pow(2, pad + 1);
     		break;
