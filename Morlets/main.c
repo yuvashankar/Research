@@ -26,7 +26,7 @@ int main(void)
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
 
     //populate the data array
-    TestCases(data, 5);
+    TestCases(data, 1);
     // n = ReadFile(data, "sst_nino3.dat");
     
 

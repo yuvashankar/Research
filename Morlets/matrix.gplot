@@ -3,8 +3,8 @@
 set term x11
 set pm3d map
 
-#set logscale z 2
-#set logscale y 2
+set logscale z 10
+set logscale y 2
 
 #shows where the tics start
 set ticslevel 0
@@ -13,6 +13,6 @@ set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
 set title "Time-Frequency graph of x(t)"
 
-set yrange [2:128]
+#set yrange [0.2:4]
 splot "DATA.log" matrix nonuniform with pm3d t ''
 pause -1 "Hit Return to continue"
