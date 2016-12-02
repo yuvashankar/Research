@@ -141,13 +141,13 @@ int CalculatePaddingSize(int array_size, int FLAG)
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {	
-	double * scales = malloc ( (MAX_I(minimum_frequency) - MIN_I(maximum_frequency)) * sizeof(double) );
-	int count = ( MAX_I(minimum_frequency) - MIN_I(maximum_frequency) );
+	double * scales = malloc ( (MAX_I - MIN_I) * sizeof(double) );
+	int count = ( MAX_I - MIN_I );
 
 	//Populate the scales array
 	for (int i = 0; i < count; ++i)
 	{
-		int counterVariable = MIN_I(minimum_frequency) + i;
+		int counterVariable = MIN_I + i;
 		scales[i] = S0 * pow(2, counterVariable * D_J);
 	}
 
