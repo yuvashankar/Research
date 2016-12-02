@@ -11,7 +11,7 @@ int main(void)
     double t = omp_get_wtime();
     //Initialize the necessary constants.
     int n = DATA_SIZE;
-    const int J = MAX_I - MIN_I;
+    const int J = MAX_I(MIN_FREQUENCY) - MIN_I(MAX_FREQUENCY);
 
     //Memory Allocations
     data =           malloc(n *     sizeof(double));
@@ -40,7 +40,7 @@ int main(void)
     
     
     // Write to file
-    WriteFile(wavelet_result, period, J, n, "DATA.log");
+    // WriteFile(wavelet_result, period, J, n, "DATA.log");
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     free(scales);
