@@ -28,8 +28,8 @@
 #define DT 1.0/FS
 #define S0 2.0 * DT
 
-#define MAX_FREQUENCY 128.0
-#define MIN_FREQUENCY 2.0
+#define MAX_FREQUENCY 1024.0
+#define MIN_FREQUENCY 0.2
 
 #define MIN_I FREQ_TO_SCALE(MAX_FREQUENCY)
 #define MAX_I FREQ_TO_SCALE(MIN_FREQUENCY)
@@ -75,4 +75,4 @@ double CompleteComplexMorlet(double x, double scale);
 void Convolute(double *data, double *conWindow, double * complexWindow, double conSize,
 	double* result, double* complexResult);
 
-int CalculatePadding(int array_size, int FLAG);
+int CalculatePaddingSize(int array_size, int FLAG);
