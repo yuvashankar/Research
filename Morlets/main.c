@@ -14,11 +14,11 @@ int main(void)
     const int J = MAX_I - MIN_I;
 
     //Memory Allocations
-    data =           malloc(n *     sizeof(double));
-    result =         malloc(n * J * sizeof(double));
-    wavelet_result = malloc(n * J * sizeof(double));
-    baseline_out =   malloc(n * J * sizeof(double));
-    period =         malloc(    J * sizeof(double));
+    data =           (double*) malloc(n *     sizeof(double));
+    result =         (double*) malloc(n * J * sizeof(double));
+    wavelet_result = (double*) malloc(n * J * sizeof(double));
+    baseline_out =   (double*) malloc(n * J * sizeof(double));
+    period =         (double*) malloc(    J * sizeof(double));
     
     assert(data != NULL); assert(result != NULL); assert(period != NULL);
     assert(wavelet_result != NULL); assert(baseline_out != NULL);

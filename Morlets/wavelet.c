@@ -2,6 +2,7 @@
 #include "wavelet.h"
 #include <omp.h>
 
+
 #define TEST 0.00001
 
 int Wavelet(double* raw_data,  double* period, double* scales, 
@@ -141,7 +142,7 @@ int CalculatePaddingSize(int array_size, int FLAG)
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {	
-	double * scales = malloc ( (MAX_I - MIN_I) * sizeof(double) );
+	double * scales = (double*) malloc ( (MAX_I - MIN_I) * sizeof(double) );
 	int count = ( MAX_I - MIN_I );
 
 	//Populate the scales array
@@ -367,7 +368,7 @@ void plot(double * data,int num_x,int num_y)
   int lines_size =2;
 
   printf("X= %d num Lines= %d \n",num_x,num_y);
-  get_normalizer(data,num_x,num_y);
+  // get_normalizer(data,num_x,num_y);
 
   pngwriter png(num_x+ 2*PLOT_OX,lines_size*num_y+2*PLOT_OY,0,"test.png");
 
