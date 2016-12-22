@@ -18,16 +18,17 @@ void plot(double * data,int num_x,int num_y)
 
 	for(i = 1; i <= num_x; i++) 
 	{
-		for(j=1; j<=num_y; j++)
+		for(j = 1; j<=num_y; j++)
 		{
-			for(k=0; k<lines_size; k++)
+			for(k = 0; k<lines_size; k++)
 			{
-				double value= scale_log( (double) (data[i+j*num_x]));
+				// double value= scale_log( (double) (data[i+j*num_x]));
 				
-				png.plot(PLOT_OX + i, PLOT_OY + j*lines_size + k, 
-					getR(value), getG(value), getB(value));
+				// png.plot(PLOT_OX + i, PLOT_OY + j*lines_size + k, 
+					// getR(value), getG(value), getB(value));
 			}
 		}
+		
 		// ADD A TIME MARKER
 		if(i%50==0)
 		{

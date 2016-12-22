@@ -305,7 +305,7 @@ int ReadFile(double data[], char filename[])
 	assert(buffer != NULL);
 
 	size_t result = fread (buffer, 1, lSize, signalFile);
-	assert(result == lSize);
+	// assert(result == lSize);
 	// puts(buffer);
 
 
@@ -325,7 +325,7 @@ int ReadFile(double data[], char filename[])
     return (counterVariable);
 }
 
-int WriteFile(double *data, double *period, int x, int y, char filename[])
+int WriteFile(double *data, double *period, int x, int y, char* filename)
 {
 
     FILE* out_file=fopen(filename,"w");
