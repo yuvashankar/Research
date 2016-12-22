@@ -37,6 +37,10 @@
 //Measuring Frequency
 #define FREQ 30.0
 
+//Plotting Constants
+#define PLOT_OY 100
+#define PLOT_OX 100
+
 #define MAX_DATA_SIZE 10000000
 
 #define DATA_SIZE 6144
@@ -51,6 +55,10 @@ void TestCases(double *data, int flag);
 
 int ReadFile(double data[], char filename[]);
 int WriteFile(double *data, double *frequency, int x, int y, char filename[]);
+
+double max(double * array, int size);
+double min(double * array, int size);
+
 int WriteTestCases(double *data, int length, char filename[]);
 
 double FourierMorlet(double w, double scale, double normal);
