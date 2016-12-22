@@ -1,9 +1,9 @@
-CC        = gcc
-CXX       = g++
-CFLAGS    = -fopenmp
-CPPFLAGS  = -Wall -I../include -g -DNO_FREETYPE
+#CC        = gcc
+CXX       = gcc-5
+#CFLAGS    = -fopenmp
+CXXFLAGS  = -Wall -g -fopenmp `freetype-config --cflags` -std=c99
 
-LDLIBS  = -lfftw3 -lgsl -lgslcblas -lm -fopenmp -lpngwriter -lz
+LDLIBS  = -lfftw3 -lgsl -lgslcblas -lm -lz `freetype-config --libs` -lz -lpngwriter -lpng -L../lib
 OBJECTS = main.o wavelet.o CleanData.o ERSP.o convolution.o Plot.o
 
 morlet: $(OBJECTS)

@@ -1,6 +1,6 @@
 //Wavelet.c
 #include "wavelet.h"
-#include <omp.h>
+//#include <omp.h>
 
 
 #define TEST 0.00001
