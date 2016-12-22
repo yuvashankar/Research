@@ -2,9 +2,6 @@
 #include <pngwriter.h>
 #include "wavelet.h"
 
-double base( double val );
-double interpolate( double val, double y0, double x0, double y1, double x1 );
-
 void plot(double * data,int num_x,int num_y)
 {
 	int i, j, k;
@@ -14,6 +11,8 @@ void plot(double * data,int num_x,int num_y)
 
 	printf("X= %d num Lines= %d \n",num_x,num_y);
 	// get_normalizer(data,num_x,num_y);
+	double minimum = min(data, num_x*num_y);
+	double maximum = max(data, num_x*num_y);
 
 	pngwriter png(num_x+ 2*PLOT_OX,lines_size*num_y+2*PLOT_OY,0,"test.png");
 
@@ -39,32 +38,6 @@ void plot(double * data,int num_x,int num_y)
 	png.close();
 }
 
-double getR(double gray) 
-{
-    return base( gray - 0.5 );
-}
-double getG(double gray) 
-{
-    return base( gray );
-}
-double getB(double gray) 
-{
-	return base( gray + 0.5 );
-}
-
-double base(double val) 
-{
-	if ( val <= -0.75 ) return 0;
-	else if ( val <= -0.25 ) return interpolate( val, 0.0, -0.75, 1.0, -0.25 );
-	else if ( val <= 0.25 ) return 1.0;
-	else if ( val <= 0.75 ) return interpolate( val, 1.0, 0.25, 0.0, 0.75 );
-	else return 0.0;
-}
-
-double interpolate( double val, double y0, double x0, double y1, double x1 ) 
-{
-	return (val-x0)*(y1-y0)/(x1-x0) + y0;
-}
 
 double max(double * array, int size)
 {

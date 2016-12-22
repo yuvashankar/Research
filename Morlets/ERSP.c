@@ -24,7 +24,7 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
 	m = PRE_EVENT_TIME * sampling_frequency;
 	
 
-	pre_stimulus = malloc( m * sizeof(double) );
+	pre_stimulus = (double*) malloc( m * sizeof(double) );
 
 	// for (int i = 0; i < m; ++i)
 	// {
