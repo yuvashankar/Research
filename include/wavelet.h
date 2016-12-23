@@ -11,7 +11,7 @@
 #include <math.h>
 #include <fftw3.h>
 
-#include <omp.h>
+//#include <omp.h>
 
 //Global Constants
 #define QUAD_ROOT_PI 0.7511255444649425 //Precalculated to machine precision Pi^-0.25
