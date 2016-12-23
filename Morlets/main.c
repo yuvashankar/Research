@@ -1,6 +1,6 @@
 #include "wavelet.h"
 #include "math.h"
-//#include <omp.h>
+#include <omp.h>
 
 #include <gsl/gsl_statistics.h>
 
