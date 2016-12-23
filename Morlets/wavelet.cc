@@ -141,14 +141,17 @@ int CalculatePaddingSize(int array_size, int FLAG)
 }
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
-{	
-	double * scales = (double*) malloc ( (MAX_I - MIN_I) * sizeof(double) );
-	int count = ( MAX_I - MIN_I );
+{
+	double min_i = FREQ_TO_SCALE(maximum_frequency);
+	double max_i = FREQ_TO_SCALE(minimum_frequency);
+
+	double * scales = (double*) malloc ( (max_i - min_i) * sizeof(double) );
+	int count = ( max_i - min_i );
 
 	//Populate the scales array
 	for (int i = 0; i < count; ++i)
 	{
-		int counterVariable = MIN_I + i;
+		int counterVariable = min_i + i;
 		scales[i] = S0 * pow(2, counterVariable * D_J);
 	}
 
@@ -304,8 +307,8 @@ int ReadFile(double data[], char filename[])
 	char * buffer = (char*) malloc(sizeof(char)*lSize);
 	assert(buffer != NULL);
 
-	size_t result = fread (buffer, 1, lSize, signalFile);
-	// assert(result == lSize);
+	int result = fread (buffer, 1, lSize, signalFile);
+	assert(result == lSize);
 	// puts(buffer);
 
 
@@ -325,7 +328,7 @@ int ReadFile(double data[], char filename[])
     return (counterVariable);
 }
 
-int WriteFile(double *data, double *period, int x, int y, char* filename)
+int WriteFile(double *data, double *period, int x, int y, const char* filename)
 {
 
     FILE* out_file=fopen(filename,"w");

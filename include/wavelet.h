@@ -54,13 +54,13 @@ void FillData(double * data);
 void TestCases(double *data, int flag);
 
 int ReadFile(double data[], char* filename);
-int WriteFile(double *data, double *frequency, int x, int y, char* filename);
+int WriteFile(double *data, double *frequency, int x, int y, const char* filename);
 
 void Plot(double * data,int num_x,int num_y);
 double max(double * array, int size);
 double min(double * array, int size);
 
-int WriteTestCases(double *data, int length, char* filename);
+int WriteTestCases(double *data, int length, const char* filename);
 
 double FourierMorlet(double w, double scale, double normal);
 
