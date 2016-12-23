@@ -1,18 +1,20 @@
 //Plot.c
-#include <pngwriter.h>
 #include "wavelet.h"
+#include <pngwriter.h>
 
-void plot(double * data,int num_x,int num_y)
+
+void Plot(double * data,int num_x,int num_y)
 {
 	int i, j, k;
-	int y;
+	// int y;
 
 	int lines_size =2;
 
-	printf("X= %d num Lines= %d \n",num_x,num_y);
+	// printf("X= %d num Lines= %d \n",num_x,num_y);
 	// get_normalizer(data,num_x,num_y);
 	double minimum = min(data, num_x*num_y);
 	double maximum = max(data, num_x*num_y);
+	printf("Maximum = %f, Minimum = %f\n", maximum, minimum);
 
 	pngwriter png(num_x+ 2*PLOT_OX,lines_size*num_y+2*PLOT_OY,0,"test.png");
 

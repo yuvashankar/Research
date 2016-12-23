@@ -1,5 +1,5 @@
 #include "wavelet.h"
-#include "math.h"
+#include <math.h>
 #include <omp.h>
 
 #include <gsl/gsl_statistics.h>
@@ -8,7 +8,7 @@ int main(void)
 {
     double *data, *result, *wavelet_result, *baseline_out, *period, *scales;
 
-    // double t = omp_get_wtime();
+    double t = omp_get_wtime();
     //Initialize the necessary constants.
     int n = DATA_SIZE;
     const int J = MAX_I - MIN_I;
@@ -28,10 +28,6 @@ int main(void)
     //populate the data array
     TestCases(data, 1);
     // n = ReadFile(data, "sst_nino3.dat");
-    
-
-
-    CleanData(data, DATA_SIZE);
 
     
     Wavelet(data, period, scales, 
@@ -41,10 +37,11 @@ int main(void)
     
     // Write to file
     WriteFile(wavelet_result, period, J, n, "DATA.log");
+    Plot(wavelet_result, n, J);
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     free(scales);
-    // t = omp_get_wtime() - t;
-    // printf("Execution Time: %f\n", t);
+    t = omp_get_wtime() - t;
+    printf("Execution Time: %f\n", t);
     return 0;
 }

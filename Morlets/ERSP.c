@@ -37,7 +37,7 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
 
 	// for (int i = 0; i < num_of_samples; ++i)
 	// {
-	// 	output[i] = (abs((data[i] * data[i])) - mean) / sDeviation;
+	// 	output[i] = (fabs((data[i] * data[i])) - mean) / sDeviation;
 	// }
 	double value;
 	//For every frequency of the datablock. 
@@ -55,12 +55,12 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
     	double sDeviation = gsl_stats_sd_m(pre_stimulus, 1, m, mean);
     	
     	//This ensures that there is no division by zero. 
-    	if (abs(sDeviation) > ZERO_TEST)
+    	if (fabs(sDeviation) > ZERO_TEST)
     	{
 		    for (int j = 0; j < num_of_samples; ++j)
 		    {
 		    	value = data[i * num_of_samples + j] * data[i * num_of_samples + j];
-		        output[ i * num_of_samples + j] = (abs(value) - mean) / sDeviation;
+		        output[ i * num_of_samples + j] = (fabs(value) - mean) / sDeviation;
 		    }
     	}
 	}
