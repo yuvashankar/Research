@@ -48,6 +48,7 @@
 //Macros
 #define FREQ_TO_SCALE(x) floor( ( log2( (W_0) / (S0 * 2 * M_PI * x) ) )/D_J)
 #define SCALE_TO_FREQ(x) (W_0)/(x * 2 * M_PI)
+
 #define MAGNITUDE(x,y) (x * x) + (y * y)
 
 void FillData(double * data);
@@ -57,8 +58,9 @@ int ReadFile(double data[], char* filename);
 int WriteFile(double *data, double *frequency, int x, int y, const char* filename);
 
 void Plot(double * data,int num_x,int num_y);
-double max(double * array, int size);
-double min(double * array, int size);
+double Max(double * array, int size);
+double Min(double * array, int size);
+void CalculateLog(double * array, int size);
 
 int WriteTestCases(double *data, int length, const char* filename);
 

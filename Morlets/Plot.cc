@@ -11,10 +11,11 @@ void Plot(double * data,int num_x,int num_y)
 	int lines_size =2;
 
 	// printf("X= %d num Lines= %d \n",num_x,num_y);
-	// get_normalizer(data,num_x,num_y);
-	double minimum = min(data, num_x*num_y);
-	double maximum = max(data, num_x*num_y);
-	printf("Maximum = %f, Minimum = %f\n", maximum, minimum);
+	CalculateLog( data, num_x * num_y );
+	minimum = Min(data, num_x*num_y);
+	maximum = Max(data, num_x*num_y);
+	printf("Maximum = %f, Minimum = %f after Log\n", maximum, minimum);
+
 
 	pngwriter png(num_x+ 2*PLOT_OX,lines_size*num_y+2*PLOT_OY,0,"test.png");
 
@@ -41,29 +42,58 @@ void Plot(double * data,int num_x,int num_y)
 	png.close();
 }
 
-
-double max(double * array, int size)
+void CalculateLog(double * array, int size)
 {
-	double max = 0.0;
+	double val;
+	for (int i = 0; i < size; ++i)
+	{
+		//If the number is greater than machine precision of zero
+		if (array[i] > 2.220446049250313e-16)
+		{
+			val = log10(array[i]);
+			array[i] = val;
+		}
+		//Te number is the logarithm of the lowest possible number.
+		else
+		{
+			array[i] = log10(2.220446049250313e-16);
+		}
+			
+
+	}
+}
+
+
+double Max(double * array, int size)
+{
+	double max = array[0];
+	int array_index = 0;
+
 	for (int i = 0; i < size; ++i)
 	{
 		if (array[i] > max)
 		{
 			max = array[i];
+			array_index = i;
 		}
 	}
+
+	printf("Max: Array[%d] = %.17f\n", array_index, array[array_index]);
 	return(max);
 }
 
-double min(double* array, int size)
+double Min(double* array, int size)
 {
+	int array_index = 0;
 	double min = array[0];
 	for (int i = 0; i < size; ++i)
 	{
 		if (array[i] < min)
 		{
 			min = array[i];
+			array_index = i;
 		}
 	}
+	printf("Min: Array[%d] = %.17f\n", array_index, array[array_index]);
 	return(min);
 }
