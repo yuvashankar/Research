@@ -11,4 +11,4 @@ morlet: $(OBJECTS)
 	install_name_tool -change libpngwriter.dylib /opt/local/lib/libpngwriter.dylib morlet
 
 clean:
-	rm *.o morlet  *.log
+	rm *.o morlet  *.log *.png

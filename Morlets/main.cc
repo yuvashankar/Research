@@ -28,10 +28,6 @@ int main(void)
     //populate the data array
     TestCases(data, 1);
     // n = ReadFile(data, "sst_nino3.dat");
-
-    double bic = log10(2.2204e-16);
-    printf("Log of 0 should be... %f\n", bic);
-
     
     Wavelet(data, period, scales, 
         FS, n, J,

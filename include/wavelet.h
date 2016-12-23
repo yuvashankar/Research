@@ -61,6 +61,10 @@ void Plot(double * data,int num_x,int num_y);
 double Max(double * array, int size);
 double Min(double * array, int size);
 void CalculateLog(double * array, int size);
+double GetR(double value, double minimum, double range);
+double GetG(double value, double minimum, double range);
+double GetB(double value, double minimum, double range);
+
 
 int WriteTestCases(double *data, int length, const char* filename);
 
