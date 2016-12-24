@@ -3,28 +3,29 @@
 #include "wavelet.h"
 #include <pngwriter.h>
 
-void Plot(double * data,int num_x,int num_y)
+void Plot(double * data, double * periods, int num_x, int num_y)
 {
 	int i, j, k;
 	
-	int lines_size =10;
-	int image_width  = num_x + 2*PLOT_OX;
-	int image_height = lines_size*num_y+2*PLOT_OY;
-	int height = lines_size*num_y;
+	const int lines_size = 10;
+	const int image_width  = num_x + 2*PLOT_OX;
+	const int image_height = lines_size*num_y+2*PLOT_OY;
+	const int height = lines_size*num_y;
 
-	char* font_location = "../lib/VeraMono.ttf";
-	int label_font_size = 20.0;
-	int title_font_size = 25.0;
+	char  font_location[] = "../lib/VeraMono.ttf";
+	const int label_font_size = 30.0;
+	const int tic_font_size = 15.0;
+	const int title_font_size = 50.0;
 
-	char* x_label = "Time (s)";
-	char* y_label = "Frequency (Hz)";
-	char* graph_title = "Time Frequency Graph of an Impulse";
-	char t_in_string[4];
+	char x_label[] = "Time (s)";
+	char y_label[] = "Frequency (Hz)";
+	char graph_title[] = "Time Frequency Graph of an Impulse";
+	char temp_string[4];
 
 	CalculateLog( data, num_x * num_y );
 
 	RANGE r = GetRange(data, num_x*num_y);
-	printf("New Max = %f, New Min = %f\n", r.maximum, r.minimum);
+	// printf("New Max = %f, New Min = %f\n", r.maximum, r.minimum);
 
 	pngwriter png( image_width, image_height , 0 , "test.png");
 
@@ -36,20 +37,20 @@ void Plot(double * data,int num_x,int num_y)
 				1.0, 1.0, 1.0);
 	
 	//Y_Label
-	int y_text_width = png.get_text_width(font_location, label_font_size, x_label);
+	int y_text_width = png.get_text_width(font_location, label_font_size, y_label);
 	png.plot_text( font_location, label_font_size,
-				0.5*PLOT_OY, (0.5*image_height - 0.5*y_text_width), M_PI*0.5,
+				0.25*PLOT_OY, (0.5*image_height - 0.5*y_text_width), M_PI*0.5,
 				y_label,
 				1.0, 1.0, 1.0);
 
 	//Title
-	int title_text_width = png.get_text_width(font_location, label_font_size, x_label);
+	int title_text_width = png.get_text_width(font_location, label_font_size, graph_title);
 	png.plot_text( font_location, title_font_size,
 				(0.5*image_width - title_text_width), (image_height - 0.5*PLOT_OY), 0.0,
 				graph_title,
 				1.0, 1.0, 1.0);
 
-	// int counterVariable = 0;
+	//Plot the Graph itself.
 	for ( i = 1; i <= num_x; ++i)
 	{
 		for ( j = 1; j <= num_y; ++j)
@@ -61,20 +62,40 @@ void Plot(double * data,int num_x,int num_y)
 				
 				png.plot(PLOT_OX + i , PLOT_OY + (height - j*lines_size + k), 
 					c.r, c.g, c.b);
+					// 0.0, 0.0, 0.0);
+			}
+
+			//Add Frequency Markers
+			if (j % 25 == 0)
+			{
+				png.filledsquare( PLOT_OX - 20, PLOT_OY + (height - j*lines_size) - 4,
+						PLOT_OX, PLOT_OY + (height - j*lines_size) + 4,
+						1.0, 1.0, 1.0);
+
+				sprintf(temp_string, "%.1f", periods[j]);
+
+				int freq_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
+				
+				png.plot_text(font_location, tic_font_size, 
+					PLOT_OX - 30 - freq_text_width, PLOT_OY + (height - j*lines_size) - 0.5*tic_font_size, 0.0, 
+					temp_string, 
+					1.0, 1.0, 1.0);
 			}
 		}
 		// ADD A TIME MARKER
 		if( i % int(FS) == 0 )
 		{
 			png.filledsquare( PLOT_OX + i - 4, PLOT_OY,
-				PLOT_OY + i + 4, PLOT_OY - 20,
-				1.0, 1.0, 1.0);
+							  PLOT_OX + i + 4, PLOT_OY - 20,
+							1.0, 1.0, 1.0);
 
-			sprintf(t_in_string, "%.1f", i/FS);
-			int time_text_width = png.get_text_width(font_location, label_font_size, t_in_string);
-			png.plot_text( font_location, label_font_size,
-				PLOT_OY + i - 4 - 0.5* time_text_width, PLOT_OY - 50, 0.0,
-				t_in_string,
+			sprintf(temp_string, "%.1f", i/FS);
+			
+			int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
+
+			png.plot_text( font_location, tic_font_size,
+				PLOT_OX + i - 4 - 0.5* time_text_width, PLOT_OY - 50, 0.0,
+				temp_string,
 				1.0, 1.0, 1.0);
 
 		}

@@ -36,7 +36,7 @@ int main(void)
     
     // Write to file
     // WriteFile(wavelet_result, period, J, n, "DATA.log");
-    Plot(wavelet_result, n, J);
+    Plot(wavelet_result, period,  n, J);
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     free(scales);

@@ -107,17 +107,6 @@ int Wavelet(double* raw_data,  double* period, double* scales,
     return(0);
 } /*Wavelet */
 
-// void PopulateArray(double* data, fftw_complex* fftw_data, int array_size, int padded_size, int FLAG)
-// {
-// 	//populate the FFTW data vector uptill N. 
-// 	for (int i = 0; i < array_size; ++i)
-//     {
-//     	fftw_data[i][0] = data[i];
-//     	fftw_data[i][1] = 0.0;
-//     }
-
-// }
-
 int CalculatePaddingSize(int array_size, int FLAG)
 {
 	const int pad = ceil(log2(array_size));
@@ -142,8 +131,12 @@ int CalculatePaddingSize(int array_size, int FLAG)
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {
-	double min_i = FREQ_TO_SCALE(maximum_frequency);
-	double max_i = FREQ_TO_SCALE(minimum_frequency);
+	int min_i = FREQ_TO_SCALE(maximum_frequency);
+	int max_i = FREQ_TO_SCALE(minimum_frequency) + 1;
+
+	double act_max_freq = SCALE_TO_FREQ(min_i);
+	double act_min_freq = SCALE_TO_FREQ(max_i);
+	printf("Max Frequency = %f, Min Frequency = %f\n", act_max_freq, act_min_freq);
 
 	double * scales = (double*) malloc ( (max_i - min_i) * sizeof(double) );
 	int count = ( max_i - min_i );
