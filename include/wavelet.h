@@ -38,12 +38,23 @@
 #define FREQ 30.0
 
 //Plotting Constants
-#define PLOT_OY 100
-#define PLOT_OX 100
+#define PLOT_OY 200
+#define PLOT_OX 200
 
 #define MAX_DATA_SIZE 10000000
 
 #define DATA_SIZE 6144
+
+//Data Structures
+typedef struct 
+{
+	double r,g,b;
+} COLOUR;
+
+typedef struct
+{
+	double minimum, maximum;
+} RANGE;
 
 //Macros
 #define FREQ_TO_SCALE(x) floor( ( log2( (W_0) / (S0 * 2 * M_PI * x) ) )/D_J)
@@ -58,16 +69,10 @@ int ReadFile(double data[], char* filename);
 int WriteFile(double *data, double *frequency, int x, int y, const char* filename);
 
 void Plot(double * data,int num_x,int num_y);
+void CalculateLog(double * array, int size);
 double Max(double * array, int size);
 double Min(double * array, int size);
-void CalculateLog(double * array, int size);
-// double GetR(double value, double minimum, double range);
-// double GetG(double value, double minimum, double range);
-// double GetB(double value, double minimum, double range);
-
- typedef struct {
-      double r,g,b;
-   } COLOUR;
+RANGE GetRange(double* array, int size);
 
 COLOUR GetColour(double v,double vmin,double vmax);
 
