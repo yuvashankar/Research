@@ -23,18 +23,16 @@ void Plot(double * data,int num_x,int num_y)
 
 	pngwriter png(num_x+ 2*PLOT_OX,lines_size*num_y+2*PLOT_OY,0,"test.png");
 
-	for ( i = 0; i < num_x; ++i)
+	for ( i = 1; i <= num_x; ++i)
 	{
-		for ( j = 0; j < num_y; ++j)
+		for ( j = 1; j <= num_y; ++j)
 		{
 			for ( k = 0; k < lines_size; ++k)
 			{
-				double value = (double) (data[i+j*num_x]);
+				double value = (double) (data[i + j*num_x]);
+				COLOUR c = GetColour(value, minimum, maximum);
 				
-				png.plot(PLOT_OX + i, PLOT_OY + j*lines_size + k, 
-					GetR(value, minimum, range), 
-					GetG(value, minimum, range),
-					GetB(value, minimum, range));
+				png.plot(PLOT_OX + i , PLOT_OY + j*lines_size + k, c.r, c.g, c.b);
 			}
 		}
 		// ADD A TIME MARKER
@@ -48,68 +46,32 @@ void Plot(double * data,int num_x,int num_y)
 	png.close();
 }
 
-void CalculateLog(double * array, int size)
+COLOUR GetColour(double v,double vmin,double vmax)
 {
-	double val;
-	for (int i = 0; i < size; ++i)
-	{
-		//If the number is greater than machine precision of zero
-		if (array[i] > 2.220446049250313e-16)
-		{
-			val = log10(array[i]);
-			array[i] = val;
-		}
-		//The number is the logarithm of the lowest possible number.
-		else
-		{
-			array[i] = log10(2.220446049250313e-16);
-		}
-			
+   COLOUR c = {1.0,1.0,1.0}; // white
+   double dv;
 
-	}
-}
+   if (v < vmin)
+      v = vmin;
+   if (v > vmax)
+      v = vmax;
+   dv = vmax - vmin;
 
-double GetR(double value, double minimum, double range)
-{
-	double red;
+   if (v < (vmin + 0.25 * dv)) {
+      c.r = 0;
+      c.g = 4 * (v - vmin) / dv;
+   } else if (v < (vmin + 0.5 * dv)) {
+      c.r = 0;
+      c.b = 1 + 4 * (vmin + 0.25 * dv - v) / dv;
+   } else if (v < (vmin + 0.75 * dv)) {
+      c.r = 4 * (v - vmin - 0.5 * dv) / dv;
+      c.b = 0;
+   } else {
+      c.g = 1 + 4 * (vmin + 0.75 * dv - v) / dv;
+      c.b = 0;
+   }
 
-	if (value < (minimum + 0.75 * range))
-	{
-		red = 4 * (value - minimum - 0.5 * range) / range;	
-	}
-	else
-	{
-		red = 0.0;
-	}
-	return (red);
-}
-
-double GetG(double value, double minimum, double range)
-{
-	double green; 
-	if (value < (minimum + 0.25 * range)) 
-	{
-		green = 4 * (value - minimum) / range;
-	}
-	else
-	{
-		green = 1 + 4 * (minimum + 0.75 * range - value) / range;
-	}
-	return(green);
-}
-
-double GetB(double value, double minimum, double range)
-{
-	double blue;
-	if (value < (minimum + 0.5 * range))	
-	{
-		blue = 1 + 4 * (minimum + 0.25 * range - value) / range;
-	}
-	else
-	{
-		blue = 0.0;
-	}
-	return(blue);
+   return(c);
 }
 
 double Max(double * array, int size)
@@ -144,4 +106,25 @@ double Min(double* array, int size)
 	}
 	printf("Min: Array[%d] = %.17f\n", array_index, array[array_index]);
 	return(min);
+}
+
+void CalculateLog(double * array, int size)
+{
+	double val;
+	for (int i = 0; i < size; ++i)
+	{
+		//If the number is greater than machine precision of zero
+		if (array[i] > 2.220446049250313e-16)
+		{
+			val = log10(array[i]);
+			array[i] = val;
+		}
+		//The number is the logarithm of the lowest possible number.
+		else
+		{
+			array[i] = log10(2.220446049250313e-16);
+		}
+			
+
+	}
 }

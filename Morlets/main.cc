@@ -28,7 +28,7 @@ int main(void)
     //populate the data array
     TestCases(data, 1);
     // n = ReadFile(data, "sst_nino3.dat");
-    
+
     Wavelet(data, period, scales, 
         FS, n, J,
         wavelet_result);
