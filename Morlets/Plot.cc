@@ -6,7 +6,7 @@
 void Plot(double * data,int num_x,int num_y)
 {
 	int i, j, k;
-	double maximum, minimum, range;
+	double maximum, minimum;
 	// int y;
 
 	int lines_size =2;
@@ -16,15 +16,13 @@ void Plot(double * data,int num_x,int num_y)
 	minimum = Min(data, num_x*num_y);
 	maximum = Max(data, num_x*num_y);
 
-	range = maximum - minimum;
-
-	// printf("Maximum = %f, Minimum = %f after Log\n", maximum, minimum);
-
-
 	pngwriter png(num_x+ 2*PLOT_OX,lines_size*num_y+2*PLOT_OY,0,"test.png");
+	int height = lines_size*num_y;
 
+	// int counterVariable = 0;
 	for ( i = 1; i <= num_x; ++i)
 	{
+		
 		for ( j = 1; j <= num_y; ++j)
 		{
 			for ( k = 0; k < lines_size; ++k)
@@ -32,9 +30,10 @@ void Plot(double * data,int num_x,int num_y)
 				double value = (double) (data[i + j*num_x]);
 				COLOUR c = GetColour(value, minimum, maximum);
 				
-				png.plot(PLOT_OX + i , PLOT_OY + j*lines_size + k, c.r, c.g, c.b);
+				png.plot(PLOT_OX + i , PLOT_OY + (height - j*lines_size + k), c.r, c.g, c.b);
 			}
 		}
+		
 		// ADD A TIME MARKER
 		if(i%50==0)
 		{
