@@ -43,7 +43,7 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 
 	// FILE* out_file = fopen("debug.log", "w");
 
-	#pragma omp parallel num_threads(1) private(i, j) shared (result, period, sampling_frequency, J, n, scales,  fft_data) default(none)
+	#pragma omp parallel num_threads(2) private(i, j) shared (result, period, sampling_frequency, J, n, scales,  fft_data) default(none)
 	{
 		double value;
 
@@ -68,13 +68,13 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
-		    
 
 			filter_convolution[0][0] = fft_data[0][0] * value;
 			filter_convolution[0][1] = fft_data[0][1] * value;
 			
 			filter_convolution[PADDED_SIZE/2][0] = 0.0;
 			filter_convolution[PADDED_SIZE/2][1] = 0.0;
+
 			//Compute the Fourier Morlet Convolution in between
 			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 			{
@@ -131,15 +131,19 @@ int CalculatePaddingSize(int array_size, int FLAG)
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency)
 {
-	int min_i = FREQ_TO_SCALE(maximum_frequency);
-	int max_i = FREQ_TO_SCALE(minimum_frequency) + 1;
+	int min_i = FREQ_TO_SCALE(maximum_frequency) + 1;
+	int max_i = FREQ_TO_SCALE(minimum_frequency);
+	assert(min_i > 0); assert(max_i > 0);
+	// printf("max_i = %d, min_i = %d\n", max_i, min_i);
 
-	double act_max_freq = SCALE_TO_FREQ(min_i);
-	double act_min_freq = SCALE_TO_FREQ(max_i);
-	printf("Max Frequency = %f, Min Frequency = %f\n", act_max_freq, act_min_freq);
+	// double bic = S0 * pow(2, min_i * D_J);
+	// double bic2 = S0 * pow(2, max_i * D_J);
+	// double act_max_freq = (W_0)/(bic * 2 * M_PI);
+	// double act_min_freq = (W_0)/(bic2 * 2 * M_PI);
+	// // printf("Max Frequency = %f, Min Frequency = %f\n", act_max_freq, act_min_freq);
 
 	double * scales = (double*) malloc ( (max_i - min_i) * sizeof(double) );
-	int count = ( max_i - min_i );
+	int count = ( max_i - min_i ) + 1;
 
 	//Populate the scales array
 	for (int i = 0; i < count; ++i)
@@ -171,36 +175,7 @@ double CompleteFourierMorlet(double w, double scale)
 	return(out);
 }
 
-void FillData(double * data)
-{
-	// Fit a FREQ signal at two points
-	// double DT = 1./FS;
-	double fsig = FREQ/FS;
-	double dw = 2*M_PI*fsig;
-	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
-	int one_peri = (int)1./fsig;
-	printf("FS  %.2f   Pitch %.f   Discrete Period = %d \n",FS,FREQ,one_peri);
 
-	for (int i = 0; i < DATA_SIZE; ++i)
-	{
-		data[i] = 0.0;
-	}
-
-	// //Impulse Sample
-	// data[2000] = 1.0;
-
-	///Sine Wave Sample
-	int i;
-	// double t=0;
-	for(i=0;i<DATA_SIZE;i++){
-		// data[i] = sin(i*dw) + sin(i*dw*4);
-		data[i]=0.;
-		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		if((i>0.25*DATA_SIZE)&(i<0.25*DATA_SIZE+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		if((i>0.5*DATA_SIZE)&(i<0.5*DATA_SIZE+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		if((i>0.75*DATA_SIZE)&(i<0.75*DATA_SIZE+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
-	}
-}
 
 void TestCases(double *data, int flag)
 {
@@ -211,7 +186,7 @@ void TestCases(double *data, int flag)
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
-	printf("FS  %.2f   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	printf("FS  %.2d   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
 
 	// double frequency = MIN_FREQUENCY;
 	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
@@ -288,38 +263,7 @@ void TestCases(double *data, int flag)
 	}
 }
 
-int ReadFile(double data[], char filename[])
-{
-	FILE* signalFile = fopen(filename, "r");
-	assert(signalFile != NULL);
-	// obtain file size:
-	fseek (signalFile , 0 , SEEK_END);
-	long lSize = ftell (signalFile);
-	rewind (signalFile);
 
-	char * buffer = (char*) malloc(sizeof(char)*lSize);
-	assert(buffer != NULL);
-
-	int result = fread (buffer, 1, lSize, signalFile);
-	assert(result == lSize);
-	// puts(buffer);
-
-
-	char * token = strtok(buffer, "\n");
-	
-    //Get input from text.
-	int counterVariable = 0;
-	while (token !=NULL)
-    {
-    	data[counterVariable] = atof(token);
-    	counterVariable++;
-        token = strtok (NULL, "\n");
-
-    }
-    fclose(signalFile);
-
-    return (counterVariable);
-}
 
 int WriteFile(double *data, double *period, int x, int y, const char* filename)
 {
@@ -331,7 +275,7 @@ int WriteFile(double *data, double *period, int x, int y, const char* filename)
     fprintf(out_file, "%d\t", x);
     for (int i = 0; i < y; ++i)
     {
-    	fprintf(out_file, "%f\t", i/FS);
+    	fprintf(out_file, "%f\t", (double) i/FS);
     }
     fprintf(out_file, "\n");
 
@@ -378,4 +322,68 @@ int WriteTestCases(double *data, int length, char filename[])
     
     fclose(out_file);
     return 0;
+}
+
+void FillData(double * data)
+{
+	// Fit a FREQ signal at two points
+	// double DT = 1./FS;
+	double fsig = FREQ/FS;
+	double dw = 2*M_PI*fsig;
+	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
+	int one_peri = (int)1./fsig;
+	printf("FS  %.2d   Pitch %.f   Discrete Period = %d \n",FS,FREQ,one_peri);
+
+	for (int i = 0; i < DATA_SIZE; ++i)
+	{
+		data[i] = 0.0;
+	}
+
+	// //Impulse Sample
+	// data[2000] = 1.0;
+
+	///Sine Wave Sample
+	int i;
+	// double t=0;
+	for(i=0;i<DATA_SIZE;i++){
+		// data[i] = sin(i*dw) + sin(i*dw*4);
+		data[i]=0.;
+		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
+		if((i>0.25*DATA_SIZE)&(i<0.25*DATA_SIZE+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		if((i>0.5*DATA_SIZE)&(i<0.5*DATA_SIZE+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		if((i>0.75*DATA_SIZE)&(i<0.75*DATA_SIZE+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+	}
+}
+
+int ReadFile(double data[], char filename[])
+{
+	FILE* signalFile = fopen(filename, "r");
+	assert(signalFile != NULL);
+	// obtain file size:
+	fseek (signalFile , 0 , SEEK_END);
+	long lSize = ftell (signalFile);
+	rewind (signalFile);
+
+	char * buffer = (char*) malloc(sizeof(char)*lSize);
+	assert(buffer != NULL);
+
+	int result = fread (buffer, 1, lSize, signalFile);
+	assert(result == lSize);
+	// puts(buffer);
+
+
+	char * token = strtok(buffer, "\n");
+	
+    //Get input from text.
+	int counterVariable = 0;
+	while (token !=NULL)
+    {
+    	data[counterVariable] = atof(token);
+    	counterVariable++;
+        token = strtok (NULL, "\n");
+
+    }
+    fclose(signalFile);
+
+    return (counterVariable);
 }

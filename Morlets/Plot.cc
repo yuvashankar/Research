@@ -1,5 +1,6 @@
 //Plot.c
 //All the functions needed to plot the png. 
+
 #include "wavelet.h"
 #include <pngwriter.h>
 
@@ -8,20 +9,22 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	int i, j, k;
 	
 	const int lines_size = 10;
-	const int image_width  = num_x + 2*PLOT_OX;
-	const int image_height = lines_size*num_y+2*PLOT_OY;
-	const int height = lines_size*num_y;
+	const int stride = 4; //Stride needs to be even. 
+	const int image_width  = (num_x/stride) + 2 * PLOT_OX;
+	const int image_height = lines_size * num_y+ 2 * PLOT_OY;
+	const int height = lines_size * num_y;
 
 	char  font_location[] = "../lib/VeraMono.ttf";
 	const int label_font_size = 30.0;
 	const int tic_font_size = 15.0;
-	const int title_font_size = 50.0;
+	const int title_font_size = 40.0;
 
 	char x_label[] = "Time (s)";
 	char y_label[] = "Frequency (Hz)";
 	char graph_title[] = "Time Frequency Graph of an Impulse";
 	char temp_string[4];
 
+	int printFlag = 0;
 	CalculateLog( data, num_x * num_y );
 
 	RANGE r = GetRange(data, num_x*num_y);
@@ -51,13 +54,18 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 				1.0, 1.0, 1.0);
 
 	//Plot the Graph itself.
-	for ( i = 1; i <= num_x; ++i)
+	for ( i = 1; i <= num_x/stride; ++i)
 	{
 		for ( j = 1; j <= num_y; ++j)
 		{
 			for ( k = 0; k < lines_size; ++k)
 			{
-				double value = data[i + j*num_x];
+				int counterVar = stride * (i-1) + (j-1) *num_x;
+				double value = data[counterVar];
+				
+				//Ensure that the indexes do not exceed the data limit.
+				assert( counterVar <= num_x*num_y );
+
 				COLOUR c = GetColour(value, r.minimum, r.maximum);
 				
 				png.plot(PLOT_OX + i , PLOT_OY + (height - j*lines_size + k), 
@@ -66,7 +74,7 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 			}
 
 			//Add Frequency Markers
-			if (j % 25 == 0)
+			if (j % 15 == 0)
 			{
 				png.filledsquare( PLOT_OX - 20, PLOT_OY + (height - j*lines_size) - 4,
 						PLOT_OX, PLOT_OY + (height - j*lines_size) + 4,
@@ -83,13 +91,13 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 			}
 		}
 		// ADD A TIME MARKER
-		if( i % int(FS) == 0 )
+		if( (stride * i) % FS == 0 )
 		{
 			png.filledsquare( PLOT_OX + i - 4, PLOT_OY,
 							  PLOT_OX + i + 4, PLOT_OY - 20,
 							1.0, 1.0, 1.0);
 
-			sprintf(temp_string, "%.1f", i/FS);
+			sprintf(temp_string, "%.1d", (stride * i)/FS);
 			
 			int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
 
@@ -97,7 +105,6 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 				PLOT_OX + i - 4 - 0.5* time_text_width, PLOT_OY - 50, 0.0,
 				temp_string,
 				1.0, 1.0, 1.0);
-
 		}
 
 	}

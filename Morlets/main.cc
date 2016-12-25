@@ -26,7 +26,7 @@ int main(void)
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
 
     //populate the data array
-    TestCases(data, 1);
+    TestCases(data, 2);
     // n = ReadFile(data, "sst_nino3.dat");
 
     Wavelet(data, period, scales, 
@@ -36,6 +36,7 @@ int main(void)
     
     // Write to file
     // WriteFile(wavelet_result, period, J, n, "DATA.log");
+    // printf("n = %d, J = %d \n", n, J);
     Plot(wavelet_result, period,  n, J);
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);

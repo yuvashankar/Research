@@ -1,6 +1,8 @@
 #set term postscript enhanced colour font 'Helv, 10'
 #set output 'Result.ps'
-set term x11
+#set term x11
+set term pngcairo enhanced font 'arial,12'
+set output 'Result.png'
 set pm3d map
 
 set logscale z 10

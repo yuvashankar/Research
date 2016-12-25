@@ -24,18 +24,18 @@
 #define D_J 0.125
 
 //Sample Rate
-#define FS 2048.0
+#define FS 2048
 #define DT 1.0/FS
 #define S0 2.0 * DT
 
-#define MAX_FREQUENCY 1024.0
-#define MIN_FREQUENCY 0.2
+#define MAX_FREQUENCY 512.0
+#define MIN_FREQUENCY 0.5
 
 #define MIN_I FREQ_TO_SCALE(MAX_FREQUENCY)
 #define MAX_I FREQ_TO_SCALE(MIN_FREQUENCY)
 
 //Measuring Frequency
-#define FREQ 30.0
+#define FREQ 18.2
 
 //Plotting Constants
 #define PLOT_OY 200
