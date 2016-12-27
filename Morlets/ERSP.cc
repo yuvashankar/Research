@@ -43,7 +43,7 @@ int RemoveBaseline(double* data, int num_of_samples, int J,
 	    for ( k = 0; k < num_of_samples; ++k)
 	    {
 	    	value = data[i * num_of_samples + k] * data[i * num_of_samples + k];
-	        output[ i * num_of_samples + k] = (fabs(value) - mean) / sDeviation;
+	        output[i * num_of_samples + k] = (fabs(value) - mean) / sDeviation;
 	    }
 	}
 

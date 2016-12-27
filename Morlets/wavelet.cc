@@ -41,8 +41,6 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
-	// FILE* out_file = fopen("debug.log", "w");
-
 	#pragma omp parallel num_threads(2) private(i, j) shared (result, period, sampling_frequency, J, n, scales,  fft_data) default(none)
 	{
 		double value;
@@ -65,11 +63,6 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 		{
 			//Calculate the corrosponding frequency to the scale
 			period[i] = (W_0)/(scales[i] * 2 * M_PI);
-
-			// if (i == 40)
-			// {
-			// 	printf("period[%d] = %f\n", i, period[i]);
-			// }
 
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
