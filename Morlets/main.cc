@@ -6,7 +6,7 @@
 
 int main(void)
 {
-    double *data, *result, *wavelet_result, *baseline_out, *period, *scales;
+    double *data, *result, *wavelet_result, *baseline_out, *period, *scales, *frequency;
 
     double t = omp_get_wtime();
     //Initialize the necessary constants.
@@ -24,26 +24,28 @@ int main(void)
     assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
-
-    printf("FREQ_2_SCALE of (%f) = %f\n", FREQ, FREQ_TO_SCALE(FREQ));
+    frequency = IdentifyFrequencies(scales, J);
 
     //populate the data array
     TestCases(data, 5);
     // n = ReadFile(data, "sst_nino3.dat");
 
-    Wavelet(data, period, scales, 
-        FS, n, J,
-        wavelet_result);
+    ERSP (data, scales, FS, n, J, 1, 
+    result);
 
-    RemoveBaseline(wavelet_result, n, J, 
-        1, FS, 
-        baseline_out);
+    // Wavelet(data, scales, 
+    //     FS, n, J,
+    //     wavelet_result);
+
+    // RemoveBaseline(wavelet_result, n, J, 
+    //     1, FS, 
+    //     baseline_out);
     
     
     // Write to file
-    WriteFile(baseline_out, period, J, n, "DATA.log");
+    // WriteFile(result, frequency, J, n, "DATA.log");
     // printf("n = %d, J = %d \n", n, J);
-    // Plot(wavelet_result, period,  n, J);
+    Plot(result, period,  n, J);
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     free(scales);

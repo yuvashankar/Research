@@ -3,6 +3,8 @@
 
 #include "wavelet.h"
 #include <pngwriter.h>
+#include <float.h>
+#include <cmath>
 
 void Plot(double * data, double * periods, int num_x, int num_y)
 {
@@ -61,6 +63,15 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 			{
 				int counterVar = stride * (i-1) + (j-1) *num_x;
 				double value = data[counterVar];
+
+				if (i == 1)
+				{
+					if (std::isnan(value))
+					{
+						printf("Naan Alert!\n");
+					}
+					printf("i = %d, j = %d, value = %f\n",i, j, value);
+				}
 				
 				//Ensure that the indexes do not exceed the data limit.
 				assert( counterVar <= num_x*num_y );
@@ -147,6 +158,12 @@ void CalculateLog(double * array, int size)
 COLOUR GetColour(double v,double vmin,double vmax)
 {
    COLOUR c = {1.0, 1.0, 1.0}; // black
+
+   if (v > vmax)
+   	v = vmax;
+   if (v < vmin)
+   	v = vmin;
+
    double dv = vmax - vmin;
 
    if (v < (vmin + 0.25 * dv)) 
@@ -176,33 +193,37 @@ COLOUR GetColour(double v,double vmin,double vmax)
 double Max(double * array, int size)
 {
 	double max = array[0];
-	// int array_index = 0;
+	int array_index = 0;
 
 	for (int i = 0; i < size; ++i)
 	{
 		if (array[i] > max)
 		{
 			max = array[i];
-			// array_index = i;
+			if (max != max)
+			{
+				printf("Naan Alert!\n");
+			}
+			array_index = i;
 		}
 	}
 
-	// printf("Max: Array[%d] = %.17f\n", array_index, array[array_index]);
+	printf("Max: Array[%d] = %.17f\n", array_index, array[array_index]);
 	return(max);
 }
 
 double Min(double* array, int size)
 {
-	// int array_index = 0;
+	int array_index = 0;
 	double min = array[0];
 	for (int i = 0; i < size; ++i)
 	{
 		if (array[i] < min)
 		{
 			min = array[i];
-			// array_index = i;
+			array_index = i;
 		}
 	}
-	// printf("Min: Array[%d] = %.17f\n", array_index, array[array_index]);
+	printf("Min: Array[%d] = %.17f\n", array_index, array[array_index]);
 	return(min);
 }

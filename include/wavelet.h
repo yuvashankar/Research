@@ -83,17 +83,21 @@ double FourierMorlet(double w, double scale, double normal);
 
 double CompleteFourierMorlet(double w, double scale);
 
-int Wavelet(double* raw_data,  double* period, double* scales, 
+int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J,
 	double* result);
+
+int ERSP (double * data, double* scales, int sampling_frequency, int n, int J, int trials, 
+	double * output);
 
 void CleanData(double * data, double n);
 
 int RemoveBaseline(double* data, int num_of_samples, int J, 
-	int trials, double sampling_frequency, 
+	int trials, int sampling_frequency, 
 	double* output);
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency);
+double* IdentifyFrequencies(double* scales, int count);
 
 double CompleteRealMorlet (double x, double scale);
 double CompleteComplexMorlet(double x, double scale);

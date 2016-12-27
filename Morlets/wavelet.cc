@@ -5,7 +5,7 @@
 
 #define TEST 0.00001
 
-int Wavelet(double* raw_data,  double* period, double* scales, 
+int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J,
 	double* result)
 {
@@ -41,7 +41,7 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
-	#pragma omp parallel num_threads(2) private(i, j) shared (result, period, sampling_frequency, J, n, scales,  fft_data) default(none)
+	#pragma omp parallel num_threads(2) private(i, j) shared (result, sampling_frequency, J, n, scales,  fft_data) default(none)
 	{
 		double value;
 
@@ -62,7 +62,7 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 		for (i = 0; i < J; ++i)
 		{
 			//Calculate the corrosponding frequency to the scale
-			period[i] = (W_0)/(scales[i] * 2 * M_PI);
+			// period[i] = (W_0)/(scales[i] * 2 * M_PI);
 
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
@@ -134,12 +134,6 @@ double* GenerateScales(double minimum_frequency, double maximum_frequency)
 	assert(min_i > 0); assert(max_i > 0);
 	// printf("max_i = %d, min_i = %d\n", max_i, min_i);
 
-	// double bic = S0 * pow(2, min_i * D_J);
-	// double bic2 = S0 * pow(2, max_i * D_J);
-	// double act_max_freq = (W_0)/(bic * 2 * M_PI);
-	// double act_min_freq = (W_0)/(bic2 * 2 * M_PI);
-	// // printf("Max Frequency = %f, Min Frequency = %f\n", act_max_freq, act_min_freq);
-
 	double * scales = (double*) malloc ( (max_i - min_i) * sizeof(double) );
 	int count = ( max_i - min_i ) + 1;
 
@@ -151,6 +145,19 @@ double* GenerateScales(double minimum_frequency, double maximum_frequency)
 	}
 
 	return(scales);
+}
+
+double* IdentifyFrequencies(double* scales, int count)
+{
+
+	double * frequency = (double*) malloc( count * sizeof(double) );
+
+	for (int i = 0; i < count; ++i)
+	{
+		frequency[i] = (W_0)/(scales[i] * 2 * M_PI);
+	}
+	return(frequency);
+
 }
 
 double FourierMorlet(double w, double scale, double normal)
@@ -287,7 +294,7 @@ int WriteFile(double *data, double *period, int x, int y, const char* filename)
         for (int j = 0; j < y; ++j)
         {
             // value = Magnitude(result[i*n + j], result[i*n + j]);
-            fprintf(out_file, "%f\t", data[i*y + j] + small_eps);
+            fprintf(out_file, "%.5f\t", data[i*y + j] + small_eps);
         }
         //Ready for the next line.
         fprintf(out_file, "\n");
