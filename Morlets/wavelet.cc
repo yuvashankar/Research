@@ -66,6 +66,11 @@ int Wavelet(double* raw_data,  double* period, double* scales,
 			//Calculate the corrosponding frequency to the scale
 			period[i] = (W_0)/(scales[i] * 2 * M_PI);
 
+			// if (i == 40)
+			// {
+			// 	printf("period[%d] = %f\n", i, period[i]);
+			// }
+
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
 
@@ -232,10 +237,10 @@ void TestCases(double *data, int flag)
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{
 				data[i] = cos( i * dw + w0 );
-				// if (i >= DATA_SIZE/2 && i <= 2 * (DATA_SIZE)/3)
-				// {
-				// 	data[i] = 2 * cos(i * dw + w0);
-				// }
+				if (i >= DATA_SIZE/2 && i <= 2 * (DATA_SIZE)/3)
+				{
+					data[i] = 2 * cos(i * dw + w0);
+				}
 			}
 			break;
 		case 6:
@@ -279,7 +284,7 @@ int WriteFile(double *data, double *period, int x, int y, const char* filename)
     }
     fprintf(out_file, "\n");
 
-
+    double small_eps = 0.00001; //Add a small eps so that logs of zero don't happen. 
 	for (int i = 0; i < x; ++i)
     {
     	//Feed Frequency
@@ -289,7 +294,7 @@ int WriteFile(double *data, double *period, int x, int y, const char* filename)
         for (int j = 0; j < y; ++j)
         {
             // value = Magnitude(result[i*n + j], result[i*n + j]);
-            fprintf(out_file, "%f\t", data[i*y + j]);
+            fprintf(out_file, "%f\t", data[i*y + j] + small_eps);
         }
         //Ready for the next line.
         fprintf(out_file, "\n");

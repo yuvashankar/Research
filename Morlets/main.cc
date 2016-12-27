@@ -25,19 +25,25 @@ int main(void)
 
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
 
+    printf("FREQ_2_SCALE of (%f) = %f\n", FREQ, FREQ_TO_SCALE(FREQ));
+
     //populate the data array
-    TestCases(data, 2);
+    TestCases(data, 5);
     // n = ReadFile(data, "sst_nino3.dat");
 
     Wavelet(data, period, scales, 
         FS, n, J,
         wavelet_result);
+
+    RemoveBaseline(wavelet_result, n, J, 
+        1, FS, 
+        baseline_out);
     
     
     // Write to file
-    // WriteFile(wavelet_result, period, J, n, "DATA.log");
+    WriteFile(baseline_out, period, J, n, "DATA.log");
     // printf("n = %d, J = %d \n", n, J);
-    Plot(wavelet_result, period,  n, J);
+    // Plot(wavelet_result, period,  n, J);
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     free(scales);

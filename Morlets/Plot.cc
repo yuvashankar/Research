@@ -14,17 +14,16 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	const int image_height = lines_size * num_y+ 2 * PLOT_OY;
 	const int height = lines_size * num_y;
 
-	char  font_location[] = "../lib/VeraMono.ttf";
 	const int label_font_size = 30.0;
 	const int tic_font_size = 15.0;
 	const int title_font_size = 40.0;
 
+	char  font_location[] = "../lib/VeraMono.ttf";
 	char x_label[] = "Time (s)";
 	char y_label[] = "Frequency (Hz)";
 	char graph_title[] = "Time Frequency Graph of an Impulse";
 	char temp_string[4];
 
-	int printFlag = 0;
 	CalculateLog( data, num_x * num_y );
 
 	RANGE r = GetRange(data, num_x*num_y);

@@ -35,7 +35,7 @@
 #define MAX_I FREQ_TO_SCALE(MIN_FREQUENCY)
 
 //Measuring Frequency
-#define FREQ 18.2
+#define FREQ 16.0
 
 //Plotting Constants
 #define PLOT_OY 200
