@@ -101,8 +101,11 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 	for ( i = 0; i < J; ++i)
 	{
 		//Copy the pre trial results from each frequency block into pre_stimulus.
-		memcpy(pre_stimulus, pre_baseline_array + i*n, sizeof(double) * n);
-		
+		// memcpy(pre_stimulus, pre_baseline_array + i*n, sizeof(double) * n);
+		for ( j = 0; j < m; ++j)		
+		{		
+			pre_stimulus[j] = pre_baseline_array[i * n + j]; 		
+		}
 		//Calculate mean and SD
 		mean = gsl_stats_mean(pre_stimulus, stride, m);
     	sDeviation = gsl_stats_sd_m(pre_stimulus, stride, m, mean);
