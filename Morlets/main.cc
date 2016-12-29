@@ -16,12 +16,13 @@ int main(void)
     //Memory Allocations
     data =           (double*) malloc(n *     sizeof(double));
     result =         (double*) malloc(n * J * sizeof(double));
-    wavelet_result = (double*) malloc(n * J * sizeof(double));
-    baseline_out =   (double*) malloc(n * J * sizeof(double));
+    // wavelet_result = (double*) malloc(n * J * sizeof(double));
+    // baseline_out =   (double*) malloc(n * J * sizeof(double));
     period =         (double*) malloc(    J * sizeof(double));
     
-    assert(data != NULL); assert(result != NULL); assert(period != NULL);
-    assert(wavelet_result != NULL); assert(baseline_out != NULL);
+    assert(data != NULL); 
+    // assert(result != NULL); assert(period != NULL);
+    // assert(wavelet_result != NULL); assert(baseline_out != NULL);
 
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
     frequency = IdentifyFrequencies(scales, J);
@@ -30,7 +31,7 @@ int main(void)
     TestCases(data, 5);
     // n = ReadFile(data, "sst_nino3.dat");
 
-    ERSP (data, scales, FS, n, J, 1, 
+    ERSP (data, scales, FS, n, J, 77, 
     result);
 
     // Wavelet(data, scales, 
@@ -46,7 +47,7 @@ int main(void)
     WriteFile(result, frequency, J, n, "DATA.log");
     // Plot(result, period,  n, J);
 
-    free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
+    free(data); free(period); free(result); //free(period); free(wavelet_result); free(baseline_out);
     free(scales);
     t = omp_get_wtime() - t;
     printf("Execution Time: %f\n", t);

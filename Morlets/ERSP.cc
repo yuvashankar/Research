@@ -6,13 +6,7 @@
 //McMaster University
 
 #include "processEEG.h"
-// #include "wavelet.h"
 #include <gsl/gsl_statistics.h>
-#include <float.h>
-
-
-// #define ZERO_TEST 0.00001
-
 
 int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int J, int trials, 
 	double * output)
@@ -49,6 +43,7 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 
 	//Preapre for the plan backwards
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
+	
 	/*Begin ERSP*/
 	for ( x = 0; x < trials; ++x)
 	{
@@ -71,7 +66,7 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 
 		//Remove the baseline
 		RemoveBaseline(pre_stimulus, wavelet_out,
-			n, J, sampling_frequency,
+			n, J, m,
 			baseline_out);
 
 		for ( i = 0; i < n * J; ++i)
@@ -89,28 +84,24 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 	//Sanitation Engineering
 	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
 	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
-	free(pre_stimulus); free(wavelet_out); free(baseline_out);
+	free(pre_stimulus); free(baseline_out); free(wavelet_out);
 	return(0);
 }
 
 int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
-	const int n, const int J, const int sampling_frequency,
+	const int n, const int J, const int m,
 	double* output)
 {
 	double value;
 	double mean, sDeviation;
 	const int stride = 1;
 	int i, j;
-	const int m = PRE_EVENT_TIME * sampling_frequency;
+	// const int m = PRE_EVENT_TIME * sampling_frequency;
 
 	for ( i = 0; i < J; ++i)
 	{
 		//Copy the pre trial results from each frequency block into pre_stimulus.
-		// memcpy(pre_stimulus, pre_baseline_array + i*num_of_samples, sizeof(double) * num_of_samples);
-		for ( j = 0; j < m; ++j)
-		{
-			pre_stimulus[j] = pre_baseline_array[i * n + j]; 
-		}
+		memcpy(pre_stimulus, pre_baseline_array + i*n, sizeof(double) * n);
 		
 		//Calculate mean and SD
 		mean = gsl_stats_mean(pre_stimulus, stride, m);
