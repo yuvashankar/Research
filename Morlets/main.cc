@@ -10,7 +10,7 @@ int main(void)
     double t = omp_get_wtime();
 
     //Initialize the necessary constants.
-    double *data, *result, *period, *scales, *frequency;
+    double *data, *result, *scales, *frequency;
 
     int n = DATA_SIZE;
     const int J = MAX_I - MIN_I;
@@ -32,8 +32,8 @@ int main(void)
     result);
     
     // Write to file
-    WriteFile(result, frequency, J, n, "DATA.log");
-    // Plot(result, period,  n, J);
+    // WriteFile(result, frequency, J, n, "DATA.log");
+    Plot(result, frequency,  n, J);
 
     //Free up Memory
     free(data);  free(result);

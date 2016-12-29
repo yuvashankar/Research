@@ -35,7 +35,7 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
 	//Populate the Data array
-	PopulateDataArray(raw_data, n, PADDED_SIZE, , 1, data_in);
+	PopulateDataArray(raw_data, n, PADDED_SIZE, 1, data_in);
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);

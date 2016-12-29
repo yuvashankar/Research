@@ -77,7 +77,7 @@ RANGE GetRange(double* array, int size);
 
 COLOUR GetColour(double v,double vmin,double vmax);
 
-int WriteTestCases(double *data, int length, const char* filename);
+int WriteDebug(double *data, int length, const char* filename);
 
 double FourierMorlet(double w, double scale, double normal);
 
@@ -107,7 +107,7 @@ void Convolute(double *data, double *conWindow, double * complexWindow, double c
 
 int CalculatePaddingSize(int array_size, int FLAG);
 int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int PAD_FLAG,
-	fftw_complex* output_data)
+	fftw_complex* output_data);
 
 int FrequencyMultiply(const fftw_complex* fft_data, 
 	const int data_size, const double scale, const double dw,
