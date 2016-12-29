@@ -106,3 +106,4 @@ void Convolute(double *data, double *conWindow, double * complexWindow, double c
 	double* result, double* complexResult);
 
 int CalculatePaddingSize(int array_size, int FLAG);
+int PopulateDataArray(double* input_data, fftw_complex* output_data, const int data_size, const int padded_size);

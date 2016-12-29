@@ -105,6 +105,25 @@ int Wavelet(double* raw_data, double* scales,
     return(0);
 } /*Wavelet */
 
+int PopulateDataArray(double* input_data, fftw_complex* output_data, const int data_size, const int padded_size)
+{
+	int i;
+	//populate the FFTW data vector. 
+	for (i = 0; i < data_size; ++i)
+    {
+    	output_data[i][0] = input_data[i];
+    	output_data[i][1] = 0.0;
+    }
+
+    //Force the rest of the data vector to zero just in case
+    for (i = data_size; i < padded_size; ++i)
+    {
+    	output_data[i][0] = 0.0;
+    	output_data[i][1] = 0.0;
+    }
+    return(0);
+}
+
 int CalculatePaddingSize(int array_size, int FLAG)
 {
 	const int pad = ceil(log2(array_size));

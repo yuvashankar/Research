@@ -43,8 +43,8 @@ int main(void)
     
     
     // Write to file
-    // WriteFile(result, frequency, J, n, "DATA.log");
-    Plot(result, period,  n, J);
+    WriteFile(result, frequency, J, n, "DATA.log");
+    // Plot(result, period,  n, J);
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
     free(scales);

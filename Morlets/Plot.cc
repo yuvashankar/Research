@@ -44,25 +44,25 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	pngwriter png( image_width, image_height , 0 , "test.png");
 
 	//X_label
-	int x_text_width = png.get_text_width(font_location, label_font_size, x_label);
-	png.plot_text( font_location, label_font_size,
-				(0.5*image_width - 0.5*x_text_width), 0.5*PLOT_OY, 0.0,
-				x_label,
-				1.0, 1.0, 1.0);
+	// int x_text_width = png.get_text_width(font_location, label_font_size, x_label);
+	// png.plot_text( font_location, label_font_size,
+	// 			(0.5*image_width - 0.5*x_text_width), 0.5*PLOT_OY, 0.0,
+	// 			x_label,
+	// 			1.0, 1.0, 1.0);
 	
-	//Y_Label
-	int y_text_width = png.get_text_width(font_location, label_font_size, y_label);
-	png.plot_text( font_location, label_font_size,
-				0.25*PLOT_OY, (0.5*image_height - 0.5*y_text_width), M_PI*0.5,
-				y_label,
-				1.0, 1.0, 1.0);
+	// //Y_Label
+	// int y_text_width = png.get_text_width(font_location, label_font_size, y_label);
+	// png.plot_text( font_location, label_font_size,
+	// 			0.25*PLOT_OY, (0.5*image_height - 0.5*y_text_width), M_PI*0.5,
+	// 			y_label,
+	// 			1.0, 1.0, 1.0);
 
-	//Title
-	int title_text_width = png.get_text_width(font_location, label_font_size, graph_title);
-	png.plot_text( font_location, title_font_size,
-				(0.5*image_width - title_text_width), (image_height - 0.5*PLOT_OY), 0.0,
-				graph_title,
-				1.0, 1.0, 1.0);
+	// //Title
+	// int title_text_width = png.get_text_width(font_location, label_font_size, graph_title);
+	// png.plot_text( font_location, title_font_size,
+	// 			(0.5*image_width - title_text_width), (image_height - 0.5*PLOT_OY), 0.0,
+	// 			graph_title,
+	// 			1.0, 1.0, 1.0);
 
 	//Plot the Graph itself.
 	for ( i = 1; i <= num_x/stride; ++i)
@@ -95,8 +95,8 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 
 				sprintf(temp_string, "%.1f", periods[j]);
 
-				int freq_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
-				
+				// int freq_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
+				int freq_text_width = 15;
 				png.plot_text(font_location, tic_font_size, 
 					PLOT_OX - 30 - freq_text_width, PLOT_OY + (height - j*lines_size) - 0.5*tic_font_size, 0.0, 
 					temp_string, 
@@ -112,8 +112,8 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 
 			sprintf(temp_string, "%.1d", (stride * i)/FS);
 			
-			int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
-
+			// int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
+			int time_text_width = 15;
 			png.plot_text( font_location, tic_font_size,
 				PLOT_OX + i - 4 - 0.5* time_text_width, PLOT_OY - 50, 0.0,
 				temp_string,

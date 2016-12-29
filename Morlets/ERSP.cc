@@ -43,19 +43,21 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
 	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
 
-	//populate the FFTW data vector. 
-	for (i = 0; i < n; ++i)
-    {
-    	data_in[i][0] = raw_data[i];
-    	data_in[i][1] = 0.0;
-    }
+	PopulateDataArray(raw_data, data_in, n, PADDED_SIZE);
 
-    //Force the rest of the data vector to zero just in case
-    for (i = n; i < PADDED_SIZE; ++i)
-    {
-    	data_in[i][0] = 0.0;
-    	data_in[i][1] = 0.0;
-    }
+	// //populate the FFTW data vector. 
+	// for (i = 0; i < n; ++i)
+ //    {
+ //    	data_in[i][0] = raw_data[i];
+ //    	data_in[i][1] = 0.0;
+ //    }
+
+ //    //Force the rest of the data vector to zero just in case
+ //    for (i = n; i < PADDED_SIZE; ++i)
+ //    {
+ //    	data_in[i][0] = 0.0;
+ //    	data_in[i][1] = 0.0;
+ //    }
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
