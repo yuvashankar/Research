@@ -26,6 +26,16 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	char graph_title[] = "Time Frequency Graph of an Impulse";
 	char temp_string[4];
 
+	// for (int i = 0; i < num_x * num_y; ++i)
+	// {
+	// 	double val = data[i];
+	// 	if (std::isnan(val))
+	// 	{
+	// 		printf("Naan Alert!\n");
+	// 	}
+	// }
+
+
 	CalculateLog( data, num_x * num_y );
 
 	RANGE r = GetRange(data, num_x*num_y);
@@ -64,14 +74,7 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 				int counterVar = stride * (i-1) + (j-1) *num_x;
 				double value = data[counterVar];
 
-				if (i == 1)
-				{
-					if (std::isnan(value))
-					{
-						printf("Naan Alert!\n");
-					}
-					printf("i = %d, j = %d, value = %f\n",i, j, value);
-				}
+
 				
 				//Ensure that the indexes do not exceed the data limit.
 				assert( counterVar <= num_x*num_y );
@@ -146,12 +149,12 @@ RANGE GetRange(double* array, int size)
 
 void CalculateLog(double * array, int size)
 {
-	// double val;
 	for (int i = 0; i < size; ++i)
 	{
 		array[i] = log10(array[i]);
-		// array[i] = val;
+
 	}
+
 }
 
 

@@ -129,12 +129,9 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 		}
 		for ( i = 0; i < n * J; ++i)
 		{
-			output[i] += baseline_out[i];
-			if (isnan(output[i]))
-			{
-				printf("Naan Alert!\n");
-				output[i] = DBL_MAX;
-			}
+			output[i] += fabs(baseline_out[i]);
+				// printf("Naan Alert!\n");
+				// output[i] = DBL_MAX;
 		}
 	/*End Baseline Removal*/
 	}

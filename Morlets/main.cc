@@ -44,7 +44,6 @@ int main(void)
     
     // Write to file
     // WriteFile(result, frequency, J, n, "DATA.log");
-    // printf("n = %d, J = %d \n", n, J);
     Plot(result, period,  n, J);
 
     free(data); free(result); free(period); free(wavelet_result); free(baseline_out);
