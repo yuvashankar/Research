@@ -6,49 +6,38 @@
 
 int main(void)
 {
-    double *data, *result, *wavelet_result, *baseline_out, *period, *scales, *frequency;
-
+    //Start the timer!
     double t = omp_get_wtime();
+
     //Initialize the necessary constants.
+    double *data, *result, *period, *scales, *frequency;
+
     int n = DATA_SIZE;
     const int J = MAX_I - MIN_I;
 
     //Memory Allocations
     data =           (double*) malloc(n *     sizeof(double));
     result =         (double*) malloc(n * J * sizeof(double));
-    // wavelet_result = (double*) malloc(n * J * sizeof(double));
-    // baseline_out =   (double*) malloc(n * J * sizeof(double));
-    period =         (double*) malloc(    J * sizeof(double));
-    
-    assert(data != NULL); 
-    // assert(result != NULL); assert(period != NULL);
-    // assert(wavelet_result != NULL); assert(baseline_out != NULL);
+    assert(data != NULL); assert(result != NULL);
 
+    //Get Scales and Frequencies
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY);
     frequency = IdentifyFrequencies(scales, J);
 
-    //populate the data array
+    //Populate the data array
     TestCases(data, 5);
-    // n = ReadFile(data, "sst_nino3.dat");
 
+    //Compute the ERSP
     ERSP (data, scales, FS, n, J, 77, 
     result);
-
-    // Wavelet(data, scales, 
-    //     FS, n, J,
-    //     wavelet_result);
-
-    // RemoveBaseline(wavelet_result, n, J, 
-    //     1, FS, 
-    //     baseline_out);
-    
     
     // Write to file
     WriteFile(result, frequency, J, n, "DATA.log");
     // Plot(result, period,  n, J);
 
-    free(data); free(period); free(result); //free(period); free(wavelet_result); free(baseline_out);
-    free(scales);
+    //Free up Memory
+    free(data);  free(result);
+    free(scales); free(frequency);
     t = omp_get_wtime() - t;
     printf("Execution Time: %f\n", t);
     return 0;
