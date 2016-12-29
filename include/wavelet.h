@@ -92,8 +92,8 @@ int ERSP (double * data, double* scales, int sampling_frequency, int n, int J, i
 
 void CleanData(double * data, double n);
 
-int RemoveBaseline(double* data, int num_of_samples, int J, 
-	int trials, int sampling_frequency, 
+int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
+	const int n, const int J, const int sampling_frequency,
 	double* output);
 
 double* GenerateScales(double minimum_frequency, double maximum_frequency);
@@ -106,4 +106,9 @@ void Convolute(double *data, double *conWindow, double * complexWindow, double c
 	double* result, double* complexResult);
 
 int CalculatePaddingSize(int array_size, int FLAG);
-int PopulateDataArray(double* input_data, fftw_complex* output_data, const int data_size, const int padded_size);
+int PopulateDataArray(double* input_data, const int data_size, const int padded_size, 
+	fftw_complex* output_data);
+
+int FrequencyMultiply(const fftw_complex* fft_data, 
+	const int data_size, const double scale, const double dw,
+	 fftw_complex* filter_convolution);

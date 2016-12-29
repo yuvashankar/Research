@@ -22,85 +22,46 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
 	fftw_plan plan_forward, plan_backward;
 
-	double value, mean, sDeviation;
-	int i, j, k;
-	int stride = 1;
-	/*Begin Wavelet Analysis*/
+	int i, j, x;
 
-	//Calculate Padding Required
+	//Calculate the necessary constants for the Continuous Wavelet Transform.
     const int PADDED_SIZE = CalculatePaddingSize(n, 1);
     const int m = PRE_EVENT_TIME * sampling_frequency;
-
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
+    //Necessary Arrays for the CWT
     wavelet_out  = (double*) malloc( n * J * sizeof(double) );
     baseline_out = (double*) malloc( n * J * sizeof(double) );
     pre_stimulus = (double*) malloc( m     * sizeof(double) );
 
-    data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-	
-	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
-	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
+    //FFTW Memory Allocations
+    data_in  =           (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	fft_data =           (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
-	PopulateDataArray(raw_data, data_in, n, PADDED_SIZE);
-
-	// //populate the FFTW data vector. 
-	// for (i = 0; i < n; ++i)
- //    {
- //    	data_in[i][0] = raw_data[i];
- //    	data_in[i][1] = 0.0;
- //    }
-
- //    //Force the rest of the data vector to zero just in case
- //    for (i = n; i < PADDED_SIZE; ++i)
- //    {
- //    	data_in[i][0] = 0.0;
- //    	data_in[i][1] = 0.0;
- //    }
+	//Populate the Data array
+	PopulateDataArray(raw_data, n, PADDED_SIZE, data_in);
 
 	//Calculate the FFT of the data and store it in fft_data
-	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
-									FFTW_FORWARD, FFTW_ESTIMATE);
+	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
-	
-	
 	//Preapre for the plan backwards
-	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
-									 FFTW_BACKWARD, FFTW_ESTIMATE);
-
-	for (int x = 0; x < trials; ++x)
+	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
+	/*Begin ERSP*/
+	for ( x = 0; x < trials; ++x)
 	{
+		/*Begin Wavelet Analysis*/
 		for (i = 0; i < J; ++i)
 		{
-			//Calculate the corrosponding frequency to the scale
-			// period[i] = (W_0)/(scales[i] * 2 * M_PI);
+			FrequencyMultiply(fft_data, PADDED_SIZE, scales[i], dw, 
+				filter_convolution);
 
-			//Compute the Fourier Morlet at 0 and N/2
-			value = CompleteFourierMorlet(0.0, scales[i]);
-
-			filter_convolution[0][0] = fft_data[0][0] * value;
-			filter_convolution[0][1] = fft_data[0][1] * value;
-			
-			filter_convolution[PADDED_SIZE/2][0] = 0.0;
-			filter_convolution[PADDED_SIZE/2][1] = 0.0;
-
-			//Compute the Fourier Morlet Convolution in between
-			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
-			{
-				value = CompleteFourierMorlet( j * dw , scales[i]);
-				filter_convolution[j][0] = fft_data[j][0] * value;
-				filter_convolution[j][1] = fft_data[j][1] * value;
-
-				filter_convolution[PADDED_SIZE- j][0] = 0.0;
-				filter_convolution[PADDED_SIZE- j][1] = 0.0;
-			}
-
-			//Take the inverse FFT. 
+			//Take the inverse FFT and store it in fftw_result
 			fftw_execute(plan_backward);
-		    
-			//Calculate the power and store it in result
+
+			//Calculate the power and store it in result this may need to be changed to accomodate for phase
 			for (j = 0; j < n; ++j)
 			{
 				wavelet_out[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
@@ -108,89 +69,60 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 		}
 		/*End Wavelet Analysis*/
 
-		/*Begin Baseline Removal*/
-		for ( i = 0; i < J; ++i)
-		{
-			//Copy the pre trial results from each frequency block into pre_stimulus.
-			// memcpy(pre_stimulus, wavelet_out + i*num_of_samples, sizeof(double) * num_of_samples);
-			for (int j = 0; j < m; ++j)
-			{
-				pre_stimulus[j] = wavelet_out[i * n + j]; 
-			}
-			
-			//Calculate mean and SD
-			mean = gsl_stats_mean(pre_stimulus, stride, m);
-	    	sDeviation = gsl_stats_sd_m(pre_stimulus, stride, m, mean);
+		//Remove the baseline
+		RemoveBaseline(pre_stimulus, wavelet_out,
+			n, J, sampling_frequency,
+			baseline_out);
 
-	    	//Remove the Baseline
-		    for ( k = 0; k < n; ++k)
-		    {
-		    	value = wavelet_out[i * n + k] * wavelet_out[i * n + k];
-		        baseline_out[i * n + k] = (fabs(value) - mean) / sDeviation;
-		    }
-		}
 		for ( i = 0; i < n * J; ++i)
 		{
 			output[i] += fabs(baseline_out[i]);
-				// printf("Naan Alert!\n");
-				// output[i] = DBL_MAX;
 		}
-	/*End Baseline Removal*/
 	}
-
-	/*Begin ERSP*/
+	
 	for (int i = 0; i < n * J; ++i)
 	{
 		output[i] = output[i] / trials;
 	}
 	/*End ERSP*/
 
-
+	//Sanitation Engineering
 	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
 	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
 	free(pre_stimulus); free(wavelet_out); free(baseline_out);
 	return(0);
 }
 
-
-
-
-
-int RemoveBaseline(double* data, int num_of_samples, int J,
-	int trials, double sampling_frequency,
+int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
+	const int n, const int J, const int sampling_frequency,
 	double* output)
 {
-	//Initializations
-	int div_by_zero = 0;
-	size_t stride = 1;
-	double * pre_stimulus;
-	int i, j, k, m;
-	double value, mean, sDeviation = 0.0;
+	double value;
+	double mean, sDeviation;
+	const int stride = 1;
+	int i, j;
+	const int m = PRE_EVENT_TIME * sampling_frequency;
 
-	//Cardinal from t = 0 to the stimulus.
-	m = PRE_EVENT_TIME * sampling_frequency;
-	
-	//Allocate Memory
-	pre_stimulus = (double*) malloc( m * sizeof(double) );
-	assert(pre_stimulus != NULL);
-	
 	for ( i = 0; i < J; ++i)
 	{
 		//Copy the pre trial results from each frequency block into pre_stimulus.
-		memcpy(pre_stimulus, data + i*num_of_samples, sizeof(double) * num_of_samples);
+		// memcpy(pre_stimulus, pre_baseline_array + i*num_of_samples, sizeof(double) * num_of_samples);
+		for ( j = 0; j < m; ++j)
+		{
+			pre_stimulus[j] = pre_baseline_array[i * n + j]; 
+		}
 		
 		//Calculate mean and SD
 		mean = gsl_stats_mean(pre_stimulus, stride, m);
     	sDeviation = gsl_stats_sd_m(pre_stimulus, stride, m, mean);
 
     	//Remove the Baseline
-	    for ( k = 0; k < num_of_samples; ++k)
+	    for ( j = 0; j < n; ++j)
 	    {
-	    	value = data[i * num_of_samples + k] * data[i * num_of_samples + k];
-	        output[i * num_of_samples + k] = (fabs(value) - mean) / sDeviation;
+	    	value = pre_baseline_array[i * n + j] * pre_baseline_array[i * n + j];
+	        output[i * n + j] = (fabs(value) - mean) / sDeviation;
 	    }
 	}
 
-	free(pre_stimulus);
-	return(div_by_zero);
+	return(0);
 }

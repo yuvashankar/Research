@@ -1,0 +1,32 @@
+int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
+	const int n, const int J, const int sampling_frequency,
+	double* output)
+{
+	double mean, sDevaiton;
+	const int stride = 1;
+	int i, j;
+	const int m = PRE_EVENT_TIME * sampling_frequency;
+
+	for ( i = 0; i < J; ++i)
+	{
+		//Copy the pre trial results from each frequency block into pre_stimulus.
+		// memcpy(pre_stimulus, pre_baseline_array + i*num_of_samples, sizeof(double) * num_of_samples);
+		for (int j = 0; j < m; ++j)
+		{
+			pre_stimulus[j] = pre_baseline_array[i * n + j]; 
+		}
+		
+		//Calculate mean and SD
+		mean = gsl_stats_mean(pre_stimulus, stride, m);
+    	sDeviation = gsl_stats_sd_m(pre_stimulus, stride, m, mean);
+
+    	//Remove the Baseline
+	    for ( j = 0; j < n; ++k)
+	    {
+	    	value = pre_baseline_array[i * n + k] * pre_baseline_array[i * n + k];
+	        output[i * n + k] = (fabs(value) - mean) / sDeviation;
+	    }
+	}
+
+	return(0)
+}
