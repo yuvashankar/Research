@@ -25,15 +25,39 @@ int main(void)
     frequency = IdentifyFrequencies(scales, J);
 
     //Populate the data array
-    TestCases(data, 5);
+    // TestCases(data, 5);
+    for (int i = 0; i < n/2; ++i)
+    {
+        data[i] = 0.5;
+        data[i + n/2] = 1.0;
+    }
+    
 
-    //Compute the ERSP
-    ERSP (data, scales, FS, n, J, 77, 
-    result);
+    int pad = CalculatePaddingSize(n, 2);
+    // printf("n = %d, Padding Size = %d, 2 * n = %d\n", n, pad, 2 * n);
+
+    fftw_complex * data_in  =           (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * pad );
+    PopulateDataArray(data, n, pad, 2, data_in);
+    // WriteDebug(data, pad, "debug.log");
+        FILE* debug_log = fopen("debug.log", "w");
+        for (int i = 0; i < pad; ++i)
+        {
+            double value = (double) i/pad;
+            fprintf(debug_log, "%f\t%f\n", value, data_in[i][0]);
+        }
+        fclose(debug_log);
+
+
+
+    
+
+    // //Compute the ERSP
+    // ERSP (data, scales, FS, n, J, 77, 
+    // result);
     
     // Write to file
     // WriteFile(result, frequency, J, n, "DATA.log");
-    Plot(result, frequency,  n, J);
+    // Plot(result, period,  n, J);
 
     //Free up Memory
     free(data);  free(result);

@@ -137,27 +137,12 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int PAD_FLAG,
 	fftw_complex* output_data)
 {
-	const double ramp = 2.0/data_size;
+	const double ramp = 2.0/data_size; // = 1.0/ n / 2
 	double gain; 
 	int i;
-	int input_offset = 0;
-	int output_offset = 0;
 
 	int output_counter = 0;
 	int input_counter = 0;
-
-	double temp = 0.0;
-	double temp2 = 0.0;
-
-	// FILE* debug_log = fopen("debug.log", "w");
-
-	    // FILE* debug_log = fopen("debug.log", "w");
-		// for (int i = 0; i < padded_size; ++i)
-		// {
-		//     double value = (double) i/padded_size;
-		//     fprintf(debug_log, "%f\t%f\n", value, output_data[i][0]);
-		// }
-	    // fclose(debug_log);
 
 	switch(PAD_FLAG)
 	{
@@ -193,30 +178,18 @@ int PopulateDataArray(double* input_data, const int data_size, const int padded_
 		    	output_data[i][1] = 0.0;
 		    }
 
-		    // printf("start = %d, end = %d:\n", data_size + (int) (0.5*data_size), data_size + (int) (0.5*data_size) + (int) (0.5 * data_size));
-		    // printf("data_size = %d, padded_size = %d\n", data_size, padded_size);
 		    for (i = 0; i < (int) (0.5* data_size); ++i)
 		    {
 		    	output_counter = data_size + i;
 		    	input_counter = (int) ((data_size/2) + i);
-		    	gain = input_offset * ramp;
+		    	gain = i * ramp;
 
 		    	output_data[output_counter][0] = (1.0 - gain) * input_data[input_counter];
 		    	output_data[output_counter][1] = 0.0;
 
 		    	output_data[output_counter + (int) (0.5 * data_size)][0] = gain * input_data[i];
 		    	output_data[output_counter + (int) (0.5 * data_size)][1] = 0.0;
-
-		    	temp = output_data[output_counter + (int) (0.5 * data_size)][0];
-		    	temp2 = input_data[i];
-
-
-		    	input_offset++;
-
 		    }
-
-
-
 			break;
 		
 		default: //Return just the array no padding. 
@@ -228,11 +201,7 @@ int PopulateDataArray(double* input_data, const int data_size, const int padded_
 		    }
 		    break;
 	}
-
-
-
-	// fclose(debug_log);
-    return(0);
+    return(PAD_FLAG);
 }
 
 int CalculatePaddingSize(int array_size, int PAD_FLAG)
