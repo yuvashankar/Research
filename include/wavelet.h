@@ -106,8 +106,8 @@ void Convolute(double *data, double *conWindow, double * complexWindow, double c
 	double* result, double* complexResult);
 
 int CalculatePaddingSize(int array_size, int FLAG);
-int PopulateDataArray(double* input_data, const int data_size, const int padded_size, 
-	fftw_complex* output_data);
+int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int PAD_FLAG,
+	fftw_complex* output_data)
 
 int FrequencyMultiply(const fftw_complex* fft_data, 
 	const int data_size, const double scale, const double dw,

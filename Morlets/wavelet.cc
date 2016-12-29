@@ -134,31 +134,69 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 	return(0);
 }
 
-int PopulateDataArray(double* input_data, const int data_size, const int padded_size, 
+int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int PAD_FLAG,
 	fftw_complex* output_data)
 {
+	const double ramp = 2.0/data_size;
+	double gain; 
 	int i;
-	//populate the FFTW data vector. 
-	for (i = 0; i < data_size; ++i)
-    {
-    	output_data[i][0] = input_data[i];
-    	output_data[i][1] = 0.0;
-    }
+	switch(PAD_FLAG)
+	{
+		case 0: //No Padding what so ever
+			//populate the FFTW data vector. 
+			for (i = 0; i < data_size; ++i)
+		    {
+		    	output_data[i][0] = input_data[i];
+		    	output_data[i][1] = 0.0;
+		    }
+		    break;
+		
+		case 1: //Zero - Padding
+			//populate the FFTW data vector. 
+			for (i = 0; i < data_size; ++i)
+		    {
+		    	output_data[i][0] = input_data[i];
+		    	output_data[i][1] = 0.0;
+		    }
 
-    //Force the rest of the data vector to zero just in case
-    for (i = data_size; i < padded_size; ++i)
-    {
-    	output_data[i][0] = 0.0;
-    	output_data[i][1] = 0.0;
-    }
+		    //Force the rest of the data vector to zero just in case
+		    for (i = data_size; i < padded_size; ++i)
+		    {
+		    	output_data[i][0] = 0.0;
+		    	output_data[i][1] = 0.0;
+		    }
+		    break;
+		
+		case 2: //Duplicate array and ramp up and ramp down output
+			for (int i = 0; i < data_size/2; ++i)
+			{
+				gain = i * ramp;
+				output_data[ data_size + i ][0] = (1.0 - gain) * input_data[ 0.5 * data_size + i];
+				output_data[ data_size + i ][1] = 0.0;
+
+				output_data[0.75 * data_size + i][0] = gain * input_data[i];
+				output_data[0.75 * data_size + i][1] = 0.0;
+			}
+			break;
+		
+		default: //Return just the array no padding. 
+			//populate the FFTW data vector. 
+			for (i = 0; i < data_size; ++i)
+		    {
+		    	output_data[i][0] = input_data[i];
+		    	output_data[i][1] = 0.0;
+		    }
+		    break;
+	}
+
     return(0);
 }
 
-int CalculatePaddingSize(int array_size, int FLAG)
+int CalculatePaddingSize(int array_size, int PAD_FLAG)
 {
 	const int pad = ceil(log2(array_size));
 	int out = array_size;
-	switch(FLAG)
+	switch(PAD_FLAG)
 	{
 		case 0: //No Padding what so ever. 
 			out = array_size;
@@ -316,8 +354,6 @@ void TestCases(double *data, int flag)
 			break;
 	}
 }
-
-
 
 int WriteFile(double *data, double *period, int x, int y, const char* filename)
 {

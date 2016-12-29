@@ -19,11 +19,11 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 	int i, j, x;
 
 	//Calculate the necessary constants for the Continuous Wavelet Transform.
-    const int PADDED_SIZE = CalculatePaddingSize(n, 1);
-    const int m = PRE_EVENT_TIME * sampling_frequency;
-    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
+    const int    PADDED_SIZE = CalculatePaddingSize(n, 1);
+    const int    m           = PRE_EVENT_TIME * sampling_frequency;
+    const double dw          = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
-    //Necessary Arrays for the CWT
+    //Memory Allocations
     wavelet_out  = (double*) malloc( n * J * sizeof(double) );
     baseline_out = (double*) malloc( n * J * sizeof(double) );
     pre_stimulus = (double*) malloc( m     * sizeof(double) );
@@ -35,7 +35,7 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
 	//Populate the Data array
-	PopulateDataArray(raw_data, n, PADDED_SIZE, data_in);
+	PopulateDataArray(raw_data, n, PADDED_SIZE, , 1, data_in);
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
@@ -85,6 +85,7 @@ int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int 
 	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
 	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
 	free(pre_stimulus); free(baseline_out); free(wavelet_out);
+	
 	return(0);
 }
 
@@ -96,17 +97,16 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 	double mean, sDeviation;
 	const int stride = 1;
 	int i, j;
-	// const int m = PRE_EVENT_TIME * sampling_frequency;
 
 	for ( i = 0; i < J; ++i)
 	{
 		//Copy the pre trial results from each frequency block into pre_stimulus.
-		// memcpy(pre_stimulus, pre_baseline_array + i*n, sizeof(double) * n);
 		for ( j = 0; j < m; ++j)		
 		{		
 			pre_stimulus[j] = pre_baseline_array[i * n + j]; 		
 		}
-		//Calculate mean and SD
+
+		//Calculate mean and standard deviation
 		mean = gsl_stats_mean(pre_stimulus, stride, m);
     	sDeviation = gsl_stats_sd_m(pre_stimulus, stride, m, mean);
 
