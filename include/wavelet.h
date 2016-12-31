@@ -40,14 +40,39 @@
 */
 #define W_0_2 36.0
 
+/**
+	\var D_J
+	The amount of "sub octaves" or sub scales inbetween the major scales that will be used. 
+	The lower the number, the higher the resolution of the result.
+*/
 #define D_J 0.125
+
+/**
+	\var PAD_FLAG
+	\brief The type of padding specified for the Continuous Wavelet Transform. 
+
+	The Continuous Wavelet Transform uses the Fast Fourier Transform. It is sometimes efficient to add additional values to the edge of the data array to improve the speed of the FFT. This method is commonly called padding the data array. 
+	This variable determins the type of padding that will be used to assist the Fast Fourier Transform. THe padding options are:
+
+	0 - No Padding
+	- The array will be analyzed with no padding. 
+
+	1 - Zero Padding
+	- The size of the array will be enlarged to the closest power of two and zeros will be added to the end.
+
+	2 - Ramp Padding
+	- The array will be doubled in size, and the signal will be ramped up and ramped down to gradually. 
+
+	If none of these are specified, the array is not padded by default.
+*/
+#define PAD_FLAG 1
 
 //Signal Constants
 #define FS 2048
 #define DT 1.0/FS
 #define S0 2.0 * DT
 #define FREQ 16.0
-#define DATA_SIZE 6144
+#define DATA_SIZE 6144 
 
 //Plotting Constants
 #define MAX_FREQUENCY 512.0
@@ -82,7 +107,8 @@ int ReadFile(double data[], char* filename);
 int WriteFile(double *data, double *frequency, int x, int y, const char* filename);
 int WriteDebug(double *data, int length, const char* filename);
 
-int ERSP (double * data, double* scales, int sampling_frequency, int n, int J, int trials, 
+int ERSP (double * raw_data, double* scales, const int sampling_frequency, 
+	const int n, const int J, int const trials, const int padding_type, 
 	double * output);
 
 void Plot(double * data, double * periods, int num_x, int num_y);

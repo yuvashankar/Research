@@ -1,18 +1,21 @@
-/*CleanData.c
-
-Takes a 1xn array and preforms the Z-Score Calculation
-
-This was made into a function to clean up main, too many lines of code in main.
-
-Input:
-	data: this is a pointer array, the buffer WILL be modified
-	n: the size of data
-Output:
-	data will be rewritten
+/** 
+    \file CleanData.cc
+    \brief This file contains the code to remove any noise in the input data. 
 */
+
+
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
 
+/*    
+    \fn void CleanData(double * data, double n)
+
+    \param data An 1 x n array with the data to be cleaned
+    \param n The size of the data array.
+
+Takes a 1 x n array and preforms the Z-Score Calculation
+The array data will be rewritten
+*/
 void CleanData(double * data, double n)
 {
 	double mean = gsl_stats_mean(data, 1, n);

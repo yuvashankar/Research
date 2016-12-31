@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['research',['Research',['../md___users_vinay__google__drive__science__research__r_e_a_d_m_e.html',1,'']]],
-  ['range',['RANGE',['../struct_r_a_n_g_e.html',1,'']]]
+  ['pad_5fflag',['PAD_FLAG',['../wavelet_8h.html#a01bbb3ee3652091a5d42d531011b3869',1,'wavelet.h']]],
+  ['pngwriter',['pngwriter',['../classpngwriter.html',1,'']]],
+  ['populatedataarray',['PopulateDataArray',['../_e_r_s_p_8cc.html#afdae15297a26fdeaee4208e9c664940f',1,'ERSP.cc']]]
 ];

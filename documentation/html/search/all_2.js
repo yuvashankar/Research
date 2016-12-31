@@ -1,5 +1,10 @@
 var searchData=
 [
-  ['filldata',['FillData',['../wavelet_8h.html#a7f77d41dda595606800244954e79daad',1,'wavelet.c']]],
-  ['freq_5fto_5fscale',['FREQ_TO_SCALE',['../wavelet_8h.html#a55e74326081d3d6dca9cca7e7063f563',1,'wavelet.h']]]
+  ['edf_5fannotation_5fstruct',['edf_annotation_struct',['../structedf__annotation__struct.html',1,'']]],
+  ['edf_5fhdr_5fstruct',['edf_hdr_struct',['../structedf__hdr__struct.html',1,'']]],
+  ['edf_5fparam_5fstruct',['edf_param_struct',['../structedf__param__struct.html',1,'']]],
+  ['edfhdrblock',['edfhdrblock',['../structedfhdrblock.html',1,'']]],
+  ['edfparamblock',['edfparamblock',['../structedfparamblock.html',1,'']]],
+  ['ersp',['ERSP',['../wavelet_8h.html#aaea544beb7b86730e400a5ae9b5997e5',1,'ERSP(double *data, double *scales, int sampling_frequency, int n, int J, int trials, double *output):&#160;ERSP.cc'],['../_e_r_s_p_8cc.html#a94e6500505d5f13d878b852e9f081301',1,'ERSP(double *raw_data, double *scales, int sampling_frequency, int n, int J, int trials, double *output):&#160;ERSP.cc']]],
+  ['ersp_2ecc',['ERSP.cc',['../_e_r_s_p_8cc.html',1,'']]]
 ];

@@ -31,7 +31,7 @@ int main(void)
     TestCases(data, 5);
 
     //Compute the ERSP
-    ERSP (data, scales, FS, n, J, 77, 
+    ERSP (data, scales, FS, n, J, 77, PAD_FLAG, 
     result);
     
     // Write to file

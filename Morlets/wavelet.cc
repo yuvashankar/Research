@@ -4,8 +4,31 @@
 
 #define TEST 0.00001
 
-double FourierMorlet(double w, double scale, double normal);
+// double FourierMorlet(double w, double scale, double normal);
 
+
+/**
+	\fn int Wavelet(double* raw_data, double* scales, 
+			double sampling_frequency, int n, int J,
+			double* result)
+	\brief A function that computes the Continuous Wavelet Transform for the data given in \a raw_data
+	\param raw_data A 1 x n array with the data required
+	\param scales A 1 x J array with all of the scales for generating the wavelets
+	\param sampling_frequency The sampling frequency of the given data
+	\param n The size of the input data
+	\param J The number of scales that is provided
+	\param result An n x J array of contiguous memory that stores the result
+
+	This function preforms the Continuous Wavelet Transform using Morlet Wavelets on the data given in raw_data. 
+	It stores the result in the result array.
+
+	This function only modifies the result array. The arrays must be pre allocated for this function to work. 
+
+	You can provide the function with scales of your choosing, or one can generate dyadic scales with the GenerateScales() function.
+
+	This function is optimized using openmp to allow for multi threading. 
+
+*/
 int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J,
 	double* result)
@@ -106,81 +129,13 @@ int Wavelet(double* raw_data, double* scales,
     return(0);
 } /*Wavelet */
 
-int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int PAD_FLAG,
-	fftw_complex* output_data)
-{
-	const double ramp = 2.0/data_size; // = 1.0/ n / 2
-	double gain; 
-	int i;
 
-	int output_counter = 0;
-	int input_counter = 0;
 
-	switch(PAD_FLAG)
-	{
-		case 0: //No Padding what so ever
-			//populate the FFTW data vector. 
-			for (i = 0; i < data_size; ++i)
-		    {
-		    	output_data[i][0] = input_data[i];
-		    	output_data[i][1] = 0.0;
-		    }
-		    break;
-		
-		case 1: //Zero - Padding
-			//populate the FFTW data vector. 
-			for (i = 0; i < data_size; ++i)
-		    {
-		    	output_data[i][0] = input_data[i];
-		    	output_data[i][1] = 0.0;
-		    }
-
-		    //Force the rest of the data vector to zero just in case
-		    for (i = data_size; i < padded_size; ++i)
-		    {
-		    	output_data[i][0] = 0.0;
-		    	output_data[i][1] = 0.0;
-		    }
-		    break;
-		
-		case 2: //Duplicate array and ramp up and ramp down output
-			for (i = 0; i < data_size; ++i)
-		    {
-		    	output_data[i][0] = input_data[i];
-		    	output_data[i][1] = 0.0;
-		    }
-
-		    for (i = 0; i < (int) (0.5* data_size); ++i)
-		    {
-		    	output_counter = data_size + i;
-		    	input_counter = (int) ((data_size/2) + i);
-		    	gain = i * ramp;
-
-		    	output_data[output_counter][0] = (1.0 - gain) * input_data[input_counter];
-		    	output_data[output_counter][1] = 0.0;
-
-		    	output_data[output_counter + (int) (0.5 * data_size)][0] = gain * input_data[i];
-		    	output_data[output_counter + (int) (0.5 * data_size)][1] = 0.0;
-		    }
-			break;
-		
-		default: //Return just the array no padding. 
-			//populate the FFTW data vector. 
-			for (i = 0; i < data_size; ++i)
-		    {
-		    	output_data[i][0] = input_data[i];
-		    	output_data[i][1] = 0.0;
-		    }
-		    break;
-	}
-    return(PAD_FLAG);
-}
-
-int CalculatePaddingSize(int array_size, int PAD_FLAG)
+int CalculatePaddingSize(int array_size, int pad_flag)
 {
 	const int pad = ceil(log2(array_size));
 	int out = array_size;
-	switch(PAD_FLAG)
+	switch(pad_flag)
 	{
 		case 0: //No Padding what so ever. 
 			out = array_size;

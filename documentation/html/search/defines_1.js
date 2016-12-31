@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['magnitude',['MAGNITUDE',['../wavelet_8h.html#a5b2902836360750d67596b282a199099',1,'wavelet.h']]]
+  ['d_5fj',['D_J',['../wavelet_8h.html#ab7acaac3ed40230536a8ded3672b64b4',1,'wavelet.h']]]
 ];

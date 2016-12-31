@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['scale_5fto_5ffreq',['SCALE_TO_FREQ',['../wavelet_8h.html#ab7d5d9582bc79ef9b90f0dd7cb876f2e',1,'wavelet.h']]]
+  ['k_5fsigma',['K_SIGMA',['../wavelet_8h.html#a409924d27c555a15d03e0f529e855fa1',1,'wavelet.h']]]
 ];

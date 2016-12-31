@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['quad_5froot_5fpi',['QUAD_ROOT_PI',['../wavelet_8h.html#af3f0cc66cab5c2ca0c1625e223daafe5',1,'wavelet.h']]]
+  ['freq_5fto_5fscale',['FREQ_TO_SCALE',['../wavelet_8h.html#a55e74326081d3d6dca9cca7e7063f563',1,'wavelet.h']]]
 ];

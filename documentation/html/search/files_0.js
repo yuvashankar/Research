@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['wavelet_2eh',['wavelet.h',['../wavelet_8h.html',1,'']]]
+  ['cleandata_2ecc',['CleanData.cc',['../_clean_data_8cc.html',1,'']]]
 ];
