@@ -2,8 +2,9 @@
 #include "wavelet.h"
 #include <omp.h>
 
-
 #define TEST 0.00001
+
+double FourierMorlet(double w, double scale, double normal);
 
 int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J,
@@ -104,35 +105,6 @@ int Wavelet(double* raw_data, double* scales,
 	fftw_free(fft_data); fftw_free(data_in);
     return(0);
 } /*Wavelet */
-
-int FrequencyMultiply(const fftw_complex* fft_data, 
-	const int data_size, const double scale, const double dw,
-	 fftw_complex* filter_convolution)
-{
-	int j; 
-	double value; 
-	//Compute the Fourier Morlet at 0 and N/2
-	value = CompleteFourierMorlet(0.0, scale);
-
-	filter_convolution[0][0] = fft_data[0][0] * value;
-	filter_convolution[0][1] = fft_data[0][1] * value;
-	
-	filter_convolution[data_size/2][0] = 0.0;
-	filter_convolution[data_size/2][1] = 0.0;
-
-	//Compute the Fourier Morlet Convolution in between
-	for (j = 1; j < data_size/2 - 1; ++j)
-	{
-		value = CompleteFourierMorlet( j * dw , scale);
-		filter_convolution[j][0] = fft_data[j][0] * value;
-		filter_convolution[j][1] = fft_data[j][1] * value;
-
-		filter_convolution[data_size- j][0] = 0.0;
-		filter_convolution[data_size- j][1] = 0.0;
-	}
-
-	return(0);
-}
 
 int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int PAD_FLAG,
 	fftw_complex* output_data)
@@ -259,12 +231,12 @@ double* IdentifyFrequencies(double* scales, int count)
 
 }
 
-double FourierMorlet(double w, double scale, double normal)
-{
-	double exponent = -0.5 * (scale * w - W_0) * (scale * w - W_0);
-	double out = QUAD_ROOT_PI* normal * exp(exponent);
-	return(out);
-}
+// double FourierMorlet(double w, double scale, double normal)
+// {
+// 	double exponent = -0.5 * (scale * w - W_0) * (scale * w - W_0);
+// 	double out = QUAD_ROOT_PI* normal * exp(exponent);
+// 	return(out);
+// }
 
 double CompleteFourierMorlet(double w, double scale)
 {

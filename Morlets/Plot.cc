@@ -6,6 +6,27 @@
 #include <float.h>
 #include <cmath>
 
+//Plotting Constants
+#define PLOT_OY 200
+#define PLOT_OX 200
+
+//Data Structures
+typedef struct 
+{
+	double r,g,b;
+} COLOUR;
+
+typedef struct
+{
+	double minimum, maximum;
+} RANGE;
+
+RANGE GetRange(double* array, int size);
+void CalculateLog(double * array, int size);
+COLOUR GetColour(double v,double vmin,double vmax);
+double Max(double * array, int size);
+double Min(double* array, int size);
+
 void Plot(double * data, double * periods, int num_x, int num_y)
 {
 	int i, j, k;

@@ -1,5 +1,8 @@
 #include "wavelet.h"
 
+double CompleteRealMorlet (double x, double scale);
+double CompleteComplexMorlet(double x, double scale);
+
 double CompleteRealMorlet (double x, double scale)
 {
 	double w_0 = 6.0;

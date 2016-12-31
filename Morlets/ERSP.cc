@@ -8,6 +8,17 @@
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
 
+int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
+	const int n, const int J, const int sampling_frequency,
+	double* output);
+
+int FrequencyMultiply(const fftw_complex* fft_data, 
+	const int data_size, const double scale, const double dw,
+	 fftw_complex* filter_convolution);
+
+int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int PAD_FLAG,
+	fftw_complex* output_data);
+
 int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int J, int trials, 
 	double * output)
 {
@@ -116,6 +127,35 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 	    	value = pre_baseline_array[i * n + j] * pre_baseline_array[i * n + j];
 	        output[i * n + j] = (fabs(value) - mean) / sDeviation;
 	    }
+	}
+
+	return(0);
+}
+
+int FrequencyMultiply(const fftw_complex* fft_data, 
+	const int data_size, const double scale, const double dw,
+	 fftw_complex* filter_convolution)
+{
+	int j; 
+	double value; 
+	//Compute the Fourier Morlet at 0 and N/2
+	value = CompleteFourierMorlet(0.0, scale);
+
+	filter_convolution[0][0] = fft_data[0][0] * value;
+	filter_convolution[0][1] = fft_data[0][1] * value;
+	
+	filter_convolution[data_size/2][0] = 0.0;
+	filter_convolution[data_size/2][1] = 0.0;
+
+	//Compute the Fourier Morlet Convolution in between
+	for (j = 1; j < data_size/2 - 1; ++j)
+	{
+		value = CompleteFourierMorlet( j * dw , scale);
+		filter_convolution[j][0] = fft_data[j][0] * value;
+		filter_convolution[j][1] = fft_data[j][1] * value;
+
+		filter_convolution[data_size- j][0] = 0.0;
+		filter_convolution[data_size- j][1] = 0.0;
 	}
 
 	return(0);
