@@ -1,4 +1,4 @@
-//Wavelet.c
+
 #include "wavelet.h"
 #include <omp.h>
 
@@ -390,6 +390,12 @@ int WriteDebug(double *data, int length, const char* filename)
     return 0;
 }
 
+/*!
+    \fn void FillData(double * data)
+	\brief Populates the input data array with a 3 sparse sine waves. 
+	\param data A 1 - dimentional block of memory that will be overwritten. 
+*/
+
 void FillData(double * data)
 {
 	// Fit a FREQ signal at two points
@@ -407,8 +413,6 @@ void FillData(double * data)
 
 	// //Impulse Sample
 	// data[2000] = 1.0;
-
-	///Sine Wave Sample
 	int i;
 	// double t=0;
 	for(i=0;i<DATA_SIZE;i++){

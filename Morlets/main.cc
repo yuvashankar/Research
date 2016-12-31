@@ -1,3 +1,6 @@
+
+
+
 #include "wavelet.h"
 #include <math.h>
 #include <omp.h>
@@ -9,7 +12,7 @@ int main(void)
     //Start the timer!
     double t = omp_get_wtime();
 
-    //Initialize the necessary constants.
+    //Initialize the necessary arrays.
     double *data, *result, *scales, *frequency;
 
     int n = DATA_SIZE;

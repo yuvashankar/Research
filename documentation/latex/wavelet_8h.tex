@@ -1,0 +1,147 @@
+\hypertarget{wavelet_8h}{}\section{/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/wavelet.h File Reference}
+\label{wavelet_8h}\index{/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/wavelet.\+h@{/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/wavelet.\+h}}
+
+
+The supporting header file for generating the Continuous Wavelet Transform.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$assert.\+h$>$}\\*
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$math.\+h$>$}\\*
+{\ttfamily \#include $<$fftw3.\+h$>$}\\*
+{\ttfamily \#include $<$omp.\+h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{wavelet_8h_af3f0cc66cab5c2ca0c1625e223daafe5}{}\#define \hyperlink{wavelet_8h_af3f0cc66cab5c2ca0c1625e223daafe5}{Q\+U\+A\+D\+\_\+\+R\+O\+O\+T\+\_\+\+P\+I}~0.\+7511255444649425\label{wavelet_8h_af3f0cc66cab5c2ca0c1625e223daafe5}
+
+\begin{DoxyCompactList}\small\item\em the quad root of pi (pi$^\wedge$-\/0.25) computed to machine precision \end{DoxyCompactList}\item 
+\hypertarget{wavelet_8h_ab2002401e0a37cd4d58bd8bcc3cd5046}{}\#define {\bfseries C\+\_\+\+S\+I\+G\+M\+A}~1.\+0000000000018794 /$\ast$! \textbackslash{}var C\+\_\+\+S\+I\+G\+M\+A pow( (1.\+0 + exp(-\/W\+\_\+0\+\_\+2) -\/ 2.\+0 $\ast$ exp(-\/0.\+75 $\ast$ W\+\_\+0\+\_\+2)), -\/0.\+5 ) $\ast$/\label{wavelet_8h_ab2002401e0a37cd4d58bd8bcc3cd5046}
+
+\item 
+\hypertarget{wavelet_8h_ac7c2829d967e969051f0676af6060909}{}\#define {\bfseries K\+\_\+\+S\+I\+G\+M\+A}~1.\+5229979744712628e-\/08\label{wavelet_8h_ac7c2829d967e969051f0676af6060909}
+
+\item 
+\hypertarget{wavelet_8h_a8e38acc72a4f3634c2a106a7637d030f}{}\#define {\bfseries W\+\_\+0}~6.\+0\label{wavelet_8h_a8e38acc72a4f3634c2a106a7637d030f}
+
+\item 
+\hypertarget{wavelet_8h_a089253e674192b6caae00767d59aea81}{}\#define {\bfseries W\+\_\+0\+\_\+2}~36.\+0\label{wavelet_8h_a089253e674192b6caae00767d59aea81}
+
+\item 
+\hypertarget{wavelet_8h_a4c423765470b63cbf1fc5dd9ab90ceb8}{}\#define {\bfseries D\+\_\+\+J}~0.\+125\label{wavelet_8h_a4c423765470b63cbf1fc5dd9ab90ceb8}
+
+\item 
+\hypertarget{wavelet_8h_a30588c5eca7c9cb6ebba02a0236f0119}{}\#define {\bfseries F\+S}~2048\label{wavelet_8h_a30588c5eca7c9cb6ebba02a0236f0119}
+
+\item 
+\hypertarget{wavelet_8h_a943f07034774ef1261d62cd0d3d1fec9}{}\#define {\bfseries D\+T}~1.\+0/F\+S\label{wavelet_8h_a943f07034774ef1261d62cd0d3d1fec9}
+
+\item 
+\hypertarget{wavelet_8h_a5cfab9793f7fd3ac4ab45eff41df9f37}{}\#define {\bfseries S0}~2.\+0 $\ast$ D\+T\label{wavelet_8h_a5cfab9793f7fd3ac4ab45eff41df9f37}
+
+\item 
+\hypertarget{wavelet_8h_a1b04ec1cde4d3032f558ed8ad05930a4}{}\#define {\bfseries F\+R\+E\+Q}~16.\+0\label{wavelet_8h_a1b04ec1cde4d3032f558ed8ad05930a4}
+
+\item 
+\hypertarget{wavelet_8h_af55149bc1f05cf18af067a302e31e3f9}{}\#define {\bfseries D\+A\+T\+A\+\_\+\+S\+I\+Z\+E}~6144\label{wavelet_8h_af55149bc1f05cf18af067a302e31e3f9}
+
+\item 
+\hypertarget{wavelet_8h_a1fcff99f421f1bc8a1bbdb641ca0324e}{}\#define {\bfseries M\+A\+X\+\_\+\+F\+R\+E\+Q\+U\+E\+N\+C\+Y}~512.\+0\label{wavelet_8h_a1fcff99f421f1bc8a1bbdb641ca0324e}
+
+\item 
+\hypertarget{wavelet_8h_aea88670257377b3103f3fbc73135949f}{}\#define {\bfseries M\+I\+N\+\_\+\+F\+R\+E\+Q\+U\+E\+N\+C\+Y}~0.\+5\label{wavelet_8h_aea88670257377b3103f3fbc73135949f}
+
+\item 
+\hypertarget{wavelet_8h_a87f68e96fb938eddc39ad1f19d923a96}{}\#define {\bfseries M\+A\+X\+\_\+\+D\+A\+T\+A\+\_\+\+S\+I\+Z\+E}~10000000\label{wavelet_8h_a87f68e96fb938eddc39ad1f19d923a96}
+
+\item 
+\hypertarget{wavelet_8h_a00338acc4b2e1c7fa30d66ead5220a9d}{}\#define {\bfseries M\+I\+N\+\_\+\+I}~\hyperlink{wavelet_8h_a55e74326081d3d6dca9cca7e7063f563}{F\+R\+E\+Q\+\_\+\+T\+O\+\_\+\+S\+C\+A\+L\+E}(M\+A\+X\+\_\+\+F\+R\+E\+Q\+U\+E\+N\+C\+Y)\label{wavelet_8h_a00338acc4b2e1c7fa30d66ead5220a9d}
+
+\item 
+\hypertarget{wavelet_8h_a76ff73fcfb08be66dba47d63ee0eb842}{}\#define {\bfseries M\+A\+X\+\_\+\+I}~\hyperlink{wavelet_8h_a55e74326081d3d6dca9cca7e7063f563}{F\+R\+E\+Q\+\_\+\+T\+O\+\_\+\+S\+C\+A\+L\+E}(M\+I\+N\+\_\+\+F\+R\+E\+Q\+U\+E\+N\+C\+Y)\label{wavelet_8h_a76ff73fcfb08be66dba47d63ee0eb842}
+
+\item 
+\hypertarget{wavelet_8h_a55e74326081d3d6dca9cca7e7063f563}{}\#define \hyperlink{wavelet_8h_a55e74326081d3d6dca9cca7e7063f563}{F\+R\+E\+Q\+\_\+\+T\+O\+\_\+\+S\+C\+A\+L\+E}(x)~floor( ( log2( (W\+\_\+0) / (S0 $\ast$ 2 $\ast$ M\+\_\+\+P\+I $\ast$ x) ) )/D\+\_\+\+J)\label{wavelet_8h_a55e74326081d3d6dca9cca7e7063f563}
+
+\begin{DoxyCompactList}\small\item\em Converts a given frequency {\itshape x} to a scale, handy for debugging. Note the scale is divided into sub octaves. \end{DoxyCompactList}\item 
+\hypertarget{wavelet_8h_ab7d5d9582bc79ef9b90f0dd7cb876f2e}{}\#define \hyperlink{wavelet_8h_ab7d5d9582bc79ef9b90f0dd7cb876f2e}{S\+C\+A\+L\+E\+\_\+\+T\+O\+\_\+\+F\+R\+E\+Q}(x)~(W\+\_\+0)/(x $\ast$ 2 $\ast$ M\+\_\+\+P\+I)\label{wavelet_8h_ab7d5d9582bc79ef9b90f0dd7cb876f2e}
+
+\begin{DoxyCompactList}\small\item\em Converts a given scale {\itshape x} to its corrosponding frequency. \end{DoxyCompactList}\item 
+\hypertarget{wavelet_8h_a5b2902836360750d67596b282a199099}{}\#define \hyperlink{wavelet_8h_a5b2902836360750d67596b282a199099}{M\+A\+G\+N\+I\+T\+U\+D\+E}(x,  y)~(x $\ast$ x) + (y $\ast$ y)\label{wavelet_8h_a5b2902836360750d67596b282a199099}
+
+\begin{DoxyCompactList}\small\item\em Computes the 2-\/ norm or the x $^\wedge$ 2 + y $^\wedge$ 2, of {\itshape x} and {\itshape y}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{wavelet_8h_a7f77d41dda595606800244954e79daad}{Fill\+Data} (double $\ast$data)
+\begin{DoxyCompactList}\small\item\em Populates the input data array with a 3 sparse sine waves. \end{DoxyCompactList}\item 
+\hypertarget{wavelet_8h_a9c0e97893f3c8af8d537f5b16220dcd1}{}void {\bfseries Test\+Cases} (double $\ast$data, int flag)\label{wavelet_8h_a9c0e97893f3c8af8d537f5b16220dcd1}
+
+\item 
+\hypertarget{wavelet_8h_a3bb938675dc6887e3c3e5df25406fb2b}{}int {\bfseries Read\+File} (double data\mbox{[}$\,$\mbox{]}, char $\ast$filename)\label{wavelet_8h_a3bb938675dc6887e3c3e5df25406fb2b}
+
+\item 
+\hypertarget{wavelet_8h_a8943636cff1f03ff302f44092cac9e1e}{}int {\bfseries Write\+File} (double $\ast$data, double $\ast$frequency, int x, int y, const char $\ast$filename)\label{wavelet_8h_a8943636cff1f03ff302f44092cac9e1e}
+
+\item 
+\hypertarget{wavelet_8h_a5d971649008c052ded097802e666dda7}{}int {\bfseries Write\+Debug} (double $\ast$data, int length, const char $\ast$filename)\label{wavelet_8h_a5d971649008c052ded097802e666dda7}
+
+\item 
+\hypertarget{wavelet_8h_aaea544beb7b86730e400a5ae9b5997e5}{}int {\bfseries E\+R\+S\+P} (double $\ast$data, double $\ast$scales, int sampling\+\_\+frequency, int n, int J, int trials, double $\ast$output)\label{wavelet_8h_aaea544beb7b86730e400a5ae9b5997e5}
+
+\item 
+\hypertarget{wavelet_8h_aa7228028715fcf3300384801fad4ab11}{}void {\bfseries Plot} (double $\ast$data, double $\ast$periods, int num\+\_\+x, int num\+\_\+y)\label{wavelet_8h_aa7228028715fcf3300384801fad4ab11}
+
+\item 
+\hypertarget{wavelet_8h_a1e8639146cda48e7bc3a07b76ae96680}{}double {\bfseries Complete\+Fourier\+Morlet} (double w, double scale)\label{wavelet_8h_a1e8639146cda48e7bc3a07b76ae96680}
+
+\item 
+\hypertarget{wavelet_8h_ad5997a1e04e6726779fded8881045b7d}{}int {\bfseries Wavelet} (double $\ast$raw\+\_\+data, double $\ast$scales, double sampling\+\_\+frequency, int n, int J, double $\ast$result)\label{wavelet_8h_ad5997a1e04e6726779fded8881045b7d}
+
+\item 
+\hypertarget{wavelet_8h_aa3dfcb0be818bb8c79f0b034ea627ac0}{}void {\bfseries Clean\+Data} (double $\ast$data, double n)\label{wavelet_8h_aa3dfcb0be818bb8c79f0b034ea627ac0}
+
+\item 
+\hypertarget{wavelet_8h_a3daffe24d549dbc53edf79c0f1f5e1f3}{}double $\ast$ {\bfseries Generate\+Scales} (double minimum\+\_\+frequency, double maximum\+\_\+frequency)\label{wavelet_8h_a3daffe24d549dbc53edf79c0f1f5e1f3}
+
+\item 
+\hypertarget{wavelet_8h_a27394bc7ac779d93a58fa1a8e2230337}{}double $\ast$ {\bfseries Identify\+Frequencies} (double $\ast$scales, int count)\label{wavelet_8h_a27394bc7ac779d93a58fa1a8e2230337}
+
+\item 
+\hypertarget{wavelet_8h_ab60ecb0f50f9df5063abe5dad801723b}{}void {\bfseries Convolute} (double $\ast$data, double $\ast$con\+Window, double $\ast$complex\+Window, double con\+Size, double $\ast$result, double $\ast$complex\+Result)\label{wavelet_8h_ab60ecb0f50f9df5063abe5dad801723b}
+
+\item 
+\hypertarget{wavelet_8h_ab4d8ea9af2556c2f2171390430274923}{}int {\bfseries Calculate\+Padding\+Size} (int array\+\_\+size, int F\+L\+A\+G)\label{wavelet_8h_ab4d8ea9af2556c2f2171390430274923}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The supporting header file for generating the Continuous Wavelet Transform. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{wavelet_8h_a7f77d41dda595606800244954e79daad}{}\index{wavelet.\+h@{wavelet.\+h}!Fill\+Data@{Fill\+Data}}
+\index{Fill\+Data@{Fill\+Data}!wavelet.\+h@{wavelet.\+h}}
+\subsubsection[{Fill\+Data(double $\ast$data)}]{\setlength{\rightskip}{0pt plus 5cm}void Fill\+Data (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{data}
+\end{DoxyParamCaption}
+)}\label{wavelet_8h_a7f77d41dda595606800244954e79daad}
+
+
+Populates the input data array with a 3 sparse sine waves. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & A 1 -\/ dimentional block of memory that will be overwritten. \\
+\hline
+\end{DoxyParams}
+Sine Wave Sample
+
+Sine Wave Sample
+
+Sine Wave Sample 
