@@ -45,10 +45,6 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	const int J, int const trials, const int padding_type, 
 	double * output)
 {
-	//Array Inits
-	double * pre_stimulus, *wavelet_out, *baseline_out;
-	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
-	fftw_plan plan_forward, plan_backward;
 
 	int i, j, x;
 
@@ -57,55 +53,73 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
     const int    m           = PRE_EVENT_TIME * sampling_frequency;
     const double dw          = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
-    //Memory Allocations
-    wavelet_out  = (double*) malloc( n * J * sizeof(double) );
-    baseline_out = (double*) malloc( n * J * sizeof(double) );
-    pre_stimulus = (double*) malloc( m     * sizeof(double) );
+    #pragma omp parallel num_threads(2) private(i, j, x) shared (raw_data, output, scales) default(none)
+    {
+    	//Array Inits
+    	double * pre_stimulus, *wavelet_out, *baseline_out;
+    	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
+    	fftw_plan plan_forward, plan_backward;
 
-    //FFTW Memory Allocations
-    data_in            = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-	fft_data           = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-	fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	    //Memory Allocations
+	    wavelet_out  = (double*) malloc( n * J * sizeof(double) );
+	    baseline_out = (double*) malloc( n * J * sizeof(double) );
+	    pre_stimulus = (double*) malloc( m     * sizeof(double) );
 
-	//FFTW Planning
-	plan_forward  = fftw_plan_dft_1d(PADDED_SIZE, data_in,            fft_data,    FFTW_FORWARD, FFTW_ESTIMATE);
-	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
-	
-	/*Begin ERSP*/
-	for ( x = 0; x < trials; ++x)
-	{
-		/*Begin Wavelet Analysis*/
-		PopulateDataArray(raw_data, n, x, 
-						  PADDED_SIZE, padding_type, data_in);
-		fftw_execute(plan_forward);
-
-		for (i = 0; i < J; ++i)
+	    //FFTW Memory Allocations
+	    data_in            = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+		fft_data           = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+		fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+		
+		//FFTW Planning
+		#pragma omp critical (make_plan)
 		{
-			FrequencyMultiply(fft_data, PADDED_SIZE, scales[i], dw, 
-							  filter_convolution);
+			
+			plan_forward  = fftw_plan_dft_1d(PADDED_SIZE, data_in,            fft_data,    FFTW_FORWARD,  FFTW_ESTIMATE);
+			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);	
+		}
 
-			//Take the inverse FFT and store it in fftw_result
-			fftw_execute(plan_backward);
+		/*Begin ERSP*/
+		#pragma omp for
+		for ( x = 0; x < trials; ++x)
+		{
+			/*Begin Wavelet Analysis*/
+			PopulateDataArray(raw_data, n, x, 
+							  PADDED_SIZE, padding_type, data_in);
+			fftw_execute(plan_forward);
 
-			//Calculate the power and store it in result this may need to be changed to accomodate for phase
-			for (j = 0; j < n; ++j)
+			for (i = 0; i < J; ++i)
 			{
-				wavelet_out[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				FrequencyMultiply(fft_data, PADDED_SIZE, scales[i], dw, 
+								  filter_convolution);
+
+				//Take the inverse FFT and store it in fftw_result
+				fftw_execute(plan_backward);
+
+				//Calculate the power and store it in result this may need to be changed to accomodate for phase
+				for (j = 0; j < n; ++j)
+				{
+					wavelet_out[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				}
+			}
+			/*End Wavelet Analysis*/
+
+			//Remove the baseline
+			RemoveBaseline(pre_stimulus, wavelet_out,
+						   n, J, m,
+						   baseline_out);
+
+			for ( i = 0; i < n * J; ++i)
+			{
+				output[i] += fabs(baseline_out[i]);
 			}
 		}
-		/*End Wavelet Analysis*/
-
-		//Remove the baseline
-		RemoveBaseline(pre_stimulus, wavelet_out,
-					   n, J, m,
-					   baseline_out);
-
-		for ( i = 0; i < n * J; ++i)
-		{
-			output[i] += fabs(baseline_out[i]);
-		}
-	}
+		//Sanitation Engineering
+		fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
+		fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
+		free(pre_stimulus); free(baseline_out); free(wavelet_out);
+    }/*End of OpenMP*/
+    
 	
 	for ( i = 0; i < n * J; ++i)
 	{
@@ -113,10 +127,7 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	}
 	/*End ERSP*/
 
-	//Sanitation Engineering
-	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
-	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
-	free(pre_stimulus); free(baseline_out); free(wavelet_out);
+	
 	
 	return(0);
 }

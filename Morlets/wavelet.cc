@@ -260,7 +260,8 @@ double CompleteFourierMorlet(const double w, const double scale)
 	// double C_SIGMA = pow( (1.0 + exp(-W_0_2) - 2.0 * exp(-0.75 * W_0_2)), -0.5 );
 	// double K_SIGMA = exp( -0.5 * W_0_2 );
 
-	double norm = pow(scale, -0.5);
+	// double norm = pow(scale, -0.5);
+	double norm = 1.0/sqrt(scale);
 	double out = exp( -0.5 * ( W_0 - scale * w ) * (W_0 - scale * w) ) 
 					- K_SIGMA * (exp ( -0.5 * scale * w * w));
 	out = norm * C_SIGMA * QUAD_ROOT_PI * out;
