@@ -37,23 +37,28 @@ int PopulateDataArray(double* input_data, const int data_size, const int trial_n
 
 	This function uses the Continuous Wavelet Transform to generate the multi-resolution analysis of the given data. 
 
+	This function is multi-threaded. 
+
+	This function deals a lot with Fast Fourier Transforms, and can be optimized by using the Generate_FFTW_Wisedom() function. If no wisdom is provided, an approximate FFT algorithm will be used. 
+
 	The variable raw_data must contain all of the data for each trial.
 
 	raw_data, scales, and output must be pre-allocated. 
 */
+
 int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
 	const int J, int const trials, const int padding_type, 
 	double * output)
 {
-
 	int i, j, x;
-
+	int number_of_threads = 2;
 	//Calculate the necessary constants for the Continuous Wavelet Transform.
     const int    PADDED_SIZE = CalculatePaddingSize(n, padding_type);
     const int    m           = PRE_EVENT_TIME * sampling_frequency;
     const double dw          = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
-    #pragma omp parallel num_threads(2) private(i, j, x) shared (raw_data, output, scales) default(none)
+    fftw_init_threads();
+    #pragma omp parallel num_threads(number_of_threads) private(i, j, x) shared(raw_data, output, scales, number_of_threads) default(none)
     {
     	//Array Inits
     	double * pre_stimulus, *wavelet_out, *baseline_out;
@@ -70,13 +75,21 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 		fft_data           = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 		fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-		
-		//FFTW Planning
+
 		#pragma omp critical (make_plan)
 		{
-			
-			plan_forward  = fftw_plan_dft_1d(PADDED_SIZE, data_in,            fft_data,    FFTW_FORWARD,  FFTW_ESTIMATE);
-			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);	
+			fftw_plan_with_nthreads(1);
+			if (fftw_import_wisdom_from_filename("FFTW_Plan.wise") == 0)
+			{
+				printf("No FFTW Plan, using an unoptimized method\n");
+				plan_forward  = fftw_plan_dft_1d(PADDED_SIZE, data_in,            fft_data,    FFTW_FORWARD,  FFTW_ESTIMATE);
+				plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
+			}
+			else
+			{
+				plan_forward  = fftw_plan_dft_1d(PADDED_SIZE, data_in,            fft_data,    FFTW_FORWARD,  FFTW_EXHAUSTIVE);
+				plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_EXHAUSTIVE);	
+			}
 		}
 
 		/*Begin ERSP*/
@@ -114,22 +127,71 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 				output[i] += fabs(baseline_out[i]);
 			}
 		}
+
+		#pragma omp for simd
+		for ( i = 0; i < n * J; ++i)
+		{
+			output[i] /= trials;
+		}
+		/*End ERSP*/
+
 		//Sanitation Engineering
 		fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
 		fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
 		free(pre_stimulus); free(baseline_out); free(wavelet_out);
-    }/*End of OpenMP*/
-    
-	
-	for ( i = 0; i < n * J; ++i)
-	{
-		output[i] /= trials;
-	}
-	/*End ERSP*/
 
-	
-	
+    }/*End of OpenMP*/
+
 	return(0);
+}
+
+/**
+	\fn int Generate_FFTW_Wisdom(int padded_size)
+	
+	\brief Analyzes the size of the FFTW arrays and generates the optimal plan. 
+	
+	\param padded_size The size of the FFT arrays. 
+
+	\return 0 If successful
+	\return 1 if unsuccessful
+
+	This function can be used to optimize FFTW. This function will try to find the fastest FFT method based on the size of the array, and will store this information as "FFTW_plan.wise". 
+
+	This function does not need to be used, but it can significantly improve performance if it is.
+*/
+
+int Generate_FFTW_Wisdom(int padded_size)
+{
+	int success_flag = 1;
+	
+	//Array Inits
+	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
+	fftw_plan plan_forward, plan_backward;
+	
+	fftw_init_threads();
+	
+	//FFTW Memory Allocations
+    data_in            = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+	fft_data           = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+	fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+
+	//FFTW Planning
+	fftw_plan_with_nthreads(1);
+	printf("Generating an Exhaustive FFTW Plan\n");
+	plan_forward  = fftw_plan_dft_1d(padded_size, data_in,            fft_data,    FFTW_FORWARD,  FFTW_EXHAUSTIVE);
+	plan_backward = fftw_plan_dft_1d(padded_size, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_EXHAUSTIVE);
+	
+	printf("Writing FFTW plan to FFTW_Plan.wise\n");
+	if (fftw_export_wisdom_to_filename("FFTW_Plan.wise") != 0)
+	{
+		success_flag = 0;
+	}
+
+	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
+	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
+
+	return(success_flag);
 }
 
 /**
@@ -193,7 +255,7 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 	\brief Multiples the signal with the wavelet at a specific scale in the frequency domain. 
 	\param fft_data A fftw_complex * data_size array with the signal data in the frequency domain. 
 	\param data_size The size of the data array
-	\param scale THe scale of the wavelet that will be multipled with the signal array
+	\param scale THe scale of the wavelet that will be multiplied with the signal array
 	\param dw THe discrete increment in the frequency domain for the wavelet
 	\param filter_convolution A fftw_complex * data_size array with the resulted multiplication
 

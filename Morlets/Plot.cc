@@ -13,6 +13,7 @@
 	\brief The amount of vertical black space in the plot
 */
 #define PLOT_OY 200
+
 /**
 	\var PLOT_OX
 	\brief The amount of horizontal black space in the plot
@@ -21,7 +22,6 @@
 
 
 //Data Structures
-
 /**
 	\struct COLOUR
 	\brief the RGB representation of every pixel
@@ -57,25 +57,18 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	const int image_height = lines_size * num_y+ 2 * PLOT_OY;
 	const int height = lines_size * num_y;
 
-	// const int label_font_size = 30.0;
-	const int tic_font_size = 15.0;
-	// const int title_font_size = 40.0;
+	const int label_font_size = 30;
+	const int tic_font_size   = 15;
+	const int title_font_size = 40;
+	const int freq_text_width = 15;
+	const int time_text_width = 15;
+
 
 	char  font_location[] = "../lib/VeraMono.ttf";
-	// char x_label[] = "Time (s)";
-	// char y_label[] = "Frequency (Hz)";
-	// char graph_title[] = "Time Frequency Graph of an Impulse";
+	char x_label[] = "Time (s)";
+	char y_label[] = "Frequency (Hz)";
+	char graph_title[] = "Time Frequency Graph of an Impulse";
 	char temp_string[4];
-
-	// for (int i = 0; i < num_x * num_y; ++i)
-	// {
-	// 	double val = data[i];
-	// 	if (std::isnan(val))
-	// 	{
-	// 		printf("Naan Alert!\n");
-	// 	}
-	// }
-
 
 	CalculateLog( data, num_x * num_y );
 
@@ -84,26 +77,26 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 
 	pngwriter png( image_width, image_height , 0 , "test.png");
 
-	//X_label
-	// int x_text_width = png.get_text_width(font_location, label_font_size, x_label);
-	// png.plot_text( font_location, label_font_size,
-	// 			(0.5*image_width - 0.5*x_text_width), 0.5*PLOT_OY, 0.0,
-	// 			x_label,
-	// 			1.0, 1.0, 1.0);
+	// X_label
+	int x_text_width = png.get_text_width(font_location, label_font_size, x_label);
+	png.plot_text( font_location, label_font_size,
+				(0.5*image_width - 0.5*x_text_width), 0.5*PLOT_OY, 0.0,
+				x_label,
+				1.0, 1.0, 1.0);
 	
-	// //Y_Label
-	// int y_text_width = png.get_text_width(font_location, label_font_size, y_label);
-	// png.plot_text( font_location, label_font_size,
-	// 			0.25*PLOT_OY, (0.5*image_height - 0.5*y_text_width), M_PI*0.5,
-	// 			y_label,
-	// 			1.0, 1.0, 1.0);
+	//Y_Label
+	int y_text_width = png.get_text_width(font_location, label_font_size, y_label);
+	png.plot_text( font_location, label_font_size,
+				0.25*PLOT_OY, (0.5*image_height - 0.5*y_text_width), M_PI*0.5,
+				y_label,
+				1.0, 1.0, 1.0);
 
-	// //Title
-	// int title_text_width = png.get_text_width(font_location, label_font_size, graph_title);
-	// png.plot_text( font_location, title_font_size,
-	// 			(0.5*image_width - title_text_width), (image_height - 0.5*PLOT_OY), 0.0,
-	// 			graph_title,
-	// 			1.0, 1.0, 1.0);
+	//Title
+	int title_text_width = png.get_text_width(font_location, label_font_size, graph_title);
+	png.plot_text( font_location, title_font_size,
+				(0.5*image_width - title_text_width), (image_height - 0.5*PLOT_OY), 0.0,
+				graph_title,
+				1.0, 1.0, 1.0);
 
 	//Plot the Graph itself.
 	for ( i = 1; i <= num_x/stride; ++i)
@@ -137,7 +130,7 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 				sprintf(temp_string, "%.1f", periods[j]);
 
 				// int freq_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
-				int freq_text_width = 15;
+				// int freq_text_width = 15;
 				png.plot_text(font_location, tic_font_size, 
 					PLOT_OX - 30 - freq_text_width, PLOT_OY + (height - j*lines_size) - 0.5*tic_font_size, 0.0, 
 					temp_string, 
@@ -154,7 +147,7 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 			sprintf(temp_string, "%.1d", (stride * i)/FS);
 			
 			// int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
-			int time_text_width = 15;
+			// int time_text_width = 15;
 			png.plot_text( font_location, tic_font_size,
 				PLOT_OX + i - 4 - 0.5* time_text_width, PLOT_OY - 50, 0.0,
 				temp_string,

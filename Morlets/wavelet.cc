@@ -165,7 +165,7 @@ int CalculatePaddingSize(const int array_size, const int pad_flag)
 }
 
 /**
-	\fn double* GenerateScales(double minimum_frequency, double maximum_frequency)
+	\fn double* GenerateScales(const double minimum_frequency, const double maximum_frequency, const double s_0)
 	
 	\brief This function generates the scales that will be used in the Continuous Wavelet Transform.
 	

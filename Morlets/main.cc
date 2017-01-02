@@ -36,9 +36,17 @@ int main(void)
         }
     }
     
+    // const int    PADDED_SIZE = CalculatePaddingSize(n, PAD_FLAG);
+    // int test = Generate_FFTW_Wisdom(PADDED_SIZE);
+
+
+
     //Compute the ERSP
     ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
     result);
+
+    t = omp_get_wtime() - t;
+
 
     // Write to file
     WriteFile(result, frequency, J, n, "DATA.log");
@@ -48,7 +56,6 @@ int main(void)
     free(data_2D);
     free(data);  free(result);
     free(scales); free(frequency);
-    t = omp_get_wtime() - t;
-    printf("Execution Time: %f\n", t);
+    printf("ERSP Execution Time: %f\n", t);
     return 0;
 }

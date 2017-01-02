@@ -213,9 +213,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Plot</b> (double *dat
 <tr class="separator:ad5997a1e04e6726779fded8881045b7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3dfcb0be818bb8c79f0b034ea627ac0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8h.html#aa3dfcb0be818bb8c79f0b034ea627ac0">CleanData</a> (double *data, double n)</td></tr>
 <tr class="separator:aa3dfcb0be818bb8c79f0b034ea627ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ab46382763cbacdb1008a6040266172"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8h.html#a5ab46382763cbacdb1008a6040266172">GenerateScales</a> (double minimum_frequency, double maximum_frequency)</td></tr>
-<tr class="memdesc:a5ab46382763cbacdb1008a6040266172"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function generates the scales that will be used in the Continuous Wavelet Transform.  <a href="#a5ab46382763cbacdb1008a6040266172">More...</a><br /></td></tr>
-<tr class="separator:a5ab46382763cbacdb1008a6040266172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d3f7b9f0f7a720314d1dec62efadabf"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8h.html#a1d3f7b9f0f7a720314d1dec62efadabf">GenerateScales</a> (const double minimum_frequency, const double maximum_frequency, const double s_0)</td></tr>
+<tr class="memdesc:a1d3f7b9f0f7a720314d1dec62efadabf"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function generates the scales that will be used in the Continuous Wavelet Transform.  <a href="#a1d3f7b9f0f7a720314d1dec62efadabf">More...</a><br /></td></tr>
+<tr class="separator:a1d3f7b9f0f7a720314d1dec62efadabf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a741383f7877b85635e4b9eaad57a11a1"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8h.html#a741383f7877b85635e4b9eaad57a11a1">IdentifyFrequencies</a> (double *scales, int count)</td></tr>
 <tr class="memdesc:a741383f7877b85635e4b9eaad57a11a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the corrosponding frequency to scales used.  <a href="#a741383f7877b85635e4b9eaad57a11a1">More...</a><br /></td></tr>
 <tr class="separator:a741383f7877b85635e4b9eaad57a11a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -225,6 +225,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Convolute</b> (double
 <tr class="memitem:ab7b8e80239255476283ace667b26e46b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8h.html#ab7b8e80239255476283ace667b26e46b">CalculatePaddingSize</a> (const int array_size, const int pad_flag)</td></tr>
 <tr class="memdesc:ab7b8e80239255476283ace667b26e46b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the size that the padded array should be.  <a href="#ab7b8e80239255476283ace667b26e46b">More...</a><br /></td></tr>
 <tr class="separator:ab7b8e80239255476283ace667b26e46b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a80fcc210f38e5dd27c37426c0a5b16"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8h.html#a0a80fcc210f38e5dd27c37426c0a5b16">Generate_FFTW_Wisdom</a> (int padded_size)</td></tr>
+<tr class="memdesc:a0a80fcc210f38e5dd27c37426c0a5b16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analyzes the size of the FFTW arrays and generates the optimal plan.  <a href="#a0a80fcc210f38e5dd27c37426c0a5b16">More...</a><br /></td></tr>
+<tr class="separator:a0a80fcc210f38e5dd27c37426c0a5b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The supporting header file for generating the Continuous Wavelet Transform. </p>
@@ -487,6 +490,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Convolute</b> (double
 <dl class="section return"><dt>Returns</dt><dd>0</dd></dl>
 <p>This function conducts the Event Related Spectral Pertubation of the given data set <em>raw_data</em>. It follows the method outlined by the paper: "Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials".</p>
 <p>This function uses the Continuous Wavelet Transform to generate the multi-resolution analysis of the given data.</p>
+<p>This function is multi-threaded.</p>
+<p>This function deals a lot with Fast Fourier Transforms, and can be optimized by using the Generate_FFTW_Wisedom() function. If no wisdom is provided, an approximate FFT algorithm will be used.</p>
 <p>The variable raw_data must contain all of the data for each trial.</p>
 <p>raw_data, scales, and output must be pre-allocated. </p>
 
@@ -520,21 +525,56 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Convolute</b> (double
 
 </div>
 </div>
-<a class="anchor" id="a5ab46382763cbacdb1008a6040266172"></a>
+<a class="anchor" id="a0a80fcc210f38e5dd27c37426c0a5b16"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Generate_FFTW_Wisdom </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>padded_size</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Analyzes the size of the FFTW arrays and generates the optimal plan. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">padded_size</td><td>The size of the FFT arrays.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>0 If successful </dd>
+<dd>
+1 if unsuccessful</dd></dl>
+<p>This function can be used to optimize FFTW. This function will try to find the fastest FFT method based on the size of the array, and will store this information as "FFTW_plan.wise".</p>
+<p>This function does not need to be used, but it can significantly improve performance if it is. </p>
+
+</div>
+</div>
+<a class="anchor" id="a1d3f7b9f0f7a720314d1dec62efadabf"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">double * GenerateScales </td>
           <td>(</td>
-          <td class="paramtype">double&#160;</td>
+          <td class="paramtype">const double&#160;</td>
           <td class="paramname"><em>minimum_frequency</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>maximum_frequency</em>&#160;</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>maximum_frequency</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>s_0</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -548,7 +588,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Convolute</b> (double
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">minimum_frequency</td><td>The lowest frequency that must be observed </td></tr>
-    <tr><td class="paramname">maximum_frequency</td><td>The higest frequency that must be observed</td></tr>
+    <tr><td class="paramname">maximum_frequency</td><td>The higest frequency that must be observed </td></tr>
+    <tr><td class="paramname">s_0</td><td>The smallest scale usually it is \( 2 * \delta t \)</td></tr>
   </table>
   </dd>
 </dl>
@@ -749,7 +790,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Convolute</b> (double
 </dl>
 <p>This function preforms the Continuous Wavelet Transform using Morlet Wavelets on the data given in raw_data. It stores the result in the result array.</p>
 <p>This function only modifies the result array. The arrays must be pre allocated for this function to work.</p>
-<p>You can provide the function with scales of your choosing, or one can generate dyadic scales with the <a class="el" href="wavelet_8cc.html#a3daffe24d549dbc53edf79c0f1f5e1f3" title="This function generates the scales that will be used in the Continuous Wavelet Transform. ">GenerateScales()</a> function.</p>
+<p>You can provide the function with scales of your choosing, or one can generate dyadic scales with the <a class="el" href="wavelet_8cc.html#a09c27fbf3c2f81918edd9c57169ca371" title="This function generates the scales that will be used in the Continuous Wavelet Transform. ">GenerateScales()</a> function.</p>
 <p>This function is optimized using openmp to allow for multi threading. </p>
 
 </div>

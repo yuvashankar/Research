@@ -119,9 +119,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ab7b8e80239255476283ace667b26e46b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8cc.html#ab7b8e80239255476283ace667b26e46b">CalculatePaddingSize</a> (const int array_size, const int pad_flag)</td></tr>
 <tr class="memdesc:ab7b8e80239255476283ace667b26e46b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the size that the padded array should be.  <a href="#ab7b8e80239255476283ace667b26e46b">More...</a><br /></td></tr>
 <tr class="separator:ab7b8e80239255476283ace667b26e46b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3daffe24d549dbc53edf79c0f1f5e1f3"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8cc.html#a3daffe24d549dbc53edf79c0f1f5e1f3">GenerateScales</a> (double minimum_frequency, double maximum_frequency)</td></tr>
-<tr class="memdesc:a3daffe24d549dbc53edf79c0f1f5e1f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function generates the scales that will be used in the Continuous Wavelet Transform.  <a href="#a3daffe24d549dbc53edf79c0f1f5e1f3">More...</a><br /></td></tr>
-<tr class="separator:a3daffe24d549dbc53edf79c0f1f5e1f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09c27fbf3c2f81918edd9c57169ca371"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8cc.html#a09c27fbf3c2f81918edd9c57169ca371">GenerateScales</a> (const double minimum_frequency, const double maximum_frequency, const double s_0)</td></tr>
+<tr class="memdesc:a09c27fbf3c2f81918edd9c57169ca371"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function generates the scales that will be used in the Continuous Wavelet Transform.  <a href="#a09c27fbf3c2f81918edd9c57169ca371">More...</a><br /></td></tr>
+<tr class="separator:a09c27fbf3c2f81918edd9c57169ca371"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27394bc7ac779d93a58fa1a8e2230337"><td class="memItemLeft" align="right" valign="top">double *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="wavelet_8cc.html#a27394bc7ac779d93a58fa1a8e2230337">IdentifyFrequencies</a> (double *scales, int count)</td></tr>
 <tr class="memdesc:a27394bc7ac779d93a58fa1a8e2230337"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the corrosponding frequency to scales used.  <a href="#a27394bc7ac779d93a58fa1a8e2230337">More...</a><br /></td></tr>
 <tr class="separator:a27394bc7ac779d93a58fa1a8e2230337"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -250,21 +250,27 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a3daffe24d549dbc53edf79c0f1f5e1f3"></a>
+<a class="anchor" id="a09c27fbf3c2f81918edd9c57169ca371"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">double* GenerateScales </td>
           <td>(</td>
-          <td class="paramtype">double&#160;</td>
+          <td class="paramtype">const double&#160;</td>
           <td class="paramname"><em>minimum_frequency</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>maximum_frequency</em>&#160;</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>maximum_frequency</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>s_0</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -278,7 +284,8 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">minimum_frequency</td><td>The lowest frequency that must be observed </td></tr>
-    <tr><td class="paramname">maximum_frequency</td><td>The higest frequency that must be observed</td></tr>
+    <tr><td class="paramname">maximum_frequency</td><td>The higest frequency that must be observed </td></tr>
+    <tr><td class="paramname">s_0</td><td>The smallest scale usually it is \( 2 * \delta t \)</td></tr>
   </table>
   </dd>
 </dl>
@@ -479,7 +486,7 @@ Functions</h2></td></tr>
 </dl>
 <p>This function preforms the Continuous Wavelet Transform using Morlet Wavelets on the data given in raw_data. It stores the result in the result array.</p>
 <p>This function only modifies the result array. The arrays must be pre allocated for this function to work.</p>
-<p>You can provide the function with scales of your choosing, or one can generate dyadic scales with the <a class="el" href="wavelet_8cc.html#a3daffe24d549dbc53edf79c0f1f5e1f3" title="This function generates the scales that will be used in the Continuous Wavelet Transform. ">GenerateScales()</a> function.</p>
+<p>You can provide the function with scales of your choosing, or one can generate dyadic scales with the <a class="el" href="wavelet_8cc.html#a09c27fbf3c2f81918edd9c57169ca371" title="This function generates the scales that will be used in the Continuous Wavelet Transform. ">GenerateScales()</a> function.</p>
 <p>This function is optimized using openmp to allow for multi threading. </p>
 
 </div>

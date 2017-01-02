@@ -95,7 +95,7 @@ int \hyperlink{wavelet_8h_ad5997a1e04e6726779fded8881045b7d}{Wavelet} (double $\
 \begin{DoxyCompactList}\small\item\em A function that computes the Continuous Wavelet Transform for the data given in {\itshape raw\+\_\+data}. \end{DoxyCompactList}\item 
 void \hyperlink{wavelet_8h_aa3dfcb0be818bb8c79f0b034ea627ac0}{Clean\+Data} (double $\ast$data, double n)
 \item 
-double $\ast$ \hyperlink{wavelet_8h_a5ab46382763cbacdb1008a6040266172}{Generate\+Scales} (double minimum\+\_\+frequency, double maximum\+\_\+frequency)
+double $\ast$ \hyperlink{wavelet_8h_a1d3f7b9f0f7a720314d1dec62efadabf}{Generate\+Scales} (const double minimum\+\_\+frequency, const double maximum\+\_\+frequency, const double s\+\_\+0)
 \begin{DoxyCompactList}\small\item\em This function generates the scales that will be used in the Continuous Wavelet Transform. \end{DoxyCompactList}\item 
 double $\ast$ \hyperlink{wavelet_8h_a741383f7877b85635e4b9eaad57a11a1}{Identify\+Frequencies} (double $\ast$scales, int count)
 \begin{DoxyCompactList}\small\item\em Compute the corrosponding frequency to scales used. \end{DoxyCompactList}\item 
@@ -103,7 +103,9 @@ double $\ast$ \hyperlink{wavelet_8h_a741383f7877b85635e4b9eaad57a11a1}{Identify\
 
 \item 
 int \hyperlink{wavelet_8h_ab7b8e80239255476283ace667b26e46b}{Calculate\+Padding\+Size} (const int array\+\_\+size, const int pad\+\_\+flag)
-\begin{DoxyCompactList}\small\item\em Calculates the size that the padded array should be. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Calculates the size that the padded array should be. \end{DoxyCompactList}\item 
+int \hyperlink{wavelet_8h_a0a80fcc210f38e5dd27c37426c0a5b16}{Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom} (int padded\+\_\+size)
+\begin{DoxyCompactList}\small\item\em Analyzes the size of the F\+F\+T\+W arrays and generates the optimal plan. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
@@ -255,6 +257,10 @@ This function conducts the Event Related Spectral Pertubation of the given data 
 
 This function uses the Continuous Wavelet Transform to generate the multi-\/resolution analysis of the given data.
 
+This function is multi-\/threaded.
+
+This function deals a lot with Fast Fourier Transforms, and can be optimized by using the Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisedom() function. If no wisdom is provided, an approximate F\+F\+T algorithm will be used.
+
 The variable raw\+\_\+data must contain all of the data for each trial.
 
 raw\+\_\+data, scales, and output must be pre-\/allocated. \hypertarget{wavelet_8h_a7f77d41dda595606800244954e79daad}{}\index{wavelet.\+h@{wavelet.\+h}!Fill\+Data@{Fill\+Data}}
@@ -277,14 +283,38 @@ Similar to \hyperlink{wavelet_8cc_ab48098090bc3958e58e44ebec4a63f52}{Test\+Cases
 
 Sine Wave Sample
 
-Sine Wave Sample \hypertarget{wavelet_8h_a5ab46382763cbacdb1008a6040266172}{}\index{wavelet.\+h@{wavelet.\+h}!Generate\+Scales@{Generate\+Scales}}
-\index{Generate\+Scales@{Generate\+Scales}!wavelet.\+h@{wavelet.\+h}}
-\subsubsection[{Generate\+Scales(double minimum\+\_\+frequency, double maximum\+\_\+frequency)}]{\setlength{\rightskip}{0pt plus 5cm}double $\ast$ Generate\+Scales (
+Sine Wave Sample \hypertarget{wavelet_8h_a0a80fcc210f38e5dd27c37426c0a5b16}{}\index{wavelet.\+h@{wavelet.\+h}!Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom@{Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom}}
+\index{Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom@{Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom}!wavelet.\+h@{wavelet.\+h}}
+\subsubsection[{Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom(int padded\+\_\+size)}]{\setlength{\rightskip}{0pt plus 5cm}int Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom (
 \begin{DoxyParamCaption}
-\item[{double}]{minimum\+\_\+frequency, }
-\item[{double}]{maximum\+\_\+frequency}
+\item[{int}]{padded\+\_\+size}
 \end{DoxyParamCaption}
-)}\label{wavelet_8h_a5ab46382763cbacdb1008a6040266172}
+)}\label{wavelet_8h_a0a80fcc210f38e5dd27c37426c0a5b16}
+
+
+Analyzes the size of the F\+F\+T\+W arrays and generates the optimal plan. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em padded\+\_\+size} & The size of the F\+F\+T arrays.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 If successful 
+
+1 if unsuccessful
+\end{DoxyReturn}
+This function can be used to optimize F\+F\+T\+W. This function will try to find the fastest F\+F\+T method based on the size of the array, and will store this information as \char`\"{}\+F\+F\+T\+W\+\_\+plan.\+wise\char`\"{}.
+
+This function does not need to be used, but it can significantly improve performance if it is. \hypertarget{wavelet_8h_a1d3f7b9f0f7a720314d1dec62efadabf}{}\index{wavelet.\+h@{wavelet.\+h}!Generate\+Scales@{Generate\+Scales}}
+\index{Generate\+Scales@{Generate\+Scales}!wavelet.\+h@{wavelet.\+h}}
+\subsubsection[{Generate\+Scales(const double minimum\+\_\+frequency, const double maximum\+\_\+frequency, const double s\+\_\+0)}]{\setlength{\rightskip}{0pt plus 5cm}double $\ast$ Generate\+Scales (
+\begin{DoxyParamCaption}
+\item[{const double}]{minimum\+\_\+frequency, }
+\item[{const double}]{maximum\+\_\+frequency, }
+\item[{const double}]{s\+\_\+0}
+\end{DoxyParamCaption}
+)}\label{wavelet_8h_a1d3f7b9f0f7a720314d1dec62efadabf}
 
 
 This function generates the scales that will be used in the Continuous Wavelet Transform. 
@@ -293,7 +323,9 @@ This function generates the scales that will be used in the Continuous Wavelet T
 \begin{DoxyParams}{Parameters}
 {\em minimum\+\_\+frequency} & The lowest frequency that must be observed \\
 \hline
-{\em maximum\+\_\+frequency} & The higest frequency that must be observed\\
+{\em maximum\+\_\+frequency} & The higest frequency that must be observed \\
+\hline
+{\em s\+\_\+0} & The smallest scale usually it is $ 2 * \delta t $\\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -415,7 +447,7 @@ This function preforms the Continuous Wavelet Transform using Morlet Wavelets on
 
 This function only modifies the result array. The arrays must be pre allocated for this function to work.
 
-You can provide the function with scales of your choosing, or one can generate dyadic scales with the \hyperlink{wavelet_8cc_a3daffe24d549dbc53edf79c0f1f5e1f3}{Generate\+Scales()} function.
+You can provide the function with scales of your choosing, or one can generate dyadic scales with the \hyperlink{wavelet_8cc_a09c27fbf3c2f81918edd9c57169ca371}{Generate\+Scales()} function.
 
 This function is optimized using openmp to allow for multi threading. \hypertarget{wavelet_8h_a03987d098ad4cf62c98501cf41969731}{}\index{wavelet.\+h@{wavelet.\+h}!Write\+Debug@{Write\+Debug}}
 \index{Write\+Debug@{Write\+Debug}!wavelet.\+h@{wavelet.\+h}}

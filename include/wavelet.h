@@ -160,3 +160,5 @@ void Convolute(double *data, double *conWindow, double * complexWindow, double c
 	double* result, double* complexResult);
 
 int CalculatePaddingSize(const int array_size, const int pad_flag);
+int Generate_FFTW_Wisdom(int padded_size);
+
