@@ -13,12 +13,14 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 	const int data_size, const double scale, const double dw,
 	 fftw_complex* filter_convolution);
 
-int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int padding_type,
+int PopulateDataArray(double* input_data, const int data_size, const int trial_number,
+	const int padded_size, const int padding_type,
 	fftw_complex* output_data);
 
 /**
-	\fn int ERSP (double * raw_data, double* scales, int sampling_frequency, int n, int J, int trials, 
-			double * output)
+	\fn int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
+	const int J, int const trials, const int padding_type, 
+	double * output)
 
 	\param raw_data A trials * n array containing the data to be analyzed
 	\param scales A 1 x J array of the scales that the wavelets will be analyzed in
@@ -28,9 +30,17 @@ int PopulateDataArray(double* input_data, const int data_size, const int padded_
 	\param trials The number of trials conducted for the ERSP
 	\param output A n x J array with the resultant ERSP from all of the trials.
 
-	This function conducts the Event Related Spectral Pertubation 
-*/
+	\return 0
 
+	This function conducts the Event Related Spectral Pertubation of the given data set \a raw_data.
+	It follows the method outlined by the paper: "Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials".
+
+	This function uses the Continuous Wavelet Transform to generate the multi-resolution analysis of the given data. 
+
+	The variable raw_data must contain all of the data for each trial.
+
+	raw_data, scales, and output must be pre-allocated. 
+*/
 int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
 	const int J, int const trials, const int padding_type, 
 	double * output)
@@ -53,29 +63,27 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
     pre_stimulus = (double*) malloc( m     * sizeof(double) );
 
     //FFTW Memory Allocations
-    data_in  =           (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-	fft_data =           (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+    data_in            = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	fft_data           = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
-	fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
-	//Populate the Data array
-	PopulateDataArray(raw_data, n, PADDED_SIZE, padding_type, data_in);
-
-	//Calculate the FFT of the data and store it in fft_data
-	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
-	fftw_execute(plan_forward);
-
-	//Preapre for the plan backwards
+	//FFTW Planning
+	plan_forward  = fftw_plan_dft_1d(PADDED_SIZE, data_in,            fft_data,    FFTW_FORWARD, FFTW_ESTIMATE);
 	plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_ESTIMATE);
 	
 	/*Begin ERSP*/
 	for ( x = 0; x < trials; ++x)
 	{
 		/*Begin Wavelet Analysis*/
+		PopulateDataArray(raw_data, n, x, 
+						  PADDED_SIZE, padding_type, data_in);
+		fftw_execute(plan_forward);
+
 		for (i = 0; i < J; ++i)
 		{
 			FrequencyMultiply(fft_data, PADDED_SIZE, scales[i], dw, 
-				filter_convolution);
+							  filter_convolution);
 
 			//Take the inverse FFT and store it in fftw_result
 			fftw_execute(plan_backward);
@@ -90,8 +98,8 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 
 		//Remove the baseline
 		RemoveBaseline(pre_stimulus, wavelet_out,
-			n, J, m,
-			baseline_out);
+					   n, J, m,
+					   baseline_out);
 
 		for ( i = 0; i < n * J; ++i)
 		{
@@ -99,9 +107,9 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 		}
 	}
 	
-	for (int i = 0; i < n * J; ++i)
+	for ( i = 0; i < n * J; ++i)
 	{
-		output[i] = output[i] / trials;
+		output[i] /= trials;
 	}
 	/*End ERSP*/
 
@@ -126,6 +134,8 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	\param m The size of the array before the stimulus
 	\param output An n x J array that the function stores the result in. 
 
+	\return 0
+
 	This function follows the method outlined in the paper "Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials".
 
 	The function will remove the baseline observed in in the pre stimulus by computing the z score on only the information before the stimulus. 
@@ -133,7 +143,6 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 
 	All arrays must be pre allocated.
 */
-
 int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
 	const int n, const int J, const int m,
 	double* output)
@@ -176,6 +185,8 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 	\param scale THe scale of the wavelet that will be multipled with the signal array
 	\param dw THe discrete increment in the frequency domain for the wavelet
 	\param filter_convolution A fftw_complex * data_size array with the resulted multiplication
+
+	\return 0
 
 	This function mutliples the contents of fft_data with with the wavelet specified by the variable \a scale. 
 	It stores the result in filter_convolution.
@@ -222,11 +233,14 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 	\param PAD_FLAG The type of padding specified
 	\param output_data  An fftw_complex * padded_size array that the data is stored in for FFTW to compute.
 
+	\return padding_type
+
 	This function takes the signal data from input_data and stores the result in an fftw_complex data array output_data.
 
 	It returns the padding type
 */
-int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int padding_type,
+int PopulateDataArray(double* input_data, const int data_size, const int trial_number,
+	const int padded_size, const int padding_type,
 	fftw_complex* output_data)
 {
 	const double ramp = 2.0/data_size; // = 1.0/ n / 2
@@ -242,7 +256,7 @@ int PopulateDataArray(double* input_data, const int data_size, const int padded_
 			//populate the FFTW data vector. 
 			for (i = 0; i < data_size; ++i)
 		    {
-		    	output_data[i][0] = input_data[i];
+		    	output_data[i][0] = input_data[trial_number * data_size + i];
 		    	output_data[i][1] = 0.0;
 		    }
 		    break;
@@ -251,7 +265,7 @@ int PopulateDataArray(double* input_data, const int data_size, const int padded_
 			//populate the FFTW data vector. 
 			for (i = 0; i < data_size; ++i)
 		    {
-		    	output_data[i][0] = input_data[i];
+		    	output_data[i][0] = input_data[trial_number * data_size + i];
 		    	output_data[i][1] = 0.0;
 		    }
 
@@ -266,20 +280,20 @@ int PopulateDataArray(double* input_data, const int data_size, const int padded_
 		case 2: //Duplicate array and ramp up and ramp down output
 			for (i = 0; i < data_size; ++i)
 		    {
-		    	output_data[i][0] = input_data[i];
+		    	output_data[i][0] = input_data[trial_number * data_size + i];
 		    	output_data[i][1] = 0.0;
 		    }
 
 		    for (i = 0; i < (int) (0.5* data_size); ++i)
 		    {
 		    	output_counter = data_size + i;
-		    	input_counter = (int) ((data_size/2) + i);
+		    	input_counter = (int) (trial_number * data_size + (0.5*data_size) + i);
 		    	gain = i * ramp;
 
 		    	output_data[output_counter][0] = (1.0 - gain) * input_data[input_counter];
 		    	output_data[output_counter][1] = 0.0;
 
-		    	output_data[output_counter + (int) (0.5 * data_size)][0] = gain * input_data[i];
+		    	output_data[output_counter + (int) (0.5 * data_size)][0] = gain * input_data[trial_number * data_size + i];
 		    	output_data[output_counter + (int) (0.5 * data_size)][1] = 0.0;
 		    }
 			break;
@@ -288,7 +302,7 @@ int PopulateDataArray(double* input_data, const int data_size, const int padded_
 			//populate the FFTW data vector. 
 			for (i = 0; i < data_size; ++i)
 		    {
-		    	output_data[i][0] = input_data[i];
+		    	output_data[i][0] = input_data[trial_number * data_size + i];
 		    	output_data[i][1] = 0.0;
 		    }
 		    break;

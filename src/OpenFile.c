@@ -3,7 +3,18 @@
 #include <stdio.h>
 #include "edflib.h"
 
+/**
+	\fn int OpenFile(const char* fileName, struct edf_hdr_struct *header)
+	
+	\brief Openes a .BDF file and allocates it to an edf_hdr_struct.
 
+	\param fileName The name and location of the file to be opened
+	\param header The pointer to the edf header structure
+
+	\return 0 if file is opened successfully
+	\return -1 if there is an error
+
+*/
 int OpenFile(const char* fileName, struct edf_hdr_struct *header)
 {
 	if(edfopen_file_readonly(fileName, header, EDFLIB_READ_ALL_ANNOTATIONS))
@@ -27,7 +38,7 @@ int OpenFile(const char* fileName, struct edf_hdr_struct *header)
 			                                        break;
 		}
 
-	return(1);
+	return(-1);
 	}
 	return(0);
 }

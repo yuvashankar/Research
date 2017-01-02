@@ -1,0 +1,140 @@
+\hypertarget{_plot_8cc}{}\section{/\+Users/vinay/\+Google Drive/\+Science/\+Research/\+Morlets/\+Plot.cc File Reference}
+\label{_plot_8cc}\index{/\+Users/vinay/\+Google Drive/\+Science/\+Research/\+Morlets/\+Plot.\+cc@{/\+Users/vinay/\+Google Drive/\+Science/\+Research/\+Morlets/\+Plot.\+cc}}
+
+
+All the functions needed to plot the png.  
+
+
+{\ttfamily \#include \char`\"{}wavelet.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$pngwriter.\+h$>$}\\*
+{\ttfamily \#include $<$float.\+h$>$}\\*
+{\ttfamily \#include $<$cmath$>$}\\*
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_c_o_l_o_u_r}{C\+O\+L\+O\+U\+R}
+\begin{DoxyCompactList}\small\item\em the R\+G\+B representation of every pixel \end{DoxyCompactList}\item 
+struct \hyperlink{struct_r_a_n_g_e}{R\+A\+N\+G\+E}
+\begin{DoxyCompactList}\small\item\em The lower and upper bound of the data matrix. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{_plot_8cc_a65aa5f7d42764b04f5e75e234525c693}{}\#define \hyperlink{_plot_8cc_a65aa5f7d42764b04f5e75e234525c693}{P\+L\+O\+T\+\_\+\+O\+Y}~200\label{_plot_8cc_a65aa5f7d42764b04f5e75e234525c693}
+
+\begin{DoxyCompactList}\small\item\em The amount of vertical black space in the plot. \end{DoxyCompactList}\item 
+\hypertarget{_plot_8cc_a455183bbaa5025561729d939a3c548d7}{}\#define \hyperlink{_plot_8cc_a455183bbaa5025561729d939a3c548d7}{P\+L\+O\+T\+\_\+\+O\+X}~200\label{_plot_8cc_a455183bbaa5025561729d939a3c548d7}
+
+\begin{DoxyCompactList}\small\item\em The amount of horizontal black space in the plot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{struct_r_a_n_g_e}{R\+A\+N\+G\+E} \hyperlink{_plot_8cc_ad02bd9e243f0824812055f19875a7466}{Get\+Range} (double $\ast$array, int size)
+\item 
+void \hyperlink{_plot_8cc_a31805a04a6b2cf75750782f7945c413d}{Calculate\+Log} (double $\ast$array, int size)
+\item 
+\hyperlink{struct_c_o_l_o_u_r}{C\+O\+L\+O\+U\+R} \hyperlink{_plot_8cc_afba38b661ed068827ded1f87c76d5ae7}{Get\+Colour} (double v, \hyperlink{struct_r_a_n_g_e}{R\+A\+N\+G\+E} data\+\_\+range)
+\item 
+double \hyperlink{_plot_8cc_a2736a47ee392d4f7deaf502fdb706087}{Max} (double $\ast$array, int size)
+\begin{DoxyCompactList}\small\item\em A function that finds the Maximum of a given array. \end{DoxyCompactList}\item 
+double \hyperlink{_plot_8cc_afacff799d1ca8005dffa4de559338c55}{Min} (double $\ast$array, int size)
+\begin{DoxyCompactList}\small\item\em A function that finds the minimum of a given array. \end{DoxyCompactList}\item 
+\hypertarget{_plot_8cc_aa7228028715fcf3300384801fad4ab11}{}void {\bfseries Plot} (double $\ast$data, double $\ast$periods, int num\+\_\+x, int num\+\_\+y)\label{_plot_8cc_aa7228028715fcf3300384801fad4ab11}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+All the functions needed to plot the png. 
+
+
+
+\subsection{Function Documentation}
+\hypertarget{_plot_8cc_a31805a04a6b2cf75750782f7945c413d}{}\index{Plot.\+cc@{Plot.\+cc}!Calculate\+Log@{Calculate\+Log}}
+\index{Calculate\+Log@{Calculate\+Log}!Plot.\+cc@{Plot.\+cc}}
+\subsubsection[{Calculate\+Log(double $\ast$array, int size)}]{\setlength{\rightskip}{0pt plus 5cm}void Calculate\+Log (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{array, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)}\label{_plot_8cc_a31805a04a6b2cf75750782f7945c413d}
+
+\begin{DoxyParams}{Parameters}
+{\em array} & The array that needs to be computed \\
+\hline
+{\em size} & The size of the contiguous block of memory\\
+\hline
+\end{DoxyParams}
+This function will iterate through every element in the array and compute the logarithm. This will override the array. \hypertarget{_plot_8cc_afba38b661ed068827ded1f87c76d5ae7}{}\index{Plot.\+cc@{Plot.\+cc}!Get\+Colour@{Get\+Colour}}
+\index{Get\+Colour@{Get\+Colour}!Plot.\+cc@{Plot.\+cc}}
+\subsubsection[{Get\+Colour(double v, R\+A\+N\+G\+E data\+\_\+range)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+O\+L\+O\+U\+R} Get\+Colour (
+\begin{DoxyParamCaption}
+\item[{double}]{v, }
+\item[{{\bf R\+A\+N\+G\+E}}]{data\+\_\+range}
+\end{DoxyParamCaption}
+)}\label{_plot_8cc_afba38b661ed068827ded1f87c76d5ae7}
+
+\begin{DoxyParams}{Parameters}
+{\em v} & the value of the pixel to be plotted \\
+\hline
+{\em data\+\_\+range} & The range of the given data\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pixel\+\_\+colour The colour of the pixel that will be plotted
+\end{DoxyReturn}
+This function takes a double and maps to a colour map. High values are closer to the red colour spectrum, and low values are mapped to the blue colour spectrum. \hypertarget{_plot_8cc_ad02bd9e243f0824812055f19875a7466}{}\index{Plot.\+cc@{Plot.\+cc}!Get\+Range@{Get\+Range}}
+\index{Get\+Range@{Get\+Range}!Plot.\+cc@{Plot.\+cc}}
+\subsubsection[{Get\+Range(double $\ast$array, int size)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf R\+A\+N\+G\+E} Get\+Range (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{array, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)}\label{_plot_8cc_ad02bd9e243f0824812055f19875a7466}
+
+\begin{DoxyParams}{Parameters}
+{\em array} & The data array that will be plotted \\
+\hline
+{\em size} & The total size of the contiguous memory\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\hyperlink{struct_r_a_n_g_e}{R\+A\+N\+G\+E} The maximum and minimum of the data array.
+\end{DoxyReturn}
+This function will iterate through the entire function and returns the maximum and minimum of the entire array. \hypertarget{_plot_8cc_a2736a47ee392d4f7deaf502fdb706087}{}\index{Plot.\+cc@{Plot.\+cc}!Max@{Max}}
+\index{Max@{Max}!Plot.\+cc@{Plot.\+cc}}
+\subsubsection[{Max(double $\ast$array, int size)}]{\setlength{\rightskip}{0pt plus 5cm}double Max (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{array, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)}\label{_plot_8cc_a2736a47ee392d4f7deaf502fdb706087}
+
+
+A function that finds the Maximum of a given array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & The array to be analyzed \\
+\hline
+{\em size} & The size of the array \\
+\hline
+\end{DoxyParams}
+\hypertarget{_plot_8cc_afacff799d1ca8005dffa4de559338c55}{}\index{Plot.\+cc@{Plot.\+cc}!Min@{Min}}
+\index{Min@{Min}!Plot.\+cc@{Plot.\+cc}}
+\subsubsection[{Min(double $\ast$array, int size)}]{\setlength{\rightskip}{0pt plus 5cm}double Min (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{array, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)}\label{_plot_8cc_afacff799d1ca8005dffa4de559338c55}
+
+
+A function that finds the minimum of a given array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & The array to be analyzed \\
+\hline
+{\em size} & The size of the array \\
+\hline
+\end{DoxyParams}

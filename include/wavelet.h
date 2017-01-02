@@ -13,18 +13,23 @@
 
 //Global Constants
 
-/*! \var QUAD_ROOT_PI 
-	\brief the quad root of pi (pi^-0.25) computed to machine precision
+/*! \def QUAD_ROOT_PI 
+	\brief the quad root of pi (\f$ \pi^{-0.25} \f$) computed to machine precision
 */
 #define QUAD_ROOT_PI 0.7511255444649425
 
-/** 	\var C_SIGMA 
+/** 	
+	\var C_SIGMA 
  	\brief A constant needed to compute the Morlet Wavelet precalculated to machine precision
+
+ 	\f[ C_\sigma = (1 + e^{-\sigma^2} - 2e^{-\frac{3\sigma^2}{4}})^{-\frac{1}{2}} \f]
 */
 #define C_SIGMA 1.0000000000018794
 /**
 	\var K_SIGMA
 	\brief A constant needed to compute the Morlet Wavelet precalculated to machine eps
+
+	\f[ \kappa_\sigma = e^{-\frac{\sigma^2}{2}} \f]
 */
 #define K_SIGMA 1.5229979744712628e-08
 
@@ -68,14 +73,39 @@
 #define PAD_FLAG 1
 
 //Signal Constants
+
+/*!
+	\var FS
+	\brief Used by TestCases() to generate sample data
+*/
 #define FS 2048
+
+/**
+	\var DT 
+	\brief \f$ \delta t = \frac{1}{f_s} \f$
+*/
 #define DT 1.0/FS
+
+/**
+	\var S0 
+	\brief the lowest scale that can be used to compute the CWT \f$ s_0 = 2 \delta t \f$
+*/
 #define S0 2.0 * DT
+
 #define FREQ 16.0
 #define DATA_SIZE 6144 
 
 //Plotting Constants
+/**
+	\var MAX_FREQUENCY
+	\brief The maximum frequency that will be analyzed
+*/
 #define MAX_FREQUENCY 512.0
+
+/**
+	\var MIN_FREQUENCY
+	\brief The minimum frequency that will be analyzed
+*/
 #define MIN_FREQUENCY 0.5
 #define MAX_DATA_SIZE 10000000
 
@@ -101,19 +131,21 @@
 #define MAGNITUDE(x,y) (x * x) + (y * y)
 
 void FillData(double * data);
-void TestCases(double *data, int flag);
+void TestCases(double *data, const int flag);
 
-int ReadFile(double data[], char* filename);
-int WriteFile(double *data, double *frequency, int x, int y, const char* filename);
-int WriteDebug(double *data, int length, const char* filename);
+int ReadFile(double data[], char filename[]);
+int WriteFile(const double *data, const double *frequency, const int x, const int y, 
+	const char* filename);
 
-int ERSP (double * raw_data, double* scales, const int sampling_frequency, 
-	const int n, const int J, int const trials, const int padding_type, 
+int WriteDebug(const double *data, const int length, const char* filename);
+
+int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
+	const int J, int const trials, const int padding_type, 
 	double * output);
 
 void Plot(double * data, double * periods, int num_x, int num_y);
 
-double CompleteFourierMorlet(double w, double scale);
+double CompleteFourierMorlet(const double w, const double scale);
 
 int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J,
@@ -121,10 +153,10 @@ int Wavelet(double* raw_data, double* scales,
 
 void CleanData(double * data, double n);
 
-double* GenerateScales(double minimum_frequency, double maximum_frequency);
+double* GenerateScales(const double minimum_frequency, const double maximum_frequency, const double s_0);
 double* IdentifyFrequencies(double* scales, int count);
 
 void Convolute(double *data, double *conWindow, double * complexWindow, double conSize,
 	double* result, double* complexResult);
 
-int CalculatePaddingSize(int array_size, int FLAG);
+int CalculatePaddingSize(const int array_size, const int pad_flag);

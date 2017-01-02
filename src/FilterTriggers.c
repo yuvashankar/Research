@@ -1,21 +1,25 @@
-/*
-Filter Triggers: 
-Filteres the triggers coming in, and finds the specified events
+/**
+    \file "FilterTriggers.c"
+*/
 
-Inputs: 
-        Code: The code of the trigger list that is needed 
+/**
+    \fn int FilterTriggers(const int code, const int button, const int numberOfRecords, 
+            const long long * triggerList,
+            const int * readBuffer, 
+            int * outputBuffer)
+
+    \brief Filteres the triggers coming in, and finds the specified events
+
+    \param code The code of the trigger list that is needed 
                 Possible Inputs: 1, or 2
-        button: The code of the button that is needed
+    \param button The code of the button that is needed
                 Possible Inputs 1, or 2
-        triggerList: The list of all of the possible triggers
-        readBuffer: The Status Channel Input from the file
+    \param triggerList The list of all of the possible triggers
+    \param readBuffer The Status Channel input from the file
+    
+    \param outputBuffer The buffer that FilterTriggers will populate with the location of the location of the triggers that we're looking for
 
-Outputs: 
-        outputBuffer: The buffer that FilterTriggers will populate with the
-            location of the location of the triggers that we're looking for
-
-        counterVariable: Output of the number of triggers found.
-
+    \return counterVariable The number of triggers found.
 */
 
 int FilterTriggers(const int code, const int button, const int numberOfRecords, 

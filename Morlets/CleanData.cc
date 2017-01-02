@@ -7,7 +7,7 @@
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
 
-/*    
+/**
     \fn void CleanData(double * data, double n)
 
     \param data An 1 x n array with the data to be cleaned

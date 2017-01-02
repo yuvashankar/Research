@@ -1,0 +1,42 @@
+\hypertarget{_find_triggers_8c}{}\section{/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Find\+Triggers.c File Reference}
+\label{_find_triggers_8c}\index{/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Find\+Triggers.\+c@{/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Find\+Triggers.\+c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{_find_triggers_8c_adc749c526585c26e41ea3600ab44a2fd}{}\#define {\bfseries M\+A\+X\+I\+M\+U\+M\+\_\+\+T\+R\+I\+G\+G\+E\+R\+S}~1000000\label{_find_triggers_8c_adc749c526585c26e41ea3600ab44a2fd}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+long long \hyperlink{_find_triggers_8c_afd0584aa4312d45d0baa4d1f79d6ac9d}{Find\+Triggers} (const int $\ast$status\+Input, const long long number\+Of\+Records, long long $\ast$output\+Buffer)
+\begin{DoxyCompactList}\small\item\em This function should take an array input and return the rising and falling edges of the triggers. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{_find_triggers_8c_afd0584aa4312d45d0baa4d1f79d6ac9d}{}\index{Find\+Triggers.\+c@{Find\+Triggers.\+c}!Find\+Triggers@{Find\+Triggers}}
+\index{Find\+Triggers@{Find\+Triggers}!Find\+Triggers.\+c@{Find\+Triggers.\+c}}
+\subsubsection[{Find\+Triggers(const int $\ast$status\+Input, const long long number\+Of\+Records, long long $\ast$output\+Buffer)}]{\setlength{\rightskip}{0pt plus 5cm}long long Find\+Triggers (
+\begin{DoxyParamCaption}
+\item[{const int $\ast$}]{status\+Input, }
+\item[{const long long}]{number\+Of\+Records, }
+\item[{long long $\ast$}]{output\+Buffer}
+\end{DoxyParamCaption}
+)}\label{_find_triggers_8c_afd0584aa4312d45d0baa4d1f79d6ac9d}
+
+
+This function should take an array input and return the rising and falling edges of the triggers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status\+Input} & The Status Channel Input from the B\+D\+F or E\+D\+F flie. use the edfread\+\_\+digital\+\_\+samples \\
+\hline
+{\em number\+Of\+Records} & The size of status\+Input \\
+\hline
+{\em output\+Buffer} & a 1 x 2 $\ast$ M\+A\+X\+I\+M\+U\+M\+\_\+\+T\+R\+I\+G\+G\+E\+R\+S long long array with the odd entries being the rising edge and the even entries being the falling edges.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+counter\+Variable The number of triggers that were found. 
+\end{DoxyReturn}

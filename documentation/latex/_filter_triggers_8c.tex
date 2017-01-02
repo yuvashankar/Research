@@ -1,0 +1,42 @@
+\hypertarget{_filter_triggers_8c}{}\section{/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Filter\+Triggers.c File Reference}
+\label{_filter_triggers_8c}\index{/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Filter\+Triggers.\+c@{/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Filter\+Triggers.\+c}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{_filter_triggers_8c_a52391f4e20341afbde4a931a3f0c3401}{Filter\+Triggers} (const int code, const int button, const int number\+Of\+Records, const long long $\ast$trigger\+List, const int $\ast$read\+Buffer, int $\ast$output\+Buffer)
+\begin{DoxyCompactList}\small\item\em Filteres the triggers coming in, and finds the specified events. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{_filter_triggers_8c_a52391f4e20341afbde4a931a3f0c3401}{}\index{Filter\+Triggers.\+c@{Filter\+Triggers.\+c}!Filter\+Triggers@{Filter\+Triggers}}
+\index{Filter\+Triggers@{Filter\+Triggers}!Filter\+Triggers.\+c@{Filter\+Triggers.\+c}}
+\subsubsection[{Filter\+Triggers(const int code, const int button, const int number\+Of\+Records, const long long $\ast$trigger\+List, const int $\ast$read\+Buffer, int $\ast$output\+Buffer)}]{\setlength{\rightskip}{0pt plus 5cm}int Filter\+Triggers (
+\begin{DoxyParamCaption}
+\item[{const int}]{code, }
+\item[{const int}]{button, }
+\item[{const int}]{number\+Of\+Records, }
+\item[{const long long $\ast$}]{trigger\+List, }
+\item[{const int $\ast$}]{read\+Buffer, }
+\item[{int $\ast$}]{output\+Buffer}
+\end{DoxyParamCaption}
+)}\label{_filter_triggers_8c_a52391f4e20341afbde4a931a3f0c3401}
+
+
+Filteres the triggers coming in, and finds the specified events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em code} & The code of the trigger list that is needed Possible Inputs\+: 1, or 2 \\
+\hline
+{\em button} & The code of the button that is needed Possible Inputs 1, or 2 \\
+\hline
+{\em trigger\+List} & The list of all of the possible triggers \\
+\hline
+{\em read\+Buffer} & The Status Channel input from the file\\
+\hline
+{\em output\+Buffer} & The buffer that Filter\+Triggers will populate with the location of the location of the triggers that we\textquotesingle{}re looking for\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+counter\+Variable The number of triggers found. 
+\end{DoxyReturn}

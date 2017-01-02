@@ -1,15 +1,19 @@
-/*
-FindTriggers.c
-This function should take an array input and return the rising and falling edges of the triggers. 
+/**
+    \file "FindTriggers.c"
+*/
 
-Inputs: 
-	StatusInput: The Status Channel Input from the BDF or EDF flie. use the edfread_digital_samples
-	numberOfRecords: The size of statusInput
-	outputBuffer: a 1 x 2 * MAXIMUM_TRIGGERS long long array that is to be populated. 
+/**
+    \fn long long FindTriggers(const int * statusInput, const long long numberOfRecords,
+                        long long * outputBuffer)
 
-Outputs:
-	outputBuffer: a 1 x 2 * MAXIMUM_TRIGGERS long long array with the odd entries being the
+    \brief This function should take an array input and return the rising and falling edges of the triggers. 
+
+    \param statusInput: The Status Channel Input from the BDF or EDF flie. use the edfread_digital_samples
+	\param numberOfRecords: The size of statusInput
+	\param outputBuffer: a 1 x 2 * MAXIMUM_TRIGGERS long long array with the odd entries being the
 				rising edge and the even entries being the falling edges. 
+
+    \return counterVariable The number of triggers that were found.                
 */
 
 #include <stdio.h>

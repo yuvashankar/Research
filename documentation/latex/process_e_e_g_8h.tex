@@ -1,0 +1,134 @@
+\hypertarget{process_e_e_g_8h}{}\section{/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/process\+E\+E\+G.h File Reference}
+\label{process_e_e_g_8h}\index{/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/process\+E\+E\+G.\+h@{/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/process\+E\+E\+G.\+h}}
+
+
+The files needed to open and process B\+D\+F Files.  
+
+
+{\ttfamily \#include \char`\"{}edflib.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}wavelet.\+h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{process_e_e_g_8h_a30bac62be278e7dd41bff5f6e5ff35ad}{P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}~1.\+0
+\begin{DoxyCompactList}\small\item\em The amount of seconds before the stimulus. \end{DoxyCompactList}\item 
+\#define \hyperlink{process_e_e_g_8h_aeadd95e38ec372c02833a06b86052964}{P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}~2.\+0
+\begin{DoxyCompactList}\small\item\em The amount of seconds after the stimulus. \end{DoxyCompactList}\item 
+\hypertarget{process_e_e_g_8h_adc749c526585c26e41ea3600ab44a2fd}{}\#define {\bfseries M\+A\+X\+I\+M\+U\+M\+\_\+\+T\+R\+I\+G\+G\+E\+R\+S}~1000000\label{process_e_e_g_8h_adc749c526585c26e41ea3600ab44a2fd}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{process_e_e_g_8h_a0de6e46285fe1fe255a4e7224bcd8cf2}{Open\+File} (const char $\ast$file\+Name, struct \hyperlink{structedf__hdr__struct}{edf\+\_\+hdr\+\_\+struct} $\ast$header)
+\begin{DoxyCompactList}\small\item\em Openes a .B\+D\+F file and allocates it to an \hyperlink{structedf__hdr__struct}{edf\+\_\+hdr\+\_\+struct}. \end{DoxyCompactList}\item 
+long long \hyperlink{process_e_e_g_8h_adf17b8ef5058d54d718d62fd2728ccba}{Find\+Triggers} (const int $\ast$status\+Input, const long long number\+Of\+Elements, long long $\ast$output\+Buffer)
+\begin{DoxyCompactList}\small\item\em This function should take an array input and return the rising and falling edges of the triggers. \end{DoxyCompactList}\item 
+int \hyperlink{process_e_e_g_8h_a52391f4e20341afbde4a931a3f0c3401}{Filter\+Triggers} (const int code, const int button, const int number\+Of\+Records, const long long $\ast$trigger\+List, const int $\ast$read\+Buffer, int $\ast$output\+Buffer)
+\begin{DoxyCompactList}\small\item\em Filteres the triggers coming in, and finds the specified events. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The files needed to open and process B\+D\+F Files. 
+
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{process_e_e_g_8h_aeadd95e38ec372c02833a06b86052964}{}\index{process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}!P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E@{P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}}
+\index{P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E@{P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}!process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}}
+\subsubsection[{P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E~2.\+0}\label{process_e_e_g_8h_aeadd95e38ec372c02833a06b86052964}
+
+
+The amount of seconds after the stimulus. 
+
+P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E \hypertarget{process_e_e_g_8h_a30bac62be278e7dd41bff5f6e5ff35ad}{}\index{process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}!P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E@{P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}}
+\index{P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E@{P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}!process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}}
+\subsubsection[{P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E~1.\+0}\label{process_e_e_g_8h_a30bac62be278e7dd41bff5f6e5ff35ad}
+
+
+The amount of seconds before the stimulus. 
+
+P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E 
+
+\subsection{Function Documentation}
+\hypertarget{process_e_e_g_8h_a52391f4e20341afbde4a931a3f0c3401}{}\index{process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}!Filter\+Triggers@{Filter\+Triggers}}
+\index{Filter\+Triggers@{Filter\+Triggers}!process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}}
+\subsubsection[{Filter\+Triggers(const int code, const int button, const int number\+Of\+Records, const long long $\ast$trigger\+List, const int $\ast$read\+Buffer, int $\ast$output\+Buffer)}]{\setlength{\rightskip}{0pt plus 5cm}int Filter\+Triggers (
+\begin{DoxyParamCaption}
+\item[{const int}]{code, }
+\item[{const int}]{button, }
+\item[{const int}]{number\+Of\+Records, }
+\item[{const long long $\ast$}]{trigger\+List, }
+\item[{const int $\ast$}]{read\+Buffer, }
+\item[{int $\ast$}]{output\+Buffer}
+\end{DoxyParamCaption}
+)}\label{process_e_e_g_8h_a52391f4e20341afbde4a931a3f0c3401}
+
+
+Filteres the triggers coming in, and finds the specified events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em code} & The code of the trigger list that is needed Possible Inputs\+: 1, or 2 \\
+\hline
+{\em button} & The code of the button that is needed Possible Inputs 1, or 2 \\
+\hline
+{\em trigger\+List} & The list of all of the possible triggers \\
+\hline
+{\em read\+Buffer} & The Status Channel input from the file\\
+\hline
+{\em output\+Buffer} & The buffer that Filter\+Triggers will populate with the location of the location of the triggers that we\textquotesingle{}re looking for\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+counter\+Variable The number of triggers found. 
+\end{DoxyReturn}
+\hypertarget{process_e_e_g_8h_adf17b8ef5058d54d718d62fd2728ccba}{}\index{process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}!Find\+Triggers@{Find\+Triggers}}
+\index{Find\+Triggers@{Find\+Triggers}!process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}}
+\subsubsection[{Find\+Triggers(const int $\ast$status\+Input, const long long number\+Of\+Elements, long long $\ast$output\+Buffer)}]{\setlength{\rightskip}{0pt plus 5cm}long long Find\+Triggers (
+\begin{DoxyParamCaption}
+\item[{const int $\ast$}]{status\+Input, }
+\item[{const long long}]{number\+Of\+Records, }
+\item[{long long $\ast$}]{output\+Buffer}
+\end{DoxyParamCaption}
+)}\label{process_e_e_g_8h_adf17b8ef5058d54d718d62fd2728ccba}
+
+
+This function should take an array input and return the rising and falling edges of the triggers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em status\+Input} & The Status Channel Input from the B\+D\+F or E\+D\+F flie. use the edfread\+\_\+digital\+\_\+samples \\
+\hline
+{\em number\+Of\+Records} & The size of status\+Input \\
+\hline
+{\em output\+Buffer} & a 1 x 2 $\ast$ M\+A\+X\+I\+M\+U\+M\+\_\+\+T\+R\+I\+G\+G\+E\+R\+S long long array with the odd entries being the rising edge and the even entries being the falling edges.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+counter\+Variable The number of triggers that were found. 
+\end{DoxyReturn}
+\hypertarget{process_e_e_g_8h_a0de6e46285fe1fe255a4e7224bcd8cf2}{}\index{process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}!Open\+File@{Open\+File}}
+\index{Open\+File@{Open\+File}!process\+E\+E\+G.\+h@{process\+E\+E\+G.\+h}}
+\subsubsection[{Open\+File(const char $\ast$file\+Name, struct edf\+\_\+hdr\+\_\+struct $\ast$header)}]{\setlength{\rightskip}{0pt plus 5cm}int Open\+File (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{file\+Name, }
+\item[{struct {\bf edf\+\_\+hdr\+\_\+struct} $\ast$}]{header}
+\end{DoxyParamCaption}
+)}\label{process_e_e_g_8h_a0de6e46285fe1fe255a4e7224bcd8cf2}
+
+
+Openes a .B\+D\+F file and allocates it to an \hyperlink{structedf__hdr__struct}{edf\+\_\+hdr\+\_\+struct}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Name} & The name and location of the file to be opened \\
+\hline
+{\em header} & The pointer to the edf header structure\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if file is opened successfully 
+
+-\/1 if there is an error 
+\end{DoxyReturn}

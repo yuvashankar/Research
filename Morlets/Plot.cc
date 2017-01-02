@@ -1,29 +1,49 @@
-//Plot.c
-//All the functions needed to plot the png. 
-
+/**
+	\file "Plot.cc"
+	\brief All the functions needed to plot the png. 
+*/
 #include "wavelet.h"
 #include <pngwriter.h>
 #include <float.h>
 #include <cmath>
 
 //Plotting Constants
+/**
+	\var PLOT_OY
+	\brief The amount of vertical black space in the plot
+*/
 #define PLOT_OY 200
+/**
+	\var PLOT_OX
+	\brief The amount of horizontal black space in the plot
+*/
 #define PLOT_OX 200
 
+
 //Data Structures
+
+/**
+	\struct COLOUR
+	\brief the RGB representation of every pixel
+*/
 typedef struct 
 {
 	double r,g,b;
 } COLOUR;
 
+/**
+	\struct RANGE
+	\brief The lower and upper bound of the data matrix
+*/
 typedef struct
 {
 	double minimum, maximum;
 } RANGE;
 
+
 RANGE GetRange(double* array, int size);
 void CalculateLog(double * array, int size);
-COLOUR GetColour(double v,double vmin,double vmax);
+COLOUR GetColour(double v,RANGE data_range);
 double Max(double * array, int size);
 double Min(double* array, int size);
 
@@ -100,7 +120,7 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 				//Ensure that the indexes do not exceed the data limit.
 				assert( counterVar <= num_x*num_y );
 
-				COLOUR c = GetColour(value, r.minimum, r.maximum);
+				COLOUR c = GetColour(value, r);
 				
 				png.plot(PLOT_OX + i , PLOT_OY + (height - j*lines_size + k), 
 					c.r, c.g, c.b);
@@ -145,7 +165,16 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	png.close();
 }
 
+/**
+	\fn RANGE GetRange(double* array, int size)
 
+	\param array The data array that will be plotted
+	\param size The total size of the contiguous memory
+
+	\return RANGE The maximum and minimum of the data array.
+
+	This function will iterate through the entire function and returns the maximum and minimum of the entire array.
+*/
 RANGE GetRange(double* array, int size)
 {
 	RANGE r = {array[0], array[0]};
@@ -167,7 +196,15 @@ RANGE GetRange(double* array, int size)
 }
 
 
+/**
+	\fn void CalculateLog(double * array, int size)
 
+	\param array The array that needs to be computed
+	\param size The size of the contiguous block of memory
+
+	This function will iterate through every element in the array and compute the logarithm. 
+	This will override the array.
+*/
 void CalculateLog(double * array, int size)
 {
 	for (int i = 0; i < size; ++i)
@@ -175,45 +212,63 @@ void CalculateLog(double * array, int size)
 		array[i] = log10(array[i]);
 
 	}
-
 }
 
+/**
+	\fn COLOUR GetColour(double v,RANGE data_range)
 
-COLOUR GetColour(double v,double vmin,double vmax)
+	\param v the value of the pixel to be plotted
+	\param data_range The range of the given data
+
+	\return pixel_colour The colour of the pixel that will be plotted
+
+	This function takes a double and maps to a colour map. High values are closer to the red colour spectrum, and low values are mapped to the blue colour spectrum. 
+*/
+
+COLOUR GetColour(double v, RANGE data_range)
 {
-   COLOUR c = {1.0, 1.0, 1.0}; // black
+   COLOUR c = {1.0, 1.0, 1.0}; // white
 
-   if (v > vmax)
-   	v = vmax;
-   if (v < vmin)
-   	v = vmin;
+   if (v > data_range.maximum)
+   	v = data_range.maximum;
+   
+   if (v < data_range.minimum)
+   	v = data_range.minimum;
 
-   double dv = vmax - vmin;
+   double dv = data_range.maximum - data_range.minimum;
 
-   if (v < (vmin + 0.25 * dv)) 
+   if (v < (data_range.minimum + 0.25 * dv)) 
    {
       c.r = 0.0;
-      c.g = 4 * (v - vmin) / dv;
+      c.g = 4 * (v - data_range.minimum) / dv;
    } 
-   else if (v < (vmin + 0.5 * dv)) 
+   else if (v < (data_range.minimum + 0.5 * dv)) 
    {
       c.r = 0.0;
-      c.b = 1 + 4 * (vmin + 0.25 * dv - v) / dv;
+      c.b = 1 + 4 * (data_range.minimum + 0.25 * dv - v) / dv;
    } 
-   else if (v < (vmin + 0.75 * dv)) 
+   else if (v < (data_range.minimum + 0.75 * dv)) 
    {
-      c.r = 4 * (v - vmin - 0.5 * dv) / dv;
+      c.r = 4 * (v - data_range.minimum - 0.5 * dv) / dv;
       c.b = 0.0;
    } 
    else 
    {
-      c.g = 1 + 4 * (vmin + 0.75 * dv - v) / dv;
+      c.g = 1 + 4 * (data_range.minimum + 0.75 * dv - v) / dv;
       c.b = 0.0;
    }
 
    return(c);
 }
 
+
+/**
+	\fn double Max(double* array, int size)
+
+	\brief A function that finds the Maximum of a given array
+	\param array The array to be analyzed
+	\param size The size of the array
+*/
 double Max(double * array, int size)
 {
 	double max = array[0];
@@ -236,6 +291,13 @@ double Max(double * array, int size)
 	return(max);
 }
 
+/**
+	\fn double Min(double* array, int size)
+
+	\brief A function that finds the minimum of a given array
+	\param array The array to be analyzed
+	\param size The size of the array
+*/
 double Min(double* array, int size)
 {
 	int array_index = 0;

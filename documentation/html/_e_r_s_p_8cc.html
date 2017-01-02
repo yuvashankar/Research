@@ -14,6 +14,12 @@
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script><script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -95,7 +101,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>This file contains all of the function required to generate the Event Related Spectral Pertubation of EEG signals.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;processEEG.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="process_e_e_g_8h_source.html">processEEG.h</a>&quot;</code><br />
 <code>#include &lt;gsl/gsl_statistics.h&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -106,16 +112,16 @@ Functions</h2></td></tr>
 <tr class="memitem:ac62979f131d715929fee642852d92469"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_e_r_s_p_8cc.html#ac62979f131d715929fee642852d92469">FrequencyMultiply</a> (const fftw_complex *fft_data, const int data_size, const double scale, const double dw, fftw_complex *filter_convolution)</td></tr>
 <tr class="memdesc:ac62979f131d715929fee642852d92469"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiples the signal with the wavelet at a specific scale in the frequency domain.  <a href="#ac62979f131d715929fee642852d92469">More...</a><br /></td></tr>
 <tr class="separator:ac62979f131d715929fee642852d92469"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdae15297a26fdeaee4208e9c664940f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_e_r_s_p_8cc.html#afdae15297a26fdeaee4208e9c664940f">PopulateDataArray</a> (double *input_data, const int data_size, const int padded_size, const int <a class="el" href="wavelet_8h.html#a01bbb3ee3652091a5d42d531011b3869">PAD_FLAG</a>, fftw_complex *output_data)</td></tr>
-<tr class="memdesc:afdae15297a26fdeaee4208e9c664940f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A function that copies and stores the input data in an array that is padded and friendly for FFTW.  <a href="#afdae15297a26fdeaee4208e9c664940f">More...</a><br /></td></tr>
-<tr class="separator:afdae15297a26fdeaee4208e9c664940f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94e6500505d5f13d878b852e9f081301"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_e_r_s_p_8cc.html#a94e6500505d5f13d878b852e9f081301">ERSP</a> (double *raw_data, double *scales, int sampling_frequency, int n, int J, int trials, double *output)</td></tr>
-<tr class="separator:a94e6500505d5f13d878b852e9f081301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10b276e713233913b5ddde6bda4825e5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_e_r_s_p_8cc.html#a10b276e713233913b5ddde6bda4825e5">PopulateDataArray</a> (double *input_data, const int data_size, const int padded_size, const int padding_type, fftw_complex *output_data)</td></tr>
+<tr class="memdesc:a10b276e713233913b5ddde6bda4825e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">A function that copies and stores the input data in an array that is padded and friendly for FFTW.  <a href="#a10b276e713233913b5ddde6bda4825e5">More...</a><br /></td></tr>
+<tr class="separator:a10b276e713233913b5ddde6bda4825e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd3b9cec11d036982bf9ab02c05c05b2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_e_r_s_p_8cc.html#afd3b9cec11d036982bf9ab02c05c05b2">ERSP</a> (double *raw_data, double *scales, const int sampling_frequency, const int n, const int J, int const trials, const int padding_type, double *output)</td></tr>
+<tr class="separator:afd3b9cec11d036982bf9ab02c05c05b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This file contains all of the function required to generate the Event Related Spectral Pertubation of EEG signals. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a94e6500505d5f13d878b852e9f081301"></a>
+<a class="anchor" id="afd3b9cec11d036982bf9ab02c05c05b2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -134,26 +140,32 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>sampling_frequency</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>J</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">int const&#160;</td>
           <td class="paramname"><em>trials</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>padding_type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -176,10 +188,15 @@ Functions</h2></td></tr>
     <tr><td class="paramname">n</td><td>The numer of samples in each data set </td></tr>
     <tr><td class="paramname">J</td><td>The number of scales to be analyzed </td></tr>
     <tr><td class="paramname">trials</td><td>The number of trials conducted for the ERSP </td></tr>
-    <tr><td class="paramname">output</td><td>A n x J array with the resultant ERSP from all of the trials. </td></tr>
+    <tr><td class="paramname">output</td><td>A n x J array with the resultant ERSP from all of the trials.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>0</dd></dl>
+<p>This function conducts the Event Related Spectral Pertubation of the given data set <em>raw_data</em>. It follows the method outlined by the paper: "Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials".</p>
+<p>This function uses the Continuous Wavelet Transform to generate the multi-resolution analysis of the given data.</p>
+<p>The variable raw_data must contain all of the data for each trial.</p>
+<p>raw_data, scales, and output must be pre-allocated. </p>
 
 </div>
 </div>
@@ -236,12 +253,13 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>0</dd></dl>
 <p>This function mutliples the contents of fft_data with with the wavelet specified by the variable <em>scale</em>. It stores the result in filter_convolution.</p>
 <p>All arrays must be pre allocated. </p>
 
 </div>
 </div>
-<a class="anchor" id="afdae15297a26fdeaee4208e9c664940f"></a>
+<a class="anchor" id="a10b276e713233913b5ddde6bda4825e5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -267,7 +285,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>PAD_FLAG</em>, </td>
+          <td class="paramname"><em>padding_type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -294,7 +312,9 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>This function takes the signal data from input_data and stores the result in an fftw_complex data array output_data. </p>
+<dl class="section return"><dt>Returns</dt><dd>padding_type</dd></dl>
+<p>This function takes the signal data from input_data and stores the result in an fftw_complex data array output_data.</p>
+<p>It returns the padding type </p>
 
 </div>
 </div>
@@ -358,6 +378,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>0</dd></dl>
 <p>This function follows the method outlined in the paper "Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials".</p>
 <p>The function will remove the baseline observed in in the pre stimulus by computing the z score on only the information before the stimulus. The variable <em>m</em> is the number of samples before the stimulus was introduced.</p>
 <p>All arrays must be pre allocated. </p>

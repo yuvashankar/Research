@@ -14,9 +14,9 @@ int \hyperlink{_e_r_s_p_8cc_aa014a2e424ce6a16f9c9984422deb2cf}{Remove\+Baseline}
 \begin{DoxyCompactList}\small\item\em A function that removes the pre stimulus noise found in E\+E\+G signals. \end{DoxyCompactList}\item 
 int \hyperlink{_e_r_s_p_8cc_ac62979f131d715929fee642852d92469}{Frequency\+Multiply} (const fftw\+\_\+complex $\ast$fft\+\_\+data, const int data\+\_\+size, const double scale, const double dw, fftw\+\_\+complex $\ast$filter\+\_\+convolution)
 \begin{DoxyCompactList}\small\item\em Multiples the signal with the wavelet at a specific scale in the frequency domain. \end{DoxyCompactList}\item 
-int \hyperlink{_e_r_s_p_8cc_afdae15297a26fdeaee4208e9c664940f}{Populate\+Data\+Array} (double $\ast$input\+\_\+data, const int data\+\_\+size, const int padded\+\_\+size, const int \hyperlink{wavelet_8h_a01bbb3ee3652091a5d42d531011b3869}{P\+A\+D\+\_\+\+F\+L\+A\+G}, fftw\+\_\+complex $\ast$output\+\_\+data)
+int \hyperlink{_e_r_s_p_8cc_a10b276e713233913b5ddde6bda4825e5}{Populate\+Data\+Array} (double $\ast$input\+\_\+data, const int data\+\_\+size, const int padded\+\_\+size, const int padding\+\_\+type, fftw\+\_\+complex $\ast$output\+\_\+data)
 \begin{DoxyCompactList}\small\item\em A function that copies and stores the input data in an array that is padded and friendly for F\+F\+T\+W. \end{DoxyCompactList}\item 
-int \hyperlink{_e_r_s_p_8cc_a94e6500505d5f13d878b852e9f081301}{E\+R\+S\+P} (double $\ast$raw\+\_\+data, double $\ast$scales, int sampling\+\_\+frequency, int n, int J, int trials, double $\ast$output)
+int \hyperlink{_e_r_s_p_8cc_afd3b9cec11d036982bf9ab02c05c05b2}{E\+R\+S\+P} (double $\ast$raw\+\_\+data, double $\ast$scales, const int sampling\+\_\+frequency, const int n, const int J, int const trials, const int padding\+\_\+type, double $\ast$output)
 \end{DoxyCompactItemize}
 
 
@@ -26,19 +26,20 @@ This file contains all of the function required to generate the Event Related Sp
 
 
 \subsection{Function Documentation}
-\hypertarget{_e_r_s_p_8cc_a94e6500505d5f13d878b852e9f081301}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!E\+R\+S\+P@{E\+R\+S\+P}}
+\hypertarget{_e_r_s_p_8cc_afd3b9cec11d036982bf9ab02c05c05b2}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!E\+R\+S\+P@{E\+R\+S\+P}}
 \index{E\+R\+S\+P@{E\+R\+S\+P}!E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}}
-\subsubsection[{E\+R\+S\+P(double $\ast$raw\+\_\+data, double $\ast$scales, int sampling\+\_\+frequency, int n, int J, int trials, double $\ast$output)}]{\setlength{\rightskip}{0pt plus 5cm}int E\+R\+S\+P (
+\subsubsection[{E\+R\+S\+P(double $\ast$raw\+\_\+data, double $\ast$scales, const int sampling\+\_\+frequency, const int n, const int J, int const trials, const int padding\+\_\+type, double $\ast$output)}]{\setlength{\rightskip}{0pt plus 5cm}int E\+R\+S\+P (
 \begin{DoxyParamCaption}
 \item[{double $\ast$}]{raw\+\_\+data, }
 \item[{double $\ast$}]{scales, }
-\item[{int}]{sampling\+\_\+frequency, }
-\item[{int}]{n, }
-\item[{int}]{J, }
-\item[{int}]{trials, }
+\item[{const int}]{sampling\+\_\+frequency, }
+\item[{const int}]{n, }
+\item[{const int}]{J, }
+\item[{int const}]{trials, }
+\item[{const int}]{padding\+\_\+type, }
 \item[{double $\ast$}]{output}
 \end{DoxyParamCaption}
-)}\label{_e_r_s_p_8cc_a94e6500505d5f13d878b852e9f081301}
+)}\label{_e_r_s_p_8cc_afd3b9cec11d036982bf9ab02c05c05b2}
 
 \begin{DoxyParams}{Parameters}
 {\em raw\+\_\+data} & A trials $\ast$ n array containing the data to be analyzed \\
@@ -53,10 +54,19 @@ This file contains all of the function required to generate the Event Related Sp
 \hline
 {\em trials} & The number of trials conducted for the E\+R\+S\+P \\
 \hline
-{\em output} & A n x J array with the resultant E\+R\+S\+P from all of the trials. \\
+{\em output} & A n x J array with the resultant E\+R\+S\+P from all of the trials.\\
 \hline
 \end{DoxyParams}
-\hypertarget{_e_r_s_p_8cc_ac62979f131d715929fee642852d92469}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!Frequency\+Multiply@{Frequency\+Multiply}}
+\begin{DoxyReturn}{Returns}
+0
+\end{DoxyReturn}
+This function conducts the Event Related Spectral Pertubation of the given data set {\itshape raw\+\_\+data}. It follows the method outlined by the paper\+: \char`\"{}\+Single-\/trial normalization for event-\/related spectral decomposition reduces sensitivity to noisy trials\char`\"{}.
+
+This function uses the Continuous Wavelet Transform to generate the multi-\/resolution analysis of the given data.
+
+The variable raw\+\_\+data must contain all of the data for each trial.
+
+raw\+\_\+data, scales, and output must be pre-\/allocated. \hypertarget{_e_r_s_p_8cc_ac62979f131d715929fee642852d92469}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!Frequency\+Multiply@{Frequency\+Multiply}}
 \index{Frequency\+Multiply@{Frequency\+Multiply}!E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}}
 \subsubsection[{Frequency\+Multiply(const fftw\+\_\+complex $\ast$fft\+\_\+data, const int data\+\_\+size, const double scale, const double dw, fftw\+\_\+complex $\ast$filter\+\_\+convolution)}]{\setlength{\rightskip}{0pt plus 5cm}int Frequency\+Multiply (
 \begin{DoxyParamCaption}
@@ -84,19 +94,22 @@ Multiples the signal with the wavelet at a specific scale in the frequency domai
 {\em filter\+\_\+convolution} & A fftw\+\_\+complex $\ast$ data\+\_\+size array with the resulted multiplication\\
 \hline
 \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0
+\end{DoxyReturn}
 This function mutliples the contents of fft\+\_\+data with with the wavelet specified by the variable {\itshape scale}. It stores the result in filter\+\_\+convolution.
 
-All arrays must be pre allocated. \hypertarget{_e_r_s_p_8cc_afdae15297a26fdeaee4208e9c664940f}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!Populate\+Data\+Array@{Populate\+Data\+Array}}
+All arrays must be pre allocated. \hypertarget{_e_r_s_p_8cc_a10b276e713233913b5ddde6bda4825e5}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!Populate\+Data\+Array@{Populate\+Data\+Array}}
 \index{Populate\+Data\+Array@{Populate\+Data\+Array}!E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}}
-\subsubsection[{Populate\+Data\+Array(double $\ast$input\+\_\+data, const int data\+\_\+size, const int padded\+\_\+size, const int P\+A\+D\+\_\+\+F\+L\+A\+G, fftw\+\_\+complex $\ast$output\+\_\+data)}]{\setlength{\rightskip}{0pt plus 5cm}int Populate\+Data\+Array (
+\subsubsection[{Populate\+Data\+Array(double $\ast$input\+\_\+data, const int data\+\_\+size, const int padded\+\_\+size, const int padding\+\_\+type, fftw\+\_\+complex $\ast$output\+\_\+data)}]{\setlength{\rightskip}{0pt plus 5cm}int Populate\+Data\+Array (
 \begin{DoxyParamCaption}
 \item[{double $\ast$}]{input\+\_\+data, }
 \item[{const int}]{data\+\_\+size, }
 \item[{const int}]{padded\+\_\+size, }
-\item[{const int}]{P\+A\+D\+\_\+\+F\+L\+A\+G, }
+\item[{const int}]{padding\+\_\+type, }
 \item[{fftw\+\_\+complex $\ast$}]{output\+\_\+data}
 \end{DoxyParamCaption}
-)}\label{_e_r_s_p_8cc_afdae15297a26fdeaee4208e9c664940f}
+)}\label{_e_r_s_p_8cc_a10b276e713233913b5ddde6bda4825e5}
 
 
 A function that copies and stores the input data in an array that is padded and friendly for F\+F\+T\+W. 
@@ -114,7 +127,12 @@ A function that copies and stores the input data in an array that is padded and 
 {\em output\+\_\+data} & An fftw\+\_\+complex $\ast$ padded\+\_\+size array that the data is stored in for F\+F\+T\+W to compute.\\
 \hline
 \end{DoxyParams}
-This function takes the signal data from input\+\_\+data and stores the result in an fftw\+\_\+complex data array output\+\_\+data. \hypertarget{_e_r_s_p_8cc_aa014a2e424ce6a16f9c9984422deb2cf}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!Remove\+Baseline@{Remove\+Baseline}}
+\begin{DoxyReturn}{Returns}
+padding\+\_\+type
+\end{DoxyReturn}
+This function takes the signal data from input\+\_\+data and stores the result in an fftw\+\_\+complex data array output\+\_\+data.
+
+It returns the padding type \hypertarget{_e_r_s_p_8cc_aa014a2e424ce6a16f9c9984422deb2cf}{}\index{E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}!Remove\+Baseline@{Remove\+Baseline}}
 \index{Remove\+Baseline@{Remove\+Baseline}!E\+R\+S\+P.\+cc@{E\+R\+S\+P.\+cc}}
 \subsubsection[{Remove\+Baseline(double $\ast$pre\+\_\+stimulus, double $\ast$pre\+\_\+baseline\+\_\+array, const int n, const int J, const int sampling\+\_\+frequency, double $\ast$output)}]{\setlength{\rightskip}{0pt plus 5cm}int Remove\+Baseline (
 \begin{DoxyParamCaption}
@@ -145,6 +163,9 @@ A function that removes the pre stimulus noise found in E\+E\+G signals.
 {\em output} & An n x J array that the function stores the result in.\\
 \hline
 \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0
+\end{DoxyReturn}
 This function follows the method outlined in the paper \char`\"{}\+Single-\/trial normalization for event-\/related spectral decomposition reduces sensitivity to noisy trials\char`\"{}.
 
 The function will remove the baseline observed in in the pre stimulus by computing the z score on only the information before the stimulus. The variable {\itshape m} is the number of samples before the stimulus was introduced.

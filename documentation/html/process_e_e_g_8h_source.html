@@ -14,6 +14,12 @@
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script><script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -90,36 +96,38 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">processEEG.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;edflib.h&quot;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="wavelet_8h.html">wavelet.h</a>&quot;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">//Constants</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#define PRE_EVENT_TIME 1.0</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#define POST_EVENT_TIME 2.0</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define MAXIMUM_TRIGGERS 1000000</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">//Functions that are going to be used.</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keywordtype">int</span> OpenFile(<span class="keyword">const</span> <span class="keywordtype">char</span>* fileName, <span class="keyword">struct</span> <a class="code" href="structedf__hdr__struct.html">edf_hdr_struct</a> *header);</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keywordtype">long</span> <span class="keywordtype">long</span> FindTriggers(<span class="keyword">const</span> <span class="keywordtype">int</span> * statusInput, <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> numberOfElements, </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordtype">long</span> <span class="keywordtype">long</span> * outputBuffer);</div>
+<a href="process_e_e_g_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;edflib.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="wavelet_8h.html">wavelet.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">//Constants</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="process_e_e_g_8h.html#a30bac62be278e7dd41bff5f6e5ff35ad">   14</a></span>&#160;<span class="comment"></span><span class="preprocessor">#define PRE_EVENT_TIME 1.0</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keywordtype">int</span> FilterTriggers(<span class="keyword">const</span> <span class="keywordtype">int</span> code, </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> button, </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> numberOfRecords, </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> * triggerList,</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> * readBuffer, </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordtype">int</span> * outputBuffer);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keywordtype">void</span> CleanData(<span class="keywordtype">double</span> * data, <span class="keywordtype">double</span> n);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keywordtype">int</span> <a class="code" href="_e_r_s_p_8cc.html#aa014a2e424ce6a16f9c9984422deb2cf">RemoveBaseline</a>(<span class="keywordtype">double</span>* data, <span class="keywordtype">int</span> num_of_samples, <span class="keywordtype">int</span> J, </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordtype">int</span> trials, <span class="keywordtype">double</span> sampling_frequency, </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordtype">double</span>* output);</div>
-<div class="ttc" id="_e_r_s_p_8cc_html_aa014a2e424ce6a16f9c9984422deb2cf"><div class="ttname"><a href="_e_r_s_p_8cc.html#aa014a2e424ce6a16f9c9984422deb2cf">RemoveBaseline</a></div><div class="ttdeci">int RemoveBaseline(double *pre_stimulus, double *pre_baseline_array, const int n, const int J, const int sampling_frequency, double *output)</div><div class="ttdoc">A function that removes the pre stimulus noise found in EEG signals. </div><div class="ttdef"><b>Definition:</b> ERSP.cc:134</div></div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="process_e_e_g_8h.html#aeadd95e38ec372c02833a06b86052964">   20</a></span>&#160;<span class="preprocessor">#define POST_EVENT_TIME 2.0</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#define MAXIMUM_TRIGGERS 1000000</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">//Functions that are going to be used.</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keywordtype">int</span> <a class="code" href="process_e_e_g_8h.html#a0de6e46285fe1fe255a4e7224bcd8cf2">OpenFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* fileName, <span class="keyword">struct</span> <a class="code" href="structedf__hdr__struct.html">edf_hdr_struct</a> *header);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keywordtype">long</span> <span class="keywordtype">long</span> <a class="code" href="process_e_e_g_8h.html#adf17b8ef5058d54d718d62fd2728ccba">FindTriggers</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> * statusInput, <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> numberOfElements, </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordtype">long</span> <span class="keywordtype">long</span> * outputBuffer);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">int</span> <a class="code" href="process_e_e_g_8h.html#a52391f4e20341afbde4a931a3f0c3401">FilterTriggers</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> code, </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> button, </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> numberOfRecords, </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> * triggerList,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span> * readBuffer, </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">int</span> * outputBuffer);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// int RemoveBaseline(double* data, int num_of_samples, int J, </span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">//  int trials, double sampling_frequency, </span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">//  double* output);</span></div>
+<div class="ttc" id="process_e_e_g_8h_html_a52391f4e20341afbde4a931a3f0c3401"><div class="ttname"><a href="process_e_e_g_8h.html#a52391f4e20341afbde4a931a3f0c3401">FilterTriggers</a></div><div class="ttdeci">int FilterTriggers(const int code, const int button, const int numberOfRecords, const long long *triggerList, const int *readBuffer, int *outputBuffer)</div><div class="ttdoc">Filteres the triggers coming in, and finds the specified events. </div><div class="ttdef"><b>Definition:</b> FilterTriggers.c:25</div></div>
 <div class="ttc" id="wavelet_8h_html"><div class="ttname"><a href="wavelet_8h.html">wavelet.h</a></div><div class="ttdoc">The supporting header file for generating the Continuous Wavelet Transform. </div></div>
+<div class="ttc" id="process_e_e_g_8h_html_a0de6e46285fe1fe255a4e7224bcd8cf2"><div class="ttname"><a href="process_e_e_g_8h.html#a0de6e46285fe1fe255a4e7224bcd8cf2">OpenFile</a></div><div class="ttdeci">int OpenFile(const char *fileName, struct edf_hdr_struct *header)</div><div class="ttdoc">Openes a .BDF file and allocates it to an edf_hdr_struct. </div><div class="ttdef"><b>Definition:</b> OpenFile.c:18</div></div>
 <div class="ttc" id="structedf__hdr__struct_html"><div class="ttname"><a href="structedf__hdr__struct.html">edf_hdr_struct</a></div><div class="ttdef"><b>Definition:</b> edflib.h:123</div></div>
+<div class="ttc" id="process_e_e_g_8h_html_adf17b8ef5058d54d718d62fd2728ccba"><div class="ttname"><a href="process_e_e_g_8h.html#adf17b8ef5058d54d718d62fd2728ccba">FindTriggers</a></div><div class="ttdeci">long long FindTriggers(const int *statusInput, const long long numberOfElements, long long *outputBuffer)</div><div class="ttdoc">This function should take an array input and return the rising and falling edges of the triggers...</div><div class="ttdef"><b>Definition:</b> FindTriggers.c:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

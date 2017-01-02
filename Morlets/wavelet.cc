@@ -1,11 +1,11 @@
-
+/**
+	\file "Wavelet.cc"
+	\brief This file contains all of the functions that support the ERSP and CWT functions
+*/
 #include "wavelet.h"
 #include <omp.h>
 
 #define TEST 0.00001
-
-// double FourierMorlet(double w, double scale, double normal);
-
 
 /**
 	\fn int Wavelet(double* raw_data, double* scales, 
@@ -129,9 +129,20 @@ int Wavelet(double* raw_data, double* scales,
     return(0);
 } /*Wavelet */
 
+/**
+	\fn int CalculatePaddingSize(int array_size, int pad_flag)
+	
+	\brief Calculates the size that the padded array should be. 
 
+	\param array_size The cardinal or size of the signal sample
+	\param pad_flag The type of padding required: see PAD_FLAG
 
-int CalculatePaddingSize(int array_size, int pad_flag)
+	\return paadded_size The cardinal or size that the padded array should be
+
+	This function computes the size of the padded array depending on the type of padding specified. 
+	It takes the size of the data array, and type of pad, and returns how large the padded array should be.
+*/
+int CalculatePaddingSize(const int array_size, const int pad_flag)
 {
 	const int pad = ceil(log2(array_size));
 	int out = array_size;
@@ -153,7 +164,24 @@ int CalculatePaddingSize(int array_size, int pad_flag)
 	return(out);
 }
 
-double* GenerateScales(double minimum_frequency, double maximum_frequency)
+/**
+	\fn double* GenerateScales(double minimum_frequency, double maximum_frequency)
+	
+	\brief This function generates the scales that will be used in the Continuous Wavelet Transform.
+	
+	\param minimum_frequency The lowest frequency that must be observed
+	\param maximum_frequency The higest frequency that must be observed
+	\param s_0 The smallest scale usually it is \f$ 2 * \delta t \f$
+
+	\return scales An 1 x n array with the dyadic scales.
+
+	This function computes the dyadic scales to be generated to accurately compute the multi resolution analysis of a signal. 
+	Given the minimum frequency and the maximum frequency, the function will generate a 1 x n array with the scales necessary scale factors for the Continuous Wavelet Transform
+
+	The Scales array will be allocated in this function, so it is wise to deallocate this array after it is used. 
+*/
+
+double* GenerateScales(const double minimum_frequency, const double maximum_frequency, const double s_0)
 {
 	int min_i = FREQ_TO_SCALE(maximum_frequency) + 1;
 	int max_i = FREQ_TO_SCALE(minimum_frequency);
@@ -167,12 +195,28 @@ double* GenerateScales(double minimum_frequency, double maximum_frequency)
 	for (int i = 0; i < count; ++i)
 	{
 		int counterVariable = min_i + i;
-		scales[i] = S0 * pow(2, counterVariable * D_J);
+		scales[i] = s_0 * pow(2, counterVariable * D_J);
 	}
-
 	return(scales);
 }
 
+/**
+	\fn double* IdentifyFrequencies(double* scales, int count)
+	
+	\brief Compute the corrosponding frequency to scales used.
+
+	\param scales A 1 x count array of the scales used
+	\param count The cardinal of the scales array
+
+	\return frequency The corrosponding frequency for each scale in the scale array
+
+	This function computes the corrosponding frequency for each scale provided in the scales array. 
+
+	It allocates memory and returns the allocated array
+
+	It is wise to dealloate this array after use with the free() function. 
+
+*/
 double* IdentifyFrequencies(double* scales, int count)
 {
 
@@ -193,7 +237,24 @@ double* IdentifyFrequencies(double* scales, int count)
 // 	return(out);
 // }
 
-double CompleteFourierMorlet(double w, double scale)
+/**
+	\fn double CompleteFourierMorlet(const double w, const double scale)
+	
+	\brief Computes the Morlet Wavelet in the frequency domain. 
+
+	\param w
+	\param scale
+
+	\return morlet
+
+	This function generates the Morlet Wavelet in the frequency domain normalized by the scale. 
+
+	The formula computed is 
+	\f[
+		\hat{\Psi}_\sigma(\omega) = c_\sigma \pi^{-\frac{1}{4}}(e^{-\frac{1}{2}(\sigma - \omega)^2} - \kappa_\sigma e^{-\frac{1}{2} \omega^2})
+	\f]
+*/
+double CompleteFourierMorlet(const double w, const double scale)
 {
 	// double W_0 = 6.0;
 	// double C_SIGMA = pow( (1.0 + exp(-W_0_2) - 2.0 * exp(-0.75 * W_0_2)), -0.5 );
@@ -206,9 +267,29 @@ double CompleteFourierMorlet(double w, double scale)
 	return(out);
 }
 
+/**
+	\fn void TestCases(double *data, const int flag)
+	\brief Generates a suite of test case data for wavelet analysis
 
+	\param data The 1 x n data array to be populated
+	\param flag The type of test data to be generated
 
-void TestCases(double *data, int flag)
+	This function populates the data array with 3 seconds of sample data. The \a flag parameter specifies the type of test data that will be generated
+
+	<table>
+	<caption id="multi_row">TestCases Flags</caption>
+	<tr><th> Flag Type 			<th> Output
+	<tr><td> 1         			<td> Impulse at T = 2 seconds
+	<tr><td> 2         			<td> 2 Sine waves at t = 1.5 seconds at FREQ and 2 * FREQ
+	<tr><td> 3 					<td> 2 sine waves at FREQ and 2 * FREQ from t = 0 to 3 s
+	<tr><td> 4 					<td> Single sine wave at t = 1.0 s
+	<tr><td> 5 					<td> sin(x) from t = 0.0 to 3.0 and 2*sin(x) from t = 1.5 - 2.0 s
+	<tr><td> 6 					<td> sin(x) from t = 0.0 - 3.0 and sin(x - w0) where w0 = 0.005 from t = 1.0 s - 1.5 s
+	<tr><td> 7 					<td> Frequency Sweet from MIN_FREQUENCY to MAX_FREQUENCY
+	</table>
+*/
+
+void TestCases(double *data, const int flag)
 {
 
 	// Fit a FREQ signal at two points
@@ -217,7 +298,7 @@ void TestCases(double *data, int flag)
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
-	printf("FS  %.2d   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
+	// printf("FS  %.2d   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
 
 	// double frequency = MIN_FREQUENCY;
 	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
@@ -294,7 +375,26 @@ void TestCases(double *data, int flag)
 	}
 }
 
-int WriteFile(double *data, double *period, int x, int y, const char* filename)
+/**
+	\fn int WriteFile(const double *data, const double *period, const int x, const int y, const char* filename)
+
+	\brief A function that writes the Wavelet Results to the disk. 
+
+	\param data A x x y array with the  data that is going to be written 
+	\param period A 1 x y array with the frequencies that were analyzed
+	\param x The number of samples in the signal
+	\param y The number of frequencies analyzed
+	\param filename The name of the file that will be written
+
+	\return 0 if successful
+	\return -1 if unsuccessful
+
+	This function will write the resultant data computed by Wavelet() and ERSP() into the disk so that it can be graphed by Gnuplot. 
+	One can plot the output of this function using the matrix.gplot file. 
+*/
+
+int WriteFile(const double *data, const double *frequency, const int x, const int y, 
+	const char* filename)
 {
 
     FILE* out_file=fopen(filename,"w");
@@ -312,7 +412,7 @@ int WriteFile(double *data, double *period, int x, int y, const char* filename)
 	for (int i = 0; i < x; ++i)
     {
     	//Feed Frequency
-    	fprintf(out_file, "%f\t", period[i]);
+    	fprintf(out_file, "%f\t", frequency[i]);
 
     	//Feed Data
         for (int j = 0; j < y; ++j)
@@ -329,8 +429,23 @@ int WriteFile(double *data, double *period, int x, int y, const char* filename)
     return(0);
 }
 
+/**
+	\fn int WriteDebug(const double *data, const int length, const char* filename)
+	
+	\brief A function that writes a 1 - d matrix into a log file
 
-int WriteDebug(double *data, int length, const char* filename)
+	\param data A 1 - dimentional data array containing the data to be written
+	\param length The size of the data array
+	\param filename THe name of the file to be written
+
+	\return 0 if successful
+	\return -1 if unsuccessful
+
+	This function writes a 1 - dimentional array to the disk, it's useful when trying to quickly get the results from an array. 
+*/
+
+
+int WriteDebug(const double *data, const int length, const char* filename)
 {
 	FILE* out_file=fopen(filename,"w");
     if (out_file == NULL) return -1;
@@ -345,12 +460,13 @@ int WriteDebug(double *data, int length, const char* filename)
     return 0;
 }
 
-/*!
+/**
     \fn void FillData(double * data)
 	\brief Populates the input data array with a 3 sparse sine waves. 
 	\param data A 1 - dimentional block of memory that will be overwritten. 
-*/
 
+	Similar to TestCases()
+*/
 void FillData(double * data)
 {
 	// Fit a FREQ signal at two points
@@ -380,6 +496,18 @@ void FillData(double * data)
 	}
 }
 
+/**
+	\fn int ReadFile(double data[], char filename[])
+
+	
+	\param A pre allocated 1 dimentional array
+	\param filename The name and location of the file to be opened
+
+	\return array_size The number of elements that was read
+
+	This function opens a file, and reads the input assuming that the file is stored with one value at every line.
+
+*/
 int ReadFile(double data[], char filename[])
 {
 	FILE* signalFile = fopen(filename, "r");
