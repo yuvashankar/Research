@@ -6,7 +6,7 @@
 #define FS 2048.0
 
 //Measuring Frequency
-#define FREQ 16.
+#define FREQ 19.0
 
 #define w_0 6.0
 
@@ -82,18 +82,19 @@ void createFilter(double frequency)
 {
 	double signalFrequency = frequency/FS;
 	double dw = 2 * M_PI * signalFrequency;
+	double scale = 1.0;
 
 	conSize = (int) 1./signalFrequency;
-	conSize *=4;
+	conSize = (int) w_0/ (scale * 2 * M_PI);
+	// conSize *=4;
 
 	// double dt = 4.0/conSize;
 	double dt = 1.0/FS;
 
-
 	double t = 0;
 	for (int i = 0; i < conSize; ++i)
 	{
-		double scale = 0.5;
+		
 		// //Use Scale of 0.5
 		conWindow[i] = Morlet (t, w_0 , scale);
 		complexWindow[i] = ComplexMorlet (t, w_0, scale);

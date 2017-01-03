@@ -137,7 +137,8 @@ int ReadFile(double data[], char filename[]);
 int WriteFile(const double *data, const double *frequency, const int x, const int y, 
 	const char* filename);
 
-int WriteDebug(const double *data, const int length, const char* filename);
+int WriteDebug(const double *data, const int length, const int sampling_frequency,
+	const char* filename);
 
 int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
 	const int J, int const trials, const int padding_type, 
@@ -146,6 +147,9 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 void Plot(double * data, double * periods, int num_x, int num_y);
 
 double CompleteFourierMorlet(const double w, const double scale);
+
+double CompleteRealMorlet (double x, double scale);
+double CompleteComplexMorlet(double x, double scale);
 
 int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J,

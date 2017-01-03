@@ -13,7 +13,8 @@ int main(void)
     double *data, *data_2D, *result, *scales, *frequency;
 
     int n = DATA_SIZE;
-    const int J = MAX_I - MIN_I;
+    const int J = (int) MAX_I - MIN_I;
+
     const int trials = 77;
 
     //Memory Allocations
@@ -39,9 +40,6 @@ int main(void)
     //Compute the ERSP
     ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
     result);
-
-    
-
 
     // Write to file
     WriteFile(result, frequency, J, n, "DATA.log");

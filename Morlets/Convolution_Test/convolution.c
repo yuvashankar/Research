@@ -30,12 +30,12 @@ void fillData(double * data)
 	double t=0;
 	int i;
 	for(i=0;i<DATA_SIZE;i++){
-		data[i]=0.;
-		if(i == 1000) data[i] = 1;
-		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		// //if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		// if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		// if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
+		// data[i]=0.;
+		// if(i == 500) data[i] = 1;
+		if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
+		//if((i>200)&(i<200+one_peri)) data[i]=sin( (i-200)*dw+w0);
+		if((i>1000)&(i<1000+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
+		if((i>2000)&(i<2000+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
 	}
 }
 

@@ -419,7 +419,7 @@ int WriteFile(const double *data, const double *frequency, const int x, const in
         for (int j = 0; j < y; ++j)
         {
             // value = Magnitude(result[i*n + j], result[i*n + j]);
-            fprintf(out_file, "%.5f\t", data[i*y + j] + small_eps);
+            fprintf(out_file, "%.16e\t", data[i*y + j] + small_eps);
         }
         //Ready for the next line.
         fprintf(out_file, "\n");
@@ -431,12 +431,14 @@ int WriteFile(const double *data, const double *frequency, const int x, const in
 }
 
 /**
-	\fn int WriteDebug(const double *data, const int length, const char* filename)
+	\fn int WriteDebug(const double *data, const int length, const int sampling_frequency,
+	const char* filename)
 	
 	\brief A function that writes a 1 - d matrix into a log file
 
 	\param data A 1 - dimentional data array containing the data to be written
 	\param length The size of the data array
+	\param sampling_frequency How often the data array was sampled
 	\param filename THe name of the file to be written
 
 	\return 0 if successful
@@ -446,15 +448,20 @@ int WriteFile(const double *data, const double *frequency, const int x, const in
 */
 
 
-int WriteDebug(const double *data, const int length, const char* filename)
+int WriteDebug(const double *data, const int length, const int sampling_frequency,
+	const char* filename)
 {
 	FILE* out_file=fopen(filename,"w");
     if (out_file == NULL) return -1;
 
+    double t = 0.0;
+    double dt = 1.0/sampling_frequency;
+
 	for (int i = 0; i < length; ++i)
     {
-    	double value = (double) i/length;
-    	fprintf(out_file, "%f\t%f\n", value, data[i]);
+    	// double value = (double) i/length;
+    	fprintf(out_file, "%f\t%.16e\n", t, data[i]);
+    	t += dt;
     }
     
     fclose(out_file);
