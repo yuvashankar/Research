@@ -409,7 +409,7 @@ int WriteFile(const double *data, const double *frequency, const int x, const in
     }
     fprintf(out_file, "\n");
 
-    // double small_eps = 0.00001; //Add a small eps so that logs of zero don't happen. 
+    double small_eps = 0.00001; //Add a small eps so that logs of zero don't happen. 
 	for (int i = 0; i < x; ++i)
     {
     	//Feed Frequency
@@ -419,7 +419,7 @@ int WriteFile(const double *data, const double *frequency, const int x, const in
         for (int j = 0; j < y; ++j)
         {
             // value = Magnitude(result[i*n + j], result[i*n + j]);
-            fprintf(out_file, "%.16e\t", data[i*y + j]);
+            fprintf(out_file, "%.16e\t", data[i*y + j] + small_eps);
         }
         //Ready for the next line.
         fprintf(out_file, "\n");

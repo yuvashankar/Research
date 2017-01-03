@@ -27,19 +27,23 @@ int main(void)
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
-    //Populate the data array
-    for (int i = 0; i < trials; ++i)
-    {
-        TestCases(data, 5);
-        for (int j = 0; j < n; ++j)
-        {
-            data_2D[i * n + j] = data[j];
-        }
-    }
+    // //Populate the data array
+    // for (int i = 0; i < trials; ++i)
+    // {
+    //     TestCases(data, 2);
+    //     for (int j = 0; j < n; ++j)
+    //     {
+    //         data_2D[i * n + j] = data[j];
+    //     }
+    // }
+    TestCases(data, 2);
     
+    Wavelet(data, scales, 
+            FS, n, J,
+            result);
     //Compute the ERSP
-    ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
-    result);
+    // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
+    // result);
 
     // Write to file
     WriteFile(result, frequency, J, n, "DATA.log");

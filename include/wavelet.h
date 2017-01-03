@@ -160,8 +160,8 @@ void CleanData(double * data, double n);
 double* GenerateScales(const double minimum_frequency, const double maximum_frequency, const double s_0);
 double* IdentifyFrequencies(double* scales, int count);
 
-void Convolute(double *data, double *conWindow, double * complexWindow, double conSize,
-	double* result, double* complexResult);
+void Convolute(double *data, double *conWindow, double * complexWindow, int data_size, int conSize,
+	double* realResult, double* complexResult);
 
 int CalculatePaddingSize(const int array_size, const int pad_flag);
 int Generate_FFTW_Wisdom(int padded_size);
