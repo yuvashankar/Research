@@ -1,36 +1,194 @@
 \begin{theindex}
 
-  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/wavelet.\+h}, 
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/\+Morlets/\+Clean\+Data.\+cc}, 
+		\hyperpage{24}
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/\+Morlets/\+E\+R\+S\+P.\+cc}, 
+		\hyperpage{24}
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/\+Morlets/\+Plot.\+cc}, 
+		\hyperpage{26}
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/\+Morlets/wavelet.\+cc}, 
+		\hyperpage{28}
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/process\+E\+E\+G.\+h}, 
 		\hyperpage{15}
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/include/wavelet.\+h}, 
+		\hyperpage{17}
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Filter\+Triggers.\+c}, 
+		\hyperpage{33}
+  \item {/\+Users/vinay/\+Google Drive/\+Science/\+Research/src/\+Find\+Triggers.\+c}, 
+		\hyperpage{33}
 
   \indexspace
 
+  \item {C\+\_\+\+S\+I\+G\+M\+A}
+    \subitem {wavelet.\+h}, \hyperpage{18}
   \item {C\+O\+L\+O\+U\+R}, \hyperpage{7}
+  \item {Calculate\+Log}
+    \subitem {Plot.\+cc}, \hyperpage{27}
+  \item {Calculate\+Padding\+Size}
+    \subitem {wavelet.\+cc}, \hyperpage{29}
+    \subitem {wavelet.\+h}, \hyperpage{19}
+  \item {Clean\+Data}
+    \subitem {Clean\+Data.\+cc}, \hyperpage{24}
+    \subitem {wavelet.\+h}, \hyperpage{19}
+  \item {Clean\+Data.\+cc}
+    \subitem {Clean\+Data}, \hyperpage{24}
+  \item {Complete\+Fourier\+Morlet}
+    \subitem {wavelet.\+cc}, \hyperpage{29}
+    \subitem {wavelet.\+h}, \hyperpage{20}
 
   \indexspace
 
+  \item {D\+\_\+\+J}
+    \subitem {wavelet.\+h}, \hyperpage{18}
+
+  \indexspace
+
+  \item {E\+R\+S\+P}
+    \subitem {E\+R\+S\+P.\+cc}, \hyperpage{25}
+    \subitem {wavelet.\+h}, \hyperpage{20}
+  \item {E\+R\+S\+P.\+cc}
+    \subitem {E\+R\+S\+P}, \hyperpage{25}
+    \subitem {Frequency\+Multiply}, \hyperpage{25}
+    \subitem {Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom}, \hyperpage{25}
+    \subitem {Remove\+Baseline}, \hyperpage{26}
   \item {edf\+\_\+annotation\+\_\+struct}, \hyperpage{7}
   \item {edf\+\_\+hdr\+\_\+struct}, \hyperpage{7}
   \item {edf\+\_\+param\+\_\+struct}, \hyperpage{8}
-  \item {edfhdrblock}, \hyperpage{8}
-  \item {edfparamblock}, \hyperpage{9}
+  \item {edfhdrblock}, \hyperpage{9}
+  \item {edfparamblock}, \hyperpage{10}
 
   \indexspace
 
   \item {Fill\+Data}
-    \subitem {wavelet.\+h}, \hyperpage{16}
+    \subitem {wavelet.\+cc}, \hyperpage{29}
+    \subitem {wavelet.\+h}, \hyperpage{20}
+  \item {Filter\+Triggers}
+    \subitem {Filter\+Triggers.\+c}, \hyperpage{33}
+    \subitem {process\+E\+E\+G.\+h}, \hyperpage{16}
+  \item {Filter\+Triggers.\+c}
+    \subitem {Filter\+Triggers}, \hyperpage{33}
+  \item {Find\+Triggers}
+    \subitem {Find\+Triggers.\+c}, \hyperpage{34}
+    \subitem {process\+E\+E\+G.\+h}, \hyperpage{16}
+  \item {Find\+Triggers.\+c}
+    \subitem {Find\+Triggers}, \hyperpage{34}
+  \item {Frequency\+Multiply}
+    \subitem {E\+R\+S\+P.\+cc}, \hyperpage{25}
 
   \indexspace
 
+  \item {Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom}
+    \subitem {E\+R\+S\+P.\+cc}, \hyperpage{25}
+    \subitem {wavelet.\+h}, \hyperpage{21}
+  \item {Generate\+Scales}
+    \subitem {wavelet.\+cc}, \hyperpage{30}
+    \subitem {wavelet.\+h}, \hyperpage{21}
+  \item {Get\+Colour}
+    \subitem {Plot.\+cc}, \hyperpage{27}
+  \item {Get\+Range}
+    \subitem {Plot.\+cc}, \hyperpage{27}
+
+  \indexspace
+
+  \item {Identify\+Frequencies}
+    \subitem {wavelet.\+cc}, \hyperpage{30}
+    \subitem {wavelet.\+h}, \hyperpage{21}
+
+  \indexspace
+
+  \item {K\+\_\+\+S\+I\+G\+M\+A}
+    \subitem {wavelet.\+h}, \hyperpage{18}
+
+  \indexspace
+
+  \item {Max}
+    \subitem {Plot.\+cc}, \hyperpage{28}
+  \item {Min}
+    \subitem {Plot.\+cc}, \hyperpage{28}
+
+  \indexspace
+
+  \item {Open\+File}
+    \subitem {process\+E\+E\+G.\+h}, \hyperpage{16}
+
+  \indexspace
+
+  \item {P\+A\+D\+\_\+\+F\+L\+A\+G}
+    \subitem {wavelet.\+h}, \hyperpage{19}
+  \item {P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}
+    \subitem {process\+E\+E\+G.\+h}, \hyperpage{15}
+  \item {P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}
+    \subitem {process\+E\+E\+G.\+h}, \hyperpage{15}
+  \item {Plot.\+cc}
+    \subitem {Calculate\+Log}, \hyperpage{27}
+    \subitem {Get\+Colour}, \hyperpage{27}
+    \subitem {Get\+Range}, \hyperpage{27}
+    \subitem {Max}, \hyperpage{28}
+    \subitem {Min}, \hyperpage{28}
   \item {pngwriter}, \hyperpage{10}
+  \item {process\+E\+E\+G.\+h}
+    \subitem {Filter\+Triggers}, \hyperpage{16}
+    \subitem {Find\+Triggers}, \hyperpage{16}
+    \subitem {Open\+File}, \hyperpage{16}
+    \subitem {P\+O\+S\+T\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}, 
+		\hyperpage{15}
+    \subitem {P\+R\+E\+\_\+\+E\+V\+E\+N\+T\+\_\+\+T\+I\+M\+E}, 
+		\hyperpage{15}
 
   \indexspace
 
   \item {R\+A\+N\+G\+E}, \hyperpage{13}
+  \item {Read\+File}
+    \subitem {wavelet.\+cc}, \hyperpage{30}
+    \subitem {wavelet.\+h}, \hyperpage{22}
+  \item {Remove\+Baseline}
+    \subitem {E\+R\+S\+P.\+cc}, \hyperpage{26}
 
   \indexspace
 
+  \item {Test\+Cases}
+    \subitem {wavelet.\+cc}, \hyperpage{30}
+    \subitem {wavelet.\+h}, \hyperpage{22}
+
+  \indexspace
+
+  \item {Wavelet}
+    \subitem {wavelet.\+cc}, \hyperpage{32}
+    \subitem {wavelet.\+h}, \hyperpage{22}
+  \item {wavelet.\+cc}
+    \subitem {Calculate\+Padding\+Size}, \hyperpage{29}
+    \subitem {Complete\+Fourier\+Morlet}, \hyperpage{29}
+    \subitem {Fill\+Data}, \hyperpage{29}
+    \subitem {Generate\+Scales}, \hyperpage{30}
+    \subitem {Identify\+Frequencies}, \hyperpage{30}
+    \subitem {Read\+File}, \hyperpage{30}
+    \subitem {Test\+Cases}, \hyperpage{30}
+    \subitem {Wavelet}, \hyperpage{32}
+    \subitem {Write\+Debug}, \hyperpage{32}
+    \subitem {Write\+File}, \hyperpage{33}
   \item {wavelet.\+h}
-    \subitem {Fill\+Data}, \hyperpage{16}
+    \subitem {C\+\_\+\+S\+I\+G\+M\+A}, \hyperpage{18}
+    \subitem {Calculate\+Padding\+Size}, \hyperpage{19}
+    \subitem {Clean\+Data}, \hyperpage{19}
+    \subitem {Complete\+Fourier\+Morlet}, \hyperpage{20}
+    \subitem {D\+\_\+\+J}, \hyperpage{18}
+    \subitem {E\+R\+S\+P}, \hyperpage{20}
+    \subitem {Fill\+Data}, \hyperpage{20}
+    \subitem {Generate\+\_\+\+F\+F\+T\+W\+\_\+\+Wisdom}, \hyperpage{21}
+    \subitem {Generate\+Scales}, \hyperpage{21}
+    \subitem {Identify\+Frequencies}, \hyperpage{21}
+    \subitem {K\+\_\+\+S\+I\+G\+M\+A}, \hyperpage{18}
+    \subitem {P\+A\+D\+\_\+\+F\+L\+A\+G}, \hyperpage{19}
+    \subitem {Read\+File}, \hyperpage{22}
+    \subitem {Test\+Cases}, \hyperpage{22}
+    \subitem {Wavelet}, \hyperpage{22}
+    \subitem {Write\+Debug}, \hyperpage{23}
+    \subitem {Write\+File}, \hyperpage{23}
+  \item {Write\+Debug}
+    \subitem {wavelet.\+cc}, \hyperpage{32}
+    \subitem {wavelet.\+h}, \hyperpage{23}
+  \item {Write\+File}
+    \subitem {wavelet.\+cc}, \hyperpage{33}
+    \subitem {wavelet.\+h}, \hyperpage{23}
 
 \end{theindex}

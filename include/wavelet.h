@@ -50,7 +50,7 @@
 	The amount of "sub octaves" or sub scales inbetween the major scales that will be used. 
 	The lower the number, the higher the resolution of the result.
 */
-#define D_J 0.125
+#define D_J 0.0625
 
 /**
 	\var PAD_FLAG

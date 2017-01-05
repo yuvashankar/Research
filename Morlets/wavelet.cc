@@ -85,9 +85,6 @@ int Wavelet(double* raw_data, double* scales,
 	    #pragma omp for
 		for (i = 0; i < J; ++i)
 		{
-			//Calculate the corrosponding frequency to the scale
-			// period[i] = (W_0)/(scales[i] * 2 * M_PI);
-
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
 

@@ -33,28 +33,42 @@ int main(void)
     frequency = IdentifyFrequencies(scales, J);
 
     TestCases(data, 2);
-
-    int conSize = 0;
-    for (int i = 0; i < J; ++i)
+    
+    double temp = 0.0;
+    for (int i = 0; i < n; ++i)
     {
-        conSize = (int) W_0/scales[i];
-        double temp = 0.0;
-        //Populate Convolution windows.
-        for (int j = 0; j < conSize; ++j)
-        {
-            conWindow[j] = CompleteRealMorlet(temp, scales[i]);
-            complexWindow[j] = CompleteComplexMorlet(temp, scales[i]);
-            temp += DT;
-        }
-
-        Convolute(data, conWindow, complexWindow, n, conSize,
-            realResult, complexResult);
-
-        for (int j = 0; j < n; ++j)
-        {
-            result[i * n + j] = MAGNITUDE(realResult[j], complexResult[j]);
-        }
+        conWindow[i] = CompleteRealMorlet(temp, 2.0);
+        temp += DT;
     }
+    WriteDebug(conWindow, n, FS, "debug.log");
+    // int conSize = 0;
+    // for (int i = 0; i < J; ++i)
+    // {
+    //     conSize = (int) W_0/scales[i];
+    //     double temp = 0.0;
+
+    //     //Populate Convolution windows.
+    //     for (int j = 0; j < conSize; ++j)
+    //     {
+    //         conWindow[j] = CompleteRealMorlet(temp, scales[i]);
+    //         complexWindow[j] = - CompleteComplexMorlet(temp, scales[i]);
+    //         temp += DT;
+    //     }
+
+    //     // if (i == 80)
+    //     // {
+    //     //     printf("Scale = %f\n", scales[i]);
+        
+    //     // }
+
+    //     Convolute(data, conWindow, complexWindow, n, conSize,
+    //         realResult, complexResult);
+
+    //     for (int j = 0; j < n; ++j)
+    //     {
+    //         result[i * n + j] = MAGNITUDE(realResult[j], complexResult[j]);
+    //     }
+    // }
 
     // Write to file
     WriteFile(result, frequency, J, n, "DATA.log");
