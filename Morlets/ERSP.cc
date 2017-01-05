@@ -96,6 +96,13 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 		#pragma omp for
 		for ( x = 0; x < trials; ++x)
 		{
+			// memset(wavelet_out,        0.0, n * J * sizeof(double));
+			// memset(baseline_out,       0.0, n * J * sizeof(double));
+			// memset(pre_stimulus,       0.0, m     * sizeof(double));
+			// memset(data_in,            0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+			// memset(fft_data,           0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+			// memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+			// memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			/*Begin Wavelet Analysis*/
 			PopulateDataArray(raw_data, n, x, 
 							  PADDED_SIZE, padding_type, data_in);

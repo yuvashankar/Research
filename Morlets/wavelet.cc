@@ -85,6 +85,10 @@ int Wavelet(double* raw_data, double* scales,
 	    #pragma omp for
 		for (i = 0; i < J; ++i)
 		{
+			//Force the arrays to zero, I'm not sure if we still need to do this.
+			memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+			memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
 
