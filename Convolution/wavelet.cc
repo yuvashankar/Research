@@ -286,7 +286,7 @@ double CompleteFourierMorlet(const double w, const double scale)
 	<tr><td> 4 					<td> Single sine wave at t = 1.0 s
 	<tr><td> 5 					<td> sin(x) from t = 0.0 to 3.0 and 2*sin(x) from t = 1.5 - 2.0 s
 	<tr><td> 6 					<td> sin(x) from t = 0.0 - 3.0 and sin(x - w0) where w0 = 0.005 from t = 1.0 s - 1.5 s
-	<tr><td> 7 					<td> Frequency Sweet from MIN_FREQUENCY to MAX_FREQUENCY
+	<tr><td> 7 					<td> Frequency Sweep from MIN_FREQUENCY to MAX_FREQUENCY
 	</table>
 */
 

@@ -24,14 +24,14 @@
 
  	\f[ C_\sigma = (1 + e^{-\sigma^2} - 2e^{-\frac{3\sigma^2}{4}})^{-\frac{1}{2}} \f]
 */
-#define C_SIGMA 1.0000000000018794
+#define C_SIGMA 1.00000000000187941284040286940
 /**
 	\var K_SIGMA
 	\brief A constant needed to compute the Morlet Wavelet precalculated to machine eps
 
 	\f[ \kappa_\sigma = e^{-\frac{\sigma^2}{2}} \f]
 */
-#define K_SIGMA 1.5229979744712628e-08
+#define K_SIGMA 1.52299797447126284361366292335e-08
 
 /**
 	\var W_0 
