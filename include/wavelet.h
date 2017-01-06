@@ -136,12 +136,12 @@ void TestCases(double *data, const int flag);
 int  ReadFile(double data[], char filename[]);
 
 int  WriteFile(const double *data, const double *frequency, const int x, const int y, 
-	char filename[]);
+	const char filename[]);
 
-int WriteGnuplotScript(char graph_title[], char filename[]);
+int WriteGnuplotScript(const char graph_title[], const char filename[]);
 
-void Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
-	char filename[]);
+int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
+	const char filename[]);
 
 int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	char graph_title[],
@@ -153,8 +153,6 @@ int WriteDebug(const double *data, const int length, const int sampling_frequenc
 int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
 	const int J, int const trials, const int padding_type, 
 	double * output);
-
-
 
 double CompleteFourierMorlet(const double w, const double scale);
 double CompleteRealMorlet (double x, double scale);

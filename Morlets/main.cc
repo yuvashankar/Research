@@ -4,9 +4,6 @@
 
 #include <gsl/gsl_statistics.h>
 
-
-int WriteGnuplotScript(const char *graph_title, const char* filename);
-
 int main(void)
 {
     //Start the timer!

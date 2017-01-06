@@ -51,19 +51,20 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	char graph_title[],
 	char filename[])
 {
+	int writeFlag = -1;
 	switch(plot_type)
 	{
 		case 0: //Plot_PNG
-			Plot_PNG(data, frequency, num_x, num_y, graph_title, filename);
+			writeFlag = Plot_PNG(data, frequency, num_x, num_y, graph_title, filename);
 			break;
 		case 1:
-			WriteFile(data, frequency, num_x, num_y, filename);
+			writeFlag = WriteFile(data, frequency, num_x, num_y, filename);
 	}
-	return(0);
+	return(writeFlag);
 }
 
-void Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
-	char filename[])
+int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
+	const char filename[])
 {
 	int i, j, k;
 	
@@ -172,6 +173,7 @@ void Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_
 
 	}
 	png.close();
+	return(0);
 }
 
 /**
@@ -191,8 +193,8 @@ void Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_
 	This function will write the resultant data computed by Wavelet() and ERSP() into the disk so that it can be graphed by Gnuplot. 
 	One can plot the output of this function using the matrix.gplot file. 
 */
-int WriteFile(const double *data, const double *frequency, const int x, const int y, 
-	char filename[])
+int  WriteFile(const double *data, const double *frequency, const int x, const int y, 
+	const char filename[])
 {
 
     FILE* out_file=fopen(filename,"w");
@@ -245,6 +247,7 @@ int WriteGnuplotScript(const char graph_title[], const char filename[])
 	//Plot filename
 	// plot "DATA.log" matrix nonuniform with pm3d t ''
 	fprintf(gnuplot_file, "%s%s%s\n", "splot \"", filename, "\" matrix nonuniform with pm3d t ''");
+	fprintf(gnuplot_file, "pause -1 \"Hit Return to continue\"");
 
 	return(0);
 }
