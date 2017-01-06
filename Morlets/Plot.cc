@@ -47,7 +47,23 @@ COLOUR GetColour(double v,RANGE data_range);
 double Max(double * array, int size);
 double Min(double* array, int size);
 
-void Plot(double * data, double * periods, int num_x, int num_y)
+int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
+	char graph_title[],
+	char filename[])
+{
+	switch(plot_type)
+	{
+		case 0: //Plot_PNG
+			Plot_PNG(data, frequency, num_x, num_y, graph_title, filename);
+			break;
+		case 1:
+			WriteFile(data, frequency, num_x, num_y, filename);
+	}
+	return(0);
+}
+
+void Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
+	char filename[])
 {
 	int i, j, k;
 	
@@ -67,7 +83,7 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	char  font_location[] = "../lib/VeraMono.ttf";
 	char x_label[] = "Time (s)";
 	char y_label[] = "Frequency (Hz)";
-	char graph_title[] = "Time Frequency Graph of an Impulse";
+	// char graph_title[] = "Time Frequency Graph of an Impulse";
 	char temp_string[4];
 
 	CalculateLog( data, num_x * num_y );
@@ -75,7 +91,7 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 	RANGE r = GetRange(data, num_x*num_y);
 	// printf("New Max = %f, New Min = %f\n", r.maximum, r.minimum);
 
-	pngwriter png( image_width, image_height , 0 , "test.png");
+	pngwriter png( image_width, image_height , 0 , filename);
 
 	// X_label
 	int x_text_width = png.get_text_width(font_location, label_font_size, x_label);
@@ -156,6 +172,81 @@ void Plot(double * data, double * periods, int num_x, int num_y)
 
 	}
 	png.close();
+}
+
+/**
+	\fn int WriteFile(const double *data, const double *period, const int x, const int y, const char* filename)
+
+	\brief A function that writes the Wavelet Results to the disk. 
+
+	\param data A x x y array with the  data that is going to be written 
+	\param period A 1 x y array with the frequencies that were analyzed
+	\param x The number of samples in the signal
+	\param y The number of frequencies analyzed
+	\param filename The name of the file that will be written
+
+	\return 0 if successful
+	\return -1 if unsuccessful
+
+	This function will write the resultant data computed by Wavelet() and ERSP() into the disk so that it can be graphed by Gnuplot. 
+	One can plot the output of this function using the matrix.gplot file. 
+*/
+int WriteFile(const double *data, const double *frequency, const int x, const int y, 
+	char filename[])
+{
+
+    FILE* out_file=fopen(filename,"w");
+    if (out_file == NULL) return -1;
+
+    //Xticks
+    fprintf(out_file, "%d\t", x);
+    for (int i = 0; i < y; ++i)
+    {
+    	fprintf(out_file, "%f\t", (double) i/FS);
+    }
+    fprintf(out_file, "\n");
+
+    // double small_eps = 0.00001; //Add a small eps so that logs of zero don't happen. 
+	for (int i = 0; i < x; ++i)
+    {
+    	//Feed Frequency
+    	fprintf(out_file, "%f\t", frequency[i]);
+
+    	//Feed Data
+        for (int j = 0; j < y; ++j)
+        {
+            // value = Magnitude(result[i*n + j], result[i*n + j]);
+            fprintf(out_file, "%.16e\t", data[i*y + j]);
+        }
+        //Ready for the next line.
+        fprintf(out_file, "\n");
+
+    }
+
+    fclose(out_file);
+    return(0);
+}
+
+int WriteGnuplotScript(const char graph_title[], const char filename[])
+{
+	FILE* gnuplot_file = fopen("script.gplot", "w");
+	if (gnuplot_file == NULL) return -1;
+	
+	fprintf(gnuplot_file, "set term x11\n");
+	fprintf(gnuplot_file, "set pm3d map\n");
+	fprintf(gnuplot_file, "set logscale z 10\n");
+	fprintf(gnuplot_file, "set logscale y 2\n");
+	fprintf(gnuplot_file, "set ticslevel 0\n");
+	fprintf(gnuplot_file, "set xlabel \"time (s)\"\n");
+	fprintf(gnuplot_file, "set ylabel \"Frequency (Hz)\"\n");
+
+	//Input Graph Title
+	fprintf(gnuplot_file, "%s%s%s\n", "set title \"", graph_title, "\"");
+	//Plot filename
+	// plot "DATA.log" matrix nonuniform with pm3d t ''
+	fprintf(gnuplot_file, "%s%s%s\n", "splot \"", filename, "\" matrix nonuniform with pm3d t ''");
+
+	return(0);
 }
 
 /**

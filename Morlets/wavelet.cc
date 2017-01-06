@@ -310,8 +310,7 @@ void TestCases(double *data, const int flag)
 	switch(flag)
 	{
 		//Impulse at T = 2 seconds
-		case 1:
-			
+		case 1:		
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{
 				data[i] = 0.0;
@@ -334,6 +333,7 @@ void TestCases(double *data, const int flag)
 				data[i] = sin(i*dw + w0) + sin(i*2*dw + w0);
 			}
 			break;
+
 		//Single sine at t = 1.0s;
 		case 4: 
 			for (int i = DATA_SIZE/3; i < DATA_SIZE/3 + 2 * one_peri; ++i)
@@ -374,62 +374,16 @@ void TestCases(double *data, const int flag)
 				// frequency += frequency_increment; 
 			}
 			break;
+		case 8:
+			for (int i = 0; i < DATA_SIZE; ++i)
+			{
+				data[i] = sin(i*dw + w0);
+			}
+			break;
 	}
 }
 
-/**
-	\fn int WriteFile(const double *data, const double *period, const int x, const int y, const char* filename)
 
-	\brief A function that writes the Wavelet Results to the disk. 
-
-	\param data A x x y array with the  data that is going to be written 
-	\param period A 1 x y array with the frequencies that were analyzed
-	\param x The number of samples in the signal
-	\param y The number of frequencies analyzed
-	\param filename The name of the file that will be written
-
-	\return 0 if successful
-	\return -1 if unsuccessful
-
-	This function will write the resultant data computed by Wavelet() and ERSP() into the disk so that it can be graphed by Gnuplot. 
-	One can plot the output of this function using the matrix.gplot file. 
-*/
-
-int WriteFile(const double *data, const double *frequency, const int x, const int y, 
-	const char* filename)
-{
-
-    FILE* out_file=fopen(filename,"w");
-    if (out_file == NULL) return -1;
-
-    //Xticks
-    fprintf(out_file, "%d\t", x);
-    for (int i = 0; i < y; ++i)
-    {
-    	fprintf(out_file, "%f\t", (double) i/FS);
-    }
-    fprintf(out_file, "\n");
-
-    // double small_eps = 0.00001; //Add a small eps so that logs of zero don't happen. 
-	for (int i = 0; i < x; ++i)
-    {
-    	//Feed Frequency
-    	fprintf(out_file, "%f\t", frequency[i]);
-
-    	//Feed Data
-        for (int j = 0; j < y; ++j)
-        {
-            // value = Magnitude(result[i*n + j], result[i*n + j]);
-            fprintf(out_file, "%.16e\t", data[i*y + j]);
-        }
-        //Ready for the next line.
-        fprintf(out_file, "\n");
-
-    }
-
-    fclose(out_file);
-    return(0);
-}
 
 /**
 	\fn int WriteDebug(const double *data, const int length, const int sampling_frequency,
@@ -447,8 +401,6 @@ int WriteFile(const double *data, const double *frequency, const int x, const in
 
 	This function writes a 1 - dimentional array to the disk, it's useful when trying to quickly get the results from an array. 
 */
-
-
 int WriteDebug(const double *data, const int length, const int sampling_frequency,
 	const char* filename)
 {

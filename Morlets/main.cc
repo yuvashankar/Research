@@ -4,6 +4,9 @@
 
 #include <gsl/gsl_statistics.h>
 
+
+int WriteGnuplotScript(const char *graph_title, const char* filename);
+
 int main(void)
 {
     //Start the timer!
@@ -12,14 +15,20 @@ int main(void)
     //Initialize the necessary arrays.
     double *data, *data_2D, *result, *scales, *frequency;
 
+    double *con_result, *wavelet_result; 
+
     int n = DATA_SIZE;
     const int J = (int) MAX_I - MIN_I;
 
-    const int trials = 77;
+    // const int trials = 77;
 
     //Memory Allocations
     data    =  (double*) malloc(n *     sizeof(double));
     data_2D =  (double*) malloc(n * J * sizeof(double));
+
+    con_result =     (double*) malloc(n * J * sizeof(double));
+    wavelet_result = (double*) malloc(n * J * sizeof(double));
+
     result  =  (double*) malloc(n * J * sizeof(double));
     assert(data != NULL); assert(result != NULL); 
 
@@ -27,7 +36,7 @@ int main(void)
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
-    TestCases(data, 2);
+    TestCases(data, 8);
 
     // //Populate the data array
     // for (int i = 0; i < trials; ++i)
@@ -39,23 +48,37 @@ int main(void)
     //     }
     // }
 
+    CWT_Convolution(data, scales, n, J, 
+                    con_result);
     
     Wavelet(data, scales, 
             FS, n, J,
-            result);
+            wavelet_result);
+
+    for (int i = 0; i < n * J; ++i)
+    {
+        wavelet_result[i] = log(wavelet_result[i]);
+
+        // result[i] = abs(wavelet_result[i] - con_result[i]);
+        result[i] = abs(wavelet_result[i] - con_result[i])/con_result[i];
+    }
     
     // Compute the ERSP
     // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
     // result);
 
     // Write to file
+    // char filename[] = "DATA.log";
     WriteFile(result, frequency, J, n, "DATA.log");
+    WriteGnuplotScript("dee Herro" , "DATA.log");
     // Plot(result, frequency,  n, J);
 
     //Free up Memory
     free(data_2D);
     free(data);  free(result);
     free(scales); free(frequency);
+
+    free(con_result); free(wavelet_result);
     
     //Stop and print the timer. 
     t = omp_get_wtime() - t;

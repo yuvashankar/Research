@@ -133,9 +133,19 @@
 void FillData(double * data);
 void TestCases(double *data, const int flag);
 
-int ReadFile(double data[], char filename[]);
-int WriteFile(const double *data, const double *frequency, const int x, const int y, 
-	const char* filename);
+int  ReadFile(double data[], char filename[]);
+
+int  WriteFile(const double *data, const double *frequency, const int x, const int y, 
+	char filename[]);
+
+int WriteGnuplotScript(char graph_title[], char filename[]);
+
+void Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
+	char filename[]);
+
+int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
+	char graph_title[],
+	char filename[]);
 
 int WriteDebug(const double *data, const int length, const int sampling_frequency,
 	const char* filename);
@@ -144,10 +154,9 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	const int J, int const trials, const int padding_type, 
 	double * output);
 
-void Plot(double * data, double * periods, int num_x, int num_y);
+
 
 double CompleteFourierMorlet(const double w, const double scale);
-
 double CompleteRealMorlet (double x, double scale);
 double CompleteComplexMorlet(double x, double scale);
 
@@ -162,6 +171,9 @@ double* IdentifyFrequencies(double* scales, int count);
 
 void Convolute(double *data, double *conWindow, double * complexWindow, int data_size, int conSize,
 	double* realResult, double* complexResult);
+
+int CWT_Convolution(double *data, double * scales, int data_size, int num_of_scales, 
+	double* result);
 
 int CalculatePaddingSize(const int array_size, const int pad_flag);
 int Generate_FFTW_Wisdom(int padded_size);
