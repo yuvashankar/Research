@@ -20,6 +20,10 @@
 */
 #define PLOT_OX 200
 
+/**
+	
+*/
+
 
 //Data Structures
 /**
@@ -47,6 +51,7 @@ COLOUR GetColour(double v,RANGE data_range);
 double Max(double * array, int size);
 double Min(double* array, int size);
 
+
 int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	char graph_title[],
 	char filename[])
@@ -63,13 +68,31 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	return(writeFlag);
 }
 
+/**
+	\fn int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
+					const char filename[])
+	\brief Uses PNGWriter to plot the results of the Continuous Wavelet Transform.
+
+	\param data An num_x * num_y size data array that will be plotted
+	\param periods A num_y x 1 array of the frequency used to analyze the signal data
+	\param num_x The size of the data
+	\param num_y The number of frequencies analyzed
+	\param graph_title The title of the graph
+	\param filename The name of the file that the data will be written to. 
+
+	This function plots a two dimentional array into a png using PNGWriter. It utilizes GetRange() and GetColour() to function.
+	In order to reduce the horizontal length of the image, a stride variable was introduced that will skip a certain number of elements in the data array. THe higher this number the slimmer the resultant graph will be. 
+	
+	The lines_size plots the same pixel in a number of vertical columns. THis allows the vertical scaling to be increased and decreased. 
+*/
+
 int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
 	const char filename[])
 {
 	int i, j, k;
 	
-	const int lines_size = 10;
-	const int stride = 4; //Stride needs to be even. 
+	const int lines_size = 10; //Adjusts vertical scaling.
+	const int stride = 4; //Stride needs to be even. Adjusts horizontal scaling
 	const int image_width  = (num_x/stride) + 2 * PLOT_OX;
 	const int image_height = lines_size * num_y+ 2 * PLOT_OY;
 	const int height = lines_size * num_y;
@@ -84,7 +107,6 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 	char  font_location[] = "../lib/VeraMono.ttf";
 	char x_label[] = "Time (s)";
 	char y_label[] = "Frequency (Hz)";
-	// char graph_title[] = "Time Frequency Graph of an Impulse";
 	char temp_string[4];
 
 	CalculateLog( data, num_x * num_y );
@@ -125,8 +147,6 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 				int counterVar = stride * (i-1) + (j-1) *num_x;
 				double value = data[counterVar];
 
-
-				
 				//Ensure that the indexes do not exceed the data limit.
 				assert( counterVar <= num_x*num_y );
 
@@ -229,6 +249,16 @@ int  WriteFile(const double *data, const double *frequency, const int x, const i
     return(0);
 }
 
+/**
+	\fn int WriteGnuplotScript(const char graph_title[], const char filename[])
+
+	\param graph_title The title that the graph should be in
+	\param filename The name of the file that will be graphed
+
+	This function will generate a file called "script.gplot" that will can be used to 
+	plot data generated using WriteFile()
+	\returns 0 on success
+*/
 int WriteGnuplotScript(const char graph_title[], const char filename[])
 {
 	FILE* gnuplot_file = fopen("script.gplot", "w");

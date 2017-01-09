@@ -6,6 +6,15 @@
 		},
 		{
 			"path": "include"
+		},
+		{
+			"path": "Morlets"
+		},
+		{
+			"path": "Convolution"
+		},
+		{
+			"path": "documentation"
 		}
 	]
 }

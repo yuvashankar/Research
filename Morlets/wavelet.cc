@@ -39,12 +39,13 @@ int Wavelet(double* raw_data, double* scales,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-    const int PADDED_SIZE = CalculatePaddingSize(n, 1);
+    const int PADDED_SIZE = CalculatePaddingSize(n, 0);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+
 
 	//populate the FFTW data vector. 
 	for (i = 0; i < n; ++i)
@@ -53,12 +54,12 @@ int Wavelet(double* raw_data, double* scales,
     	data_in[i][1] = 0.0;
     }
 
-    //Force the rest of the data vector to zero just in case
-    for (int i = n; i < PADDED_SIZE; ++i)
-    {
-    	data_in[i][0] = 0.0;
-    	data_in[i][1] = 0.0;
-    }
+    // //Force the rest of the data vector to zero just in case
+    // for (int i = n; i < PADDED_SIZE; ++i)
+    // {
+    // 	data_in[i][0] = 0.0;
+    // 	data_in[i][1] = 0.0;
+    // }
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
@@ -115,7 +116,7 @@ int Wavelet(double* raw_data, double* scales,
 			//Calculate the power and store it in result
 			for (j = 0; j < n; ++j)
 			{
-				result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				result[i * n + j] = log(MAGNITUDE(fftw_result[j][0], fftw_result[j][1]));
 			}
 		}
 
@@ -231,13 +232,6 @@ double* IdentifyFrequencies(double* scales, int count)
 
 }
 
-// double FourierMorlet(double w, double scale, double normal)
-// {
-// 	double exponent = -0.5 * (scale * w - W_0) * (scale * w - W_0);
-// 	double out = QUAD_ROOT_PI* normal * exp(exponent);
-// 	return(out);
-// }
-
 /**
 	\fn double CompleteFourierMorlet(const double w, const double scale)
 	
@@ -293,7 +287,6 @@ double CompleteFourierMorlet(const double w, const double scale)
 
 void TestCases(double *data, const int flag)
 {
-
 	// Fit a FREQ signal at two points
 	// double DT = 1./FS;
 	double fsig = FREQ/FS;
@@ -382,8 +375,6 @@ void TestCases(double *data, const int flag)
 			break;
 	}
 }
-
-
 
 /**
 	\fn int WriteDebug(const double *data, const int length, const int sampling_frequency,

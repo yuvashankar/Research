@@ -9,21 +9,20 @@ int CWT_Convolution(double *data, double * scales, int data_size, int num_of_sca
 	double *conWindow, *complexWindow;
     double *realResult, *complexResult;
 
-	conWindow     =  (double*) malloc(data_size *     sizeof(double));
-    complexWindow =  (double*) malloc(data_size *     sizeof(double));
-    realResult    =  (double*) malloc(data_size *     sizeof(double));
-    complexResult =  (double*) malloc(data_size *     sizeof(double));
+	conWindow     =  (double*) malloc(data_size * sizeof(double));
+    complexWindow =  (double*) malloc(data_size * sizeof(double));
+    realResult    =  (double*) malloc(data_size * sizeof(double));
+    complexResult =  (double*) malloc(data_size * sizeof(double));
 
 	int conSize = 0;
     for (int i = 0; i < num_of_scales; ++i)
     {
-        memset(conWindow, 0.0, data_size *     sizeof(double));
-        memset(complexWindow, 0.0, data_size *     sizeof(double));
-        memset(realResult, 0.0, data_size *     sizeof(double));
-        memset(complexResult, 0.0, data_size *     sizeof(double));
+        memset(conWindow, 0.0,     data_size * sizeof(double));
+        memset(complexWindow, 0.0, data_size * sizeof(double));
+        memset(realResult, 0.0,    data_size * sizeof(double));
+        memset(complexResult, 0.0, data_size * sizeof(double));
         
         conSize = (int) W_0/(2 * M_PI * scales[i]);
-        conSize *= 4;
         // printf("Scale[%d] = %f, conSize = %d\n", i, scales[i], conSize);
         
         double temp = 0.0;
@@ -40,7 +39,7 @@ int CWT_Convolution(double *data, double * scales, int data_size, int num_of_sca
 
         for (int j = 0; j < data_size; ++j)
         {
-            result[i * data_size + j] = MAGNITUDE(realResult[j], complexResult[j]);
+            result[i * data_size + j] = log(MAGNITUDE(realResult[j], complexResult[j]));
         }
     }
     
@@ -53,28 +52,46 @@ void Convolute(double *data, double *conWindow, double * complexWindow, int data
 	double* realResult, double* complexResult)
 {
 	for (int i = 0; i < data_size; ++i) //For every element in the data file
-	{
-		realResult[i] = 0.0;
-		for (int j = -conSize; j < conSize; ++j) 
-		{
-			if ( (i - j) > 0)
-			{
-				if (j >= 0)
-				{
-					realResult[i] += data[i - j] * conWindow[j];
-					complexResult[i] += data[i - j] * complexWindow[j];
-				}
-					
+    {
+        realResult[i]    = 0.0;
+        complexResult[i] = 0.0;
+        for (int j = -conSize + 1; j < conSize; ++j) 
+        {
+            if ( (i - j) >= 0 && (i - j) < data_size)
+            {
+                // printf("data[%d - %d] = %d, conWindow[%d] = %d\n", i,j,  data[i - j], j, conWindow[-j]);   
+                if (j >= 0)
+                {
+                    realResult[i]    += data[i - j] * conWindow[j];
+                    complexResult[i] += data[i - j] * complexWindow[j];
+                }
+                    
+                if (j < 0)
+                {
+                    
+                    realResult[i]     += data[i - j] * conWindow[-j];
+                    complexResult[i] -= data[i - j] * complexWindow[-j];
+                }
+            }
+            else
+            {
+                // int count = (i - j);
+                int count = ( data_size + (i - j) )%data_size;
+                if (j >= 0)
+                {
+                    realResult[i]    += data[count] * conWindow[j];
+                    complexResult[i] += data[count] * complexWindow[j];
+                }
 
-				if (j < 0)
-				{
-					realResult[i] += data[i - j] * conWindow[-j];
-					complexResult[i] -= data[i - j] * complexWindow[-j];
-				}
-					
-			}
-		}
-	}
+                if (j < 0)
+                {
+                    realResult[i]  += data[count] * conWindow[-j];
+                    complexResult[i] -= data[count] * conWindow[-j];
+                }
+            }
+        }
+    }
+
 }
 
 double CompleteRealMorlet (double x, double scale)
