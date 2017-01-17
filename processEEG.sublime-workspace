@@ -4,6 +4,34 @@
 		"selected_items":
 		[
 			[
+				"err",
+				"error_time"
+			],
+			[
+				"array",
+				"array_index"
+			],
+			[
+				"freq",
+				"freq_index"
+			],
+			[
+				"wavelet",
+				"wavelet_result"
+			],
+			[
+				"con",
+				"con_result"
+			],
+			[
+				"data",
+				"data_size"
+			],
+			[
+				"complex",
+				"complexResult"
+			],
+			[
 				"filtered",
 				"filteredTriggerNumber"
 			],
@@ -47,30 +75,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "src/main.c",
-			"settings":
-			{
-				"buffer_size": 3708,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/FindTriggers.c",
-			"settings":
-			{
-				"buffer_size": 1449,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/vinay/Google Drive/Research/ScpDump/newtimef.m",
-			"settings":
-			{
-				"buffer_size": 97226,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/Makefile/Make.sublime-build",
 	"command_palette":
@@ -100,7 +104,24 @@
 	},
 	"file_history":
 	[
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/MasterThesis.tex",
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/ThesisBib.bib",
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Background.tex",
+		"/Users/vinay/Google Drive/Science/Research/include/wavelet.h",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/ERSP.cc",
+		"/Users/vinay/Google Drive/Career Planning/Applications/Perimeter-Instutite/Resume/VinayYuvashankarResume.tex",
+		"/Users/vinay/Google Drive/Career Planning/Applications/Perimeter-Instutite/Cover_Letter/VinayYuvashankarCoverLetter.tex",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/convolution.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/Plot.cc",
+		"/Users/vinay/Google Drive/Science/Research/Convolution/main.cc",
+		"/Users/vinay/Google Drive/Science/Research/Convolution/convolution.cc",
+		"/Users/vinay/Google Drive/Science/Research/src/main.c",
+		"/Users/vinay/Google Drive/Science/Research/processEEG.sublime-project",
+		"/Users/vinay/Google Drive/Science/Research/processEEG.sublime-workspace",
 		"/Users/vinay/Google Drive/Research/ScpDump/newtimef.m",
+		"/Users/vinay/Google Drive/Science/Research/src/FindTriggers.c",
 		"/Users/vinay/Library/Application Support/Sublime Text 2/Packages/User/Distraction Free.sublime-settings",
 		"/Users/vinay/Google Drive/Research/Source/src/FilterTriggers.c",
 		"/Users/vinay/Google Drive/Research/Source/include/processEEG.h",
@@ -136,7 +157,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 99.0,
+		"height": 0.0,
 		"where_history":
 		[
 			"",
@@ -149,6 +170,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Max",
 			"lowmem",
 			"int",
 			"Chris",
@@ -220,91 +242,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "src/main.c",
-					"settings":
-					{
-						"buffer_size": 3708,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1859,
-								1859
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 7.0,
-						"translation.y": 845.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/FindTriggers.c",
-					"settings":
-					{
-						"buffer_size": 1449,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 196.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/Users/vinay/Google Drive/Research/ScpDump/newtimef.m",
-					"settings":
-					{
-						"buffer_size": 97226,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								31672,
-								31678
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Objective-C/Objective-C.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -353,6 +292,22 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"main.c",
+				"Morlets/main.cc"
+			],
+			[
+				"w",
+				"Morlets/wavelet.cc"
+			],
+			[
+				"main",
+				"Convolution/main.cc"
+			],
+			[
+				"conv",
+				"Morlets/convolution.cc"
+			],
 			[
 				"find",
 				"src/FindTriggers.c"

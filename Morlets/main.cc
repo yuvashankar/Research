@@ -4,6 +4,23 @@
 
 #include <gsl/gsl_statistics.h>
 
+double DiracRealMorlet(double time, double scale)
+{
+    double time = (-time)/scale;
+
+    double out = exp( - 0.5 * time * time) * ( cos( W_0 * time ) - K_SIGMA);
+    out = C_SIGMA * QUAD_ROOT_PI * out;
+    return(out);
+}
+
+double DiracComplexMorlet(double time, double scale)
+{
+    double out = exp( - 0.5 * time * time) * ( sin( W_0 * time ) - K_SIGMA);
+    out = C_SIGMA * QUAD_ROOT_PI * out;
+    return(out);
+}
+
+
 int main(void)
 {
     //Start the timer!
@@ -17,11 +34,11 @@ int main(void)
     int n = DATA_SIZE;
     const int J = (int) MAX_I - MIN_I;
 
-    // const int trials = 77;
+    const int trials = 1;
 
     //Memory Allocations
     data    =  (double*) malloc(n *     sizeof(double));
-    data_2D =  (double*) malloc(n * J * sizeof(double));
+    data_2D =  (double*) malloc(n * trials * sizeof(double));
 
     con_result =     (double*) malloc(n * J * sizeof(double));
     wavelet_result = (double*) malloc(n * J * sizeof(double));
@@ -30,36 +47,32 @@ int main(void)
     assert(data != NULL); assert(result != NULL); 
 
     //Get Scales and Frequencies
-    scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
+    scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
     TestCases(data, 8);
 
-    // //Populate the data array
-    // for (int i = 0; i < trials; ++i)
-    // {
-    //     TestCases(data, 2);
-    //     for (int j = 0; j < n; ++j)
-    //     {
-    //         data_2D[i * n + j] = data[j];
-    //     }
-    // }
 
+    //Compute the Convolution
     CWT_Convolution(data, scales, n, J, 
                     con_result);
-    
-    Wavelet(data, scales, 
-            FS, n, J,
-            wavelet_result);
 
-    // printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[466920], con_result[466920]);
+    // // Compute the Wavelet Transform
+    // Wavelet(data, scales, 
+    // FS, n, J,
+    // wavelet_result);
+
+    // // Compute the ERSP
+    // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
+    // wavelet_result);
+    
 
     for (int i = 0; i < n * J; ++i)
     {
         // wavelet_result[i] = log(wavelet_result[i]);
+        // con_result[i] = log(con_result[i]);
 
-        result[i] = abs(wavelet_result[i] - con_result[i]);
-        // result[i] = abs(wavelet_result[i] - con_result[i])/con_result[i];
+        result[i] = abs(result[i] - con_result[i]);
     }
 
     double max = result[0];
@@ -80,24 +93,16 @@ int main(void)
         }
         
     }
+    
 
     double error_time = (double) array_index/FS;
     printf("Worst error at %f Hz at %f s\n", frequency[freq_index], error_time);
 
+    array_index = freq_index * n + array_index;
+    printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[array_index], con_result[array_index]);
+    printf("Worst Error = %f\n", result[array_index]);
 
-
-    // Compute the ERSP
-    // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
-    // result);
-
-    // Write to file
-    // char filename[] = "DATA.log";
-
-
-
-    WriteFile(result, frequency, J, n, "DATA.log");
-    // WriteGnuplotScript("dee Herro" , "DATA.log");
-    // Plot(result, frequency,  n, J);
+    WriteFile(con_result, frequency, J, n, "DATA.log");
 
     //Free up Memory
     free(data_2D);

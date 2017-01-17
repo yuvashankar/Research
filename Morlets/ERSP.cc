@@ -51,7 +51,7 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	double * output)
 {
 	int i, j, x;
-	int number_of_threads = 2;
+	int number_of_threads = 1;
 	//Calculate the necessary constants for the Continuous Wavelet Transform.
     const int    PADDED_SIZE = CalculatePaddingSize(n, padding_type);
     const int    m           = PRE_EVENT_TIME * sampling_frequency;
@@ -96,13 +96,6 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 		#pragma omp for
 		for ( x = 0; x < trials; ++x)
 		{
-			// memset(wavelet_out,        0.0, n * J * sizeof(double));
-			// memset(baseline_out,       0.0, n * J * sizeof(double));
-			// memset(pre_stimulus,       0.0, m     * sizeof(double));
-			// memset(data_in,            0.0, sizeof( fftw_complex ) * PADDED_SIZE);
-			// memset(fft_data,           0.0, sizeof( fftw_complex ) * PADDED_SIZE);
-			// memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
-			// memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			/*Begin Wavelet Analysis*/
 			PopulateDataArray(raw_data, n, x, 
 							  PADDED_SIZE, padding_type, data_in);
@@ -377,7 +370,17 @@ int PopulateDataArray(double* input_data, const int data_size, const int trial_n
 		    	output_data[output_counter + (int) (0.5 * data_size)][1] = 0.0;
 		    }
 			break;
-		
+
+		case 3: //Duplicate the signal once. 
+			for ( i = 0; i < data_size; ++i)
+			{
+				output_data[i            ][0] = input_data[trial_number * data_size + i];
+				output_data[i + data_size][0] = input_data[trial_number * data_size + i];
+
+				output_data[i            ][1] = 0.0;
+				output_data[i + data_size][1] = 0.0;
+			}
+			break;
 		default: //Return just the array no padding. 
 			//populate the FFTW data vector. 
 			for (i = 0; i < data_size; ++i)

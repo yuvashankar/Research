@@ -37,7 +37,7 @@
 	\var W_0 
 	\brief The fundamental frequency of the Morlet Wavelet
 */
-#define W_0 6.0
+#define W_0 12.0
 
 /**
 	\var W_0_2
@@ -68,9 +68,12 @@
 	2 - Ramp Padding
 	- The array will be doubled in size, and the signal will be ramped up and ramped down to gradually. 
 
+	3 - Repetion Padding
+	- The signal will be repeated once, in effect the signal length will be doubled. 
+
 	If none of these are specified, the array is not padded by default.
 */
-#define PAD_FLAG 1
+#define PAD_FLAG 3
 
 //Signal Constants
 
@@ -100,7 +103,7 @@
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-#define MAX_FREQUENCY 512.0
+#define MAX_FREQUENCY 256.0
 
 /**
 	\var MIN_FREQUENCY
@@ -128,7 +131,7 @@
 	\def MAGNITUDE(x, y)
 	\brief Computes the 2- norm or the x ^ 2 + y ^ 2, of \a x and \a y
 */
-#define MAGNITUDE(x,y) (x * x) + (y * y)
+#define MAGNITUDE(x,y) sqrt( (x * x) + (y * y) )
 
 void FillData(double * data);
 void TestCases(double *data, const int flag);
@@ -154,7 +157,7 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	const int J, int const trials, const int padding_type, 
 	double * output);
 
-double CompleteFourierMorlet(const double w, const double scale);
+double CompleteFourierMorlet(double w, const double scale);
 double CompleteRealMorlet (double x, double scale);
 double CompleteComplexMorlet(double x, double scale);
 

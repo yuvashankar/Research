@@ -1,4 +1,5 @@
 import numpy as np
+import timeit
 from waveletFunctions import wavelet, wave_signif
 import matplotlib.pylab as plt
 import matplotlib
@@ -18,47 +19,53 @@ __author__ = 'Evgeniya Predybaylo'
 # ------------------------------------------------------------------------------------------------------------------
 
 # READ THE DATA
-sst = np.loadtxt('Main_debug.log')  # input SST time series
+sst = np.loadtxt('sst_nino3.dat')  # input SST time series
 
 #----------C-O-M-P-U-T-A-T-I-O-N------S-T-A-R-T-S------H-E-R-E------------------------------------------------------
 
 # normalize by standard deviation (not necessary, but makes it easier
 # to compare with plot on Interactive Wavelet page, at
 # "http://paos.colorado.edu/research/wavelets/plot/"
-variance = np.std(sst, ddof=1) ** 2
-sst = (sst - np.mean(sst)) / np.std(sst, ddof=1)
-n = len(sst)
-dt = 1.0/2048.0
-time = np.arange(len(sst)) * dt  # construct time array
-xlim = ([0, len(sst)*dt])  # plotting range
-pad = 1  # pad the time series with zeroes (recommended)
-dj = 0.25  # this will do 4 sub-octaves per octave
-s0 = 2 * dt  # this says start at a scale of 6 months
-j1 = 7 / dj  # this says do 7 powers-of-two with dj sub-octaves each
-lag1 = 0.72  # lag-1 autocorrelation for red noise background
-mother = 'MORLET'
 
-# Wavelet transform:
-wave, period, scale, coi = wavelet(sst, dt, pad, dj, s0, j1, mother)
-power = (np.abs(wave)) ** 2  # compute wavelet power spectrum
 
-# Significance levels: (variance=1 for the normalized SST)
-signif = wave_signif(([1.0]), dt=dt, sigtest=0, scale=scale, lag1=lag1, mother=mother)
-sig95 = signif[:, np.newaxis].dot(np.ones(n)[np.newaxis, :])  # expand signif --> (J+1)x(N) array
-sig95 = power / sig95  # where ratio > 1, power is significant
+#start_time = timeit.timeit();
+for x in range (0, 50):
+    variance = np.std(sst, ddof=1) ** 2
+    sst = (sst - np.mean(sst)) / np.std(sst, ddof=1)
+    n = len(sst)
+    dt = 0.25
+    time = np.arange(len(sst)) * dt + 1871.0  # construct time array
+    xlim = ([1870, 2000])  # plotting range
+    pad = 1  # pad the time series with zeroes (recommended)
+    dj = 0.25  # this will do 4 sub-octaves per octave
+    s0 = 2 * dt  # this says start at a scale of 6 months
+    j1 = 7 / dj  # this says do 7 powers-of-two with dj sub-octaves each
+    lag1 = 0.72  # lag-1 autocorrelation for red noise background
+    mother = 'PAUL'
 
-# Global wavelet spectrum & significance levels:
-global_ws = variance * (np.sum(power, axis=1) / n)  # time-average over all times
-dof = n - scale  # the -scale corrects for padding at edges
-global_signif = wave_signif(variance, dt=dt, scale=scale, sigtest=1, lag1=lag1, dof=dof, mother=mother)
+    # Wavelet transform:
+    wave, period, scale, coi = wavelet(sst, dt, pad, dj, s0, j1, mother)
+    power = (np.abs(wave)) ** 2  # compute wavelet power spectrum
 
-# Scale-average between El Nino periods of 2--8 years
-avg = np.logical_and(scale >= 2, scale < 8)
-Cdelta = 0.776  # this is for the MORLET wavelet
-scale_avg = scale[:, np.newaxis].dot(np.ones(n)[np.newaxis, :])  # expand scale --> (J+1)x(N) array
-scale_avg = power / scale_avg  # [Eqn(24)]
-scale_avg = variance * dj * dt / Cdelta * sum(scale_avg[avg, :])  # [Eqn(24)]
-scaleavg_signif = wave_signif(variance, dt=dt, scale=scale, sigtest=2, lag1=lag1, dof=([2, 7.9]), mother=mother)
+    # Significance levels: (variance=1 for the normalized SST)
+    signif = wave_signif(([1.0]), dt=dt, sigtest=0, scale=scale, lag1=lag1, mother=mother)
+    sig95 = signif[:, np.newaxis].dot(np.ones(n)[np.newaxis, :])  # expand signif --> (J+1)x(N) array
+    sig95 = power / sig95  # where ratio > 1, power is significant
+
+    # Global wavelet spectrum & significance levels:
+    global_ws = variance * (np.sum(power, axis=1) / n)  # time-average over all times
+    dof = n - scale  # the -scale corrects for padding at edges
+    global_signif = wave_signif(variance, dt=dt, scale=scale, sigtest=1, lag1=lag1, dof=dof, mother=mother)
+
+    # Scale-average between El Nino periods of 2--8 years
+    avg = np.logical_and(scale >= 2, scale < 8)
+    Cdelta = 0.776  # this is for the MORLET wavelet
+    scale_avg = scale[:, np.newaxis].dot(np.ones(n)[np.newaxis, :])  # expand scale --> (J+1)x(N) array
+    scale_avg = power / scale_avg  # [Eqn(24)]
+    scale_avg = variance * dj * dt / Cdelta * sum(scale_avg[avg, :])  # [Eqn(24)]
+    scaleavg_signif = wave_signif(variance, dt=dt, scale=scale, sigtest=2, lag1=lag1, dof=([2, 7.9]), mother=mother)
+
+#print("--- %s seconds ---" % (timeit.timeit() - start_time))
 
 #------------------------------------------------------ Plotting
 
@@ -132,4 +139,6 @@ plt.tight_layout()
 
 plt.show()
 
+
 # end of code
+

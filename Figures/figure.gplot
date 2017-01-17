@@ -1,5 +1,6 @@
-set term postscript colour font "Helv, 10"
+#set term postscript colour font "Helv, 10"
 #set term epslatex colour font "Helv, 10"
+set term pngcairo
 set output '20hz-sine.eps'
 set key off
 set xlabel "Time (s)"
