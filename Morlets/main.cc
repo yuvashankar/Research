@@ -4,19 +4,48 @@
 
 #include <gsl/gsl_statistics.h>
 
+
+double CosineRealMorlet(double time, double scale)
+{
+    double norm = sqrt(scale);
+    double w_o = FREQ * 2 * M_PI;
+    w_o *= scale;
+    double mor = exp( - 0.5 * (W_0 - w_o) * (W_0 - w_o) ) + K_SIGMA * exp( -0.5 * w_o * w_o );
+    double cosine = cos(w_o * time);
+
+    double out = 0.5 * C_SIGMA * QUAD_ROOT_PI * norm * mor * cosine;
+    return(out);
+}
+
+double CosineComplexMorlet(double time, double scale)
+{
+    double norm = sqrt(scale);
+    double w_o = FREQ * 2 * M_PI;
+    w_o *= scale;
+    double mor = exp( - 0.5 * (W_0 - w_o) * (W_0 - w_o) ) + K_SIGMA * exp( -0.5 * w_o * w_o );
+    double sine = sin(w_o * time);
+
+    double out = 0.5 * C_SIGMA * QUAD_ROOT_PI * norm * mor * sine;
+    return(out);
+}
+
 double DiracRealMorlet(double time, double scale)
 {
-    double time = (-time)/scale;
-
-    double out = exp( - 0.5 * time * time) * ( cos( W_0 * time ) - K_SIGMA);
-    out = C_SIGMA * QUAD_ROOT_PI * out;
+    double impulse = 2.0;
+    time = (impulse -time )/scale;
+    double norm = 1.0/sqrt(scale);
+    double out = exp( - 0.5 * time * time ) * ( cos( W_0 * time ) - K_SIGMA );
+    out = norm * C_SIGMA * QUAD_ROOT_PI * out;
     return(out);
 }
 
 double DiracComplexMorlet(double time, double scale)
 {
-    double out = exp( - 0.5 * time * time) * ( sin( W_0 * time ) - K_SIGMA);
-    out = C_SIGMA * QUAD_ROOT_PI * out;
+    double impulse = 2.0;
+    time = (impulse -time )/scale;
+    double norm = 1.0/sqrt(scale);
+    double out = exp( - 0.5 * time * time ) * ( sin( W_0 * time ) - K_SIGMA );
+    out = norm * C_SIGMA * QUAD_ROOT_PI * out;
     return(out);
 }
 
@@ -51,16 +80,33 @@ int main(void)
     frequency = IdentifyFrequencies(scales, J);
 
     TestCases(data, 8);
+    // data[0] = 1.0;
 
+    for (int i = 0; i < J; ++i)
+    {
+        double tau = 0.0;
+        for (int j = 0; j < n; ++j)
+        {
+            // double realVal = DiracRealMorlet(tau, scales[i]);
+            // double compVal = DiracComplexMorlet(tau, scales[i]); //Complex Conjucate
 
-    //Compute the Convolution
-    CWT_Convolution(data, scales, n, J, 
-                    con_result);
+            double realVal = CosineRealMorlet(tau, scales[i]);
+            double compVal = CosineComplexMorlet(tau, scales[i]);
 
-    // // Compute the Wavelet Transform
-    // Wavelet(data, scales, 
-    // FS, n, J,
-    // wavelet_result);
+            con_result[i * n + j] = MAGNITUDE(realVal, compVal);
+            
+            tau += DT;
+        }
+    }
+
+    // //Compute the Convolution
+    // CWT_Convolution(data, scales, n, J, 
+    //                 con_result);
+
+    // Compute the Wavelet Transform
+    Wavelet(data, scales, 
+    FS, n, J,
+    wavelet_result);
 
     // // Compute the ERSP
     // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
@@ -72,7 +118,8 @@ int main(void)
         // wavelet_result[i] = log(wavelet_result[i]);
         // con_result[i] = log(con_result[i]);
 
-        result[i] = abs(result[i] - con_result[i]);
+        result[i] = abs(wavelet_result[i] - con_result[i]);
+        // result[i] = abs(result[i] - con_result[i])/con_result[i];
     }
 
     double max = result[0];
@@ -100,9 +147,9 @@ int main(void)
 
     array_index = freq_index * n + array_index;
     printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[array_index], con_result[array_index]);
-    printf("Worst Error = %f\n", result[array_index]);
+    printf("Worst Error = %.16f\n", result[array_index]);
 
-    WriteFile(con_result, frequency, J, n, "DATA.log");
+    WriteFile(result, frequency, J, n, "DATA.log");
 
     //Free up Memory
     free(data_2D);

@@ -107,8 +107,11 @@ int Wavelet(double* raw_data, double* scales,
 			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 			{
 				value = CompleteFourierMorlet( j * dw , scales[i]);
-				filter_convolution[j][0] = fft_data[j][0] * value;
-				filter_convolution[j][1] = fft_data[j][1] * value;
+				filter_convolution[j][0] = (fft_data[j][0]/PADDED_SIZE) * value;
+				filter_convolution[j][1] = (fft_data[j][1]/PADDED_SIZE) * value;
+
+				// filter_convolution[j][0] = (fft_data[j][0]) * value;
+				// filter_convolution[j][1] = (fft_data[j][1]) * value;
 
 				filter_convolution[PADDED_SIZE- j][0] = 0.0;
 				filter_convolution[PADDED_SIZE- j][1] = 0.0;
@@ -340,7 +343,7 @@ void TestCases(double *data, const int flag)
 			}
 			break;
 
-		//Single sine all the way through. 
+		
 		case 5:
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{
@@ -376,6 +379,7 @@ void TestCases(double *data, const int flag)
 			}
 			break;
 			
+		//Single sine all the way through. 
 		case 8:
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{

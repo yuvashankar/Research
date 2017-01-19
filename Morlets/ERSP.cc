@@ -285,8 +285,8 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 	for (j = 1; j < data_size/2 - 1; ++j)
 	{
 		value = CompleteFourierMorlet( j * dw , scale);
-		filter_convolution[j][0] = fft_data[j][0] * value;
-		filter_convolution[j][1] = fft_data[j][1] * value;
+		filter_convolution[j][0] = (fft_data[j][0]/data_size) * value;
+		filter_convolution[j][1] = (fft_data[j][1]/data_size) * value;
 
 		filter_convolution[data_size- j][0] = 0.0;
 		filter_convolution[data_size- j][1] = 0.0;
