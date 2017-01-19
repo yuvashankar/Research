@@ -97,8 +97,8 @@ int Wavelet(double* raw_data, double* scales,
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
 
-			filter_convolution[0][0] = fft_data[0][0] * value;
-			filter_convolution[0][1] = fft_data[0][1] * value;
+			filter_convolution[0][0] = (fft_data[0][0]/PADDED_SIZE) * value;
+			filter_convolution[0][1] = (fft_data[0][1]/PADDED_SIZE) * value;
 			
 			filter_convolution[PADDED_SIZE/2][0] = 0.0;
 			filter_convolution[PADDED_SIZE/2][1] = 0.0;
@@ -109,9 +109,6 @@ int Wavelet(double* raw_data, double* scales,
 				value = CompleteFourierMorlet( j * dw , scales[i]);
 				filter_convolution[j][0] = (fft_data[j][0]/PADDED_SIZE) * value;
 				filter_convolution[j][1] = (fft_data[j][1]/PADDED_SIZE) * value;
-
-				// filter_convolution[j][0] = (fft_data[j][0]) * value;
-				// filter_convolution[j][1] = (fft_data[j][1]) * value;
 
 				filter_convolution[PADDED_SIZE- j][0] = 0.0;
 				filter_convolution[PADDED_SIZE- j][1] = 0.0;
@@ -504,4 +501,50 @@ int ReadFile(double data[], char filename[])
     fclose(signalFile);
 
     return (counterVariable);
+}
+
+
+double CWT_Cosine_Real(double time, double scale)
+{
+    double norm = sqrt(scale);
+    double w_o = FREQ * 2 * M_PI;
+    w_o *= scale;
+    double mor = exp( - 0.5 * (W_0 - w_o) * (W_0 - w_o) ) + K_SIGMA * exp( -0.5 * w_o * w_o );
+    double cosine = cos(w_o * time);
+
+    double out = 0.5 * C_SIGMA * QUAD_ROOT_PI * norm * mor * cosine;
+    return(out);
+}
+
+double CWT_Cosine_Complex(double time, double scale)
+{
+    double norm = sqrt(scale);
+    double w_o = FREQ * 2 * M_PI;
+    w_o *= scale;
+    double mor = exp( - 0.5 * (W_0 - w_o) * (W_0 - w_o) ) + K_SIGMA * exp( -0.5 * w_o * w_o );
+    double sine = sin(w_o * time);
+
+    double out = 0.5 * C_SIGMA * QUAD_ROOT_PI * norm * mor * sine;
+    return(out);
+}
+
+double CWT_Dirac_Real(double time, double scale)
+{
+    double impulse = 2.0;
+    time = (impulse - time )/scale;
+    double norm = 1.0/sqrt(scale);
+    double out = exp( - 0.5 * time * time ) * ( cos( W_0 * time ) - K_SIGMA );
+
+    out = norm * C_SIGMA * QUAD_ROOT_PI * out;
+    return(out);
+}
+
+double CWT_Dirac_Complex(double time, double scale)
+{
+    double impulse = 2.0;
+    time = (impulse - time )/scale;
+    double norm = 1.0/sqrt(scale);
+    double out = exp( - 0.5 * time * time ) * ( sin( W_0 * time ) - K_SIGMA );
+    out = norm * C_SIGMA * QUAD_ROOT_PI * out;
+    return(out);
 }
