@@ -33,50 +33,17 @@ int main(void)
     scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
-    TestCases(data, 1);
-    // data[0] = 1.0;
+    TestCases(data, 8);
 
-    for (int i = 0; i < J; ++i)
-    {
-        double tau = 0.0;
-        for (int j = 0; j < n; ++j)
-        {
-            // double realVal = CWT_Dirac_Real(tau, scales[i]);
-            // double compVal = CWT_Dirac_Complex(tau, scales[i]); //Complex Conjucate
-
-            double realVal = CWT_Cosine_Real(tau, scales[i]);
-            double compVal = CWT_Cosine_Complex(tau, scales[i]);
-
-            con_result[i * n + j] = MAGNITUDE(realVal, compVal);
-            
-            tau += DT;
-        }
-    }
-
-    // //Compute the Convolution
-    // CWT_Convolution(data, scales, n, J, 
-    //                 con_result);
-
-    // Compute the Wavelet Transform
     Wavelet(data, scales, 
-    FS, n, J,
-    wavelet_result);
-
-    // // Compute the ERSP
-    // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
-    // wavelet_result);
+            FS, n, J,
+            wavelet_result);
     
+    // ERSP (data, scales, FS, n, 
+    // J, trials, 1, 
+    // wavelet_result);
 
-    for (int i = 0; i < n * J; ++i)
-    {
-        // wavelet_result[i] = log(wavelet_result[i]);
-        // con_result[i] = log(con_result[i]);
-
-        result[i] = abs(wavelet_result[i] - con_result[i]);
-        // result[i] = abs(result[i] - con_result[i])/con_result[i];
-    }
-
-    double max = result[0];
+        double max = result[0];
     int array_index = 0;
     int freq_index = 0;
 
@@ -84,9 +51,9 @@ int main(void)
     {
         for (int j = 0; j < n; ++j)
         {
-            if (result[i* n + j] > max)
+            if (wavelet_result[i* n + j] > max)
             {
-                max = result[i* n + j];
+                max = wavelet_result[i* n + j];
                 
                 array_index = j;
                 freq_index = i;
@@ -98,10 +65,9 @@ int main(void)
 
     double error_time = (double) array_index/FS;
     printf("Worst error at %f Hz at %f s\n", frequency[freq_index], error_time);
-
     array_index = freq_index * n + array_index;
-    printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[array_index], con_result[array_index]);
-    printf("Worst Error = %.16f\n", result[array_index]);
+    // printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[array_index], con_result[array_index]);
+    // printf("Worst Error = %.16f\n", result[array_index]);
 
     WriteFile(wavelet_result, frequency, J, n, "DATA.log");
 

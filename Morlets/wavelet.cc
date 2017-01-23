@@ -109,6 +109,8 @@ int Wavelet(double* raw_data, double* scales,
 				value = CompleteFourierMorlet( j * dw , scales[i]);
 				filter_convolution[j][0] = (fft_data[j][0]/PADDED_SIZE) * value;
 				filter_convolution[j][1] = (fft_data[j][1]/PADDED_SIZE) * value;
+				// filter_convolution[j][0] = (fft_data[j][0]) * value;
+				// filter_convolution[j][1] = (fft_data[j][1]) * value;
 
 				filter_convolution[PADDED_SIZE- j][0] = 0.0;
 				filter_convolution[PADDED_SIZE- j][1] = 0.0;
@@ -297,9 +299,7 @@ void TestCases(double *data, const int flag)
 	double dw = 2*M_PI*fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
-	// printf("FS  %.2d   Pitch %.f   Discrete Priode = %d \n",FS,FREQ,one_peri);
 
-	// double frequency = MIN_FREQUENCY;
 	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
 	
 	int t = 2 * FS; //At 2 seconds. 

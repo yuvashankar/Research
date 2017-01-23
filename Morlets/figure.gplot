@@ -1,11 +1,16 @@
-set term postscript colour font "Helv, 10"
-#set term epslatex colour font "Helv, 10"
-set output '20hz-sine.eps'
-set key off
-set xlabel "Time (s)"
-set yrange [-2:2]
-set xrange [0:1.2]
+set term pngcairo enhanced font 'arial,12'
+set output 'Result.png'
+set pm3d map
 
-set title "A Cosine Wave at 30 Hz"
-plot 'data.log' u 1:2 w l
+set logscale z 10
+set logscale y 2
 
+#shows where the tics start
+set ticslevel 0
+
+set xlabel "time (s)"
+set ylabel "Frequency (Hz)"
+set title "Continuous Wavelet Transform of a Cosine at 16 Hz"
+
+#set yrange [0.2:4]
+splot "DATA.log" matrix nonuniform with pm3d t ''

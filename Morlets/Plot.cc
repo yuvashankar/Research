@@ -48,9 +48,6 @@ typedef struct
 RANGE GetRange(double* array, int size);
 void CalculateLog(double * array, int size);
 COLOUR GetColour(double v,RANGE data_range);
-double Max(double * array, int size);
-double Min(double* array, int size);
-
 
 int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	char graph_title[],
