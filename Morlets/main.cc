@@ -33,17 +33,34 @@ int main(void)
     scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
-    TestCases(data, 8);
+    TestCases(data, 1);
 
     Wavelet(data, scales, 
             FS, n, J,
             wavelet_result);
-    
-    // ERSP (data, scales, FS, n, 
-    // J, trials, 1, 
-    // wavelet_result);
 
-        double max = result[0];
+
+    for (int i = 0; i < J; ++i)
+    {
+        double tau = 0.0;
+
+        for (int j = 0; j < n; ++j)
+        {
+            double realVal = CWT_Cosine_Real(tau, scales[i]);
+            double compVal = CWT_Cosine_Complex(tau, scales[i]);
+
+            con_result[i * n + j] = MAGNITUDE(realVal, compVal);
+            tau += DT;
+        }
+    }
+
+    for (int i = 0; i < i * J; ++i)
+    {
+        result[i] = abs(wavelet_result[i] - con_result[i]);
+        // result[i] = result[i]/abs(con_result[i]);
+    }
+
+    double max = result[0];
     int array_index = 0;
     int freq_index = 0;
 
@@ -51,25 +68,24 @@ int main(void)
     {
         for (int j = 0; j < n; ++j)
         {
-            if (wavelet_result[i* n + j] > max)
+            if (result[i* n + j] > max)
             {
-                max = wavelet_result[i* n + j];
+                max = result[i* n + j];
                 
                 array_index = j;
                 freq_index = i;
             }
         }
-        
     }
     
 
     double error_time = (double) array_index/FS;
     printf("Worst error at %f Hz at %f s\n", frequency[freq_index], error_time);
     array_index = freq_index * n + array_index;
-    // printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[array_index], con_result[array_index]);
-    // printf("Worst Error = %.16f\n", result[array_index]);
+    printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[array_index], con_result[array_index]);
+    printf("Worst Error = %.16f\n", result[array_index]);
 
-    WriteFile(wavelet_result, frequency, J, n, "DATA.log");
+    WriteFile(result, frequency, J, n, "DATA.log");
 
     //Free up Memory
     free(data_2D);

@@ -40,7 +40,7 @@ int Wavelet(double* raw_data, double* scales,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-    const int PADDED_SIZE = CalculatePaddingSize(n, 3);
+    const int PADDED_SIZE = CalculatePaddingSize(n, 1);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
@@ -58,12 +58,12 @@ int Wavelet(double* raw_data, double* scales,
     	data_in[i][1] = 0.0;
     }
 
-    // //Force the rest of the data vector to zero just in case
-    // for (int i = n; i < PADDED_SIZE; ++i)
-    // {
-    // 	data_in[i][0] = 0.0;
-    // 	data_in[i][1] = 0.0;
-    // }
+    //Force the rest of the data vector to zero just in case
+    for (int i = n; i < PADDED_SIZE; ++i)
+    {
+    	data_in[i][0] = 0.0;
+    	data_in[i][1] = 0.0;
+    }
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
