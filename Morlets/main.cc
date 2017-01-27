@@ -17,7 +17,7 @@ int main(void)
     int n = DATA_SIZE;
     const int J = (int) MAX_I - MIN_I;
 
-    const int trials = 1;
+    const int trials = 77;
 
     //Memory Allocations
     data    =  (double*) malloc(n *     sizeof(double));
@@ -33,59 +33,30 @@ int main(void)
     scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
-    TestCases(data, 1);
-
-    Wavelet(data, scales, 
-            FS, n, J,
-            wavelet_result);
-
-
-    for (int i = 0; i < J; ++i)
-    {
-        double tau = 0.0;
-
-        for (int j = 0; j < n; ++j)
+    //Populate the data array
+    for (int i = 0; i < trials; ++i)            
+    {           
+        TestCases(data, 5);          
+        for (int j = 0; j < n; ++j)          
         {
-            double realVal = CWT_Cosine_Real(tau, scales[i]);
-            double compVal = CWT_Cosine_Complex(tau, scales[i]);
-
-            con_result[i * n + j] = MAGNITUDE(realVal, compVal);
-            tau += DT;
+            data_2D[i * n + j] = data[j];
         }
     }
 
-    for (int i = 0; i < i * J; ++i)
-    {
-        result[i] = abs(wavelet_result[i] - con_result[i]);
-        // result[i] = result[i]/abs(con_result[i]);
-    }
+    // TestCases(data, 5);
 
-    double max = result[0];
-    int array_index = 0;
-    int freq_index = 0;
+    // Wavelet(data, scales, 
+    // FS, n, J,
+    // wavelet_result);
 
-    for (int i = 0; i < J; ++i)
-    {
-        for (int j = 0; j < n; ++j)
-        {
-            if (result[i* n + j] > max)
-            {
-                max = result[i* n + j];
-                
-                array_index = j;
-                freq_index = i;
-            }
-        }
-    }
-    
+    ERSP (data_2D, scales, FS, n, 
+    J, trials, 3, 
+    wavelet_result);
 
-    double error_time = (double) array_index/FS;
-    printf("Worst error at %f Hz at %f s\n", frequency[freq_index], error_time);
-    array_index = freq_index * n + array_index;
-    printf("Wavelet_result = %f, con_result = %f\n", wavelet_result[array_index], con_result[array_index]);
-    printf("Worst Error = %.16f\n", result[array_index]);
 
-    WriteFile(result, frequency, J, n, "DATA.log");
+
+
+    WriteFile(wavelet_result, frequency, J, n, "DATA.log");
 
     //Free up Memory
     free(data_2D);

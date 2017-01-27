@@ -96,6 +96,15 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 		#pragma omp for
 		for ( x = 0; x < trials; ++x)
 		{
+			// memset(wavelet_out,        0.0, sizeof( double ) * n * J);
+			// memset(baseline_out,       0.0, sizeof( double ) * n * J);
+			// memset(pre_stimulus,       0.0, sizeof( double ) * m);
+
+			memset(data_in,            0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+			memset(fft_data,           0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+			memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+			memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+
 			/*Begin Wavelet Analysis*/
 			PopulateDataArray(raw_data, n, x, 
 							  PADDED_SIZE, padding_type, data_in);
@@ -113,6 +122,7 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 				for (j = 0; j < n; ++j)
 				{
 					wavelet_out[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+					wavelet_out[i * n + j] = fabs( wavelet_out[i * n + j] * wavelet_out[i * n + j] );
 				}
 			}
 			/*End Wavelet Analysis*/
@@ -227,6 +237,7 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 
 	for ( i = 0; i < J; ++i)
 	{
+		memset(pre_stimulus, 0.0, sizeof(double) * m);
 		//Copy the pre trial results from each frequency block into pre_stimulus.
 		for ( j = 0; j < m; ++j)		
 		{		
@@ -234,14 +245,14 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 		}
 
 		//Calculate mean and standard deviation
-		mean = gsl_stats_mean(pre_stimulus, stride, m);
+		mean       = gsl_stats_mean(pre_stimulus, stride, m);
     	sDeviation = gsl_stats_sd_m(pre_stimulus, stride, m, mean);
 
     	//Remove the Baseline
 	    for ( j = 0; j < n; ++j)
 	    {
-	    	value = pre_baseline_array[i * n + j] * pre_baseline_array[i * n + j];
-	        output[i * n + j] = (fabs(value) - mean) / sDeviation;
+	    	// value = pre_baseline_array[i * n + j] * pre_baseline_array[i * n + j];
+	        output[i * n + j] = (pre_baseline_array[i * n + j] - mean) / sDeviation;
 	    }
 	}
 
@@ -275,9 +286,9 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 	//Compute the Fourier Morlet at 0 and N/2
 	value = CompleteFourierMorlet(0.0, scale);
 
-	filter_convolution[0][0] = fft_data[0][0] * value;
-	filter_convolution[0][1] = fft_data[0][1] * value;
-	
+	filter_convolution[0][0] = (fft_data[0][0]/data_size) * value;
+	filter_convolution[0][1] = (fft_data[0][1]/data_size) * value;
+
 	filter_convolution[data_size/2][0] = 0.0;
 	filter_convolution[data_size/2][1] = 0.0;
 

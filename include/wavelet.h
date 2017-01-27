@@ -127,6 +127,7 @@
 	\brief Converts a given scale \a x to its corrosponding frequency. 
 */
 #define SCALE_TO_FREQ(x) (W_0)/(x * 2 * M_PI)
+
 /*!
 	\def MAGNITUDE(x, y)
 	\brief Computes the 2- norm or the x ^ 2 + y ^ 2, of \a x and \a y
@@ -161,6 +162,12 @@ double CompleteFourierMorlet(double w, const double scale);
 double CompleteRealMorlet (double x, double scale);
 double CompleteComplexMorlet(double x, double scale);
 
+
+double CWT_Cosine_Real(double time, double scale);
+double CWT_Cosine_Complex(double time, double scale);
+double CWT_Dirac_Real(double time, double scale);
+double CWT_Dirac_Complex(double time, double scale);
+
 int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J,
 	double* result);
@@ -178,4 +185,7 @@ int CWT_Convolution(double *data, double * scales, int data_size, int num_of_sca
 
 int CalculatePaddingSize(const int array_size, const int pad_flag);
 int Generate_FFTW_Wisdom(int padded_size);
+
+double Max(double * array, int size);
+double Min(double* array, int size);
 

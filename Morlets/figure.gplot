@@ -10,7 +10,7 @@ set ticslevel 0
 
 set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
-set title "Relative Error of a Cosine Function"
+set title "Continuous Wavelet Transform of an Impulse"
 
 #set yrange [0.2:4]
 splot "DATA.log" matrix nonuniform with pm3d t ''

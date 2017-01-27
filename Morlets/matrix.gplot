@@ -11,6 +11,8 @@ set logscale y 2
 #shows where the tics start
 set ticslevel 0
 
+set rmargin 55
+
 set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
 set title "Time-Frequency graph of x(t)"

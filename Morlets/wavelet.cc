@@ -90,7 +90,7 @@ int Wavelet(double* raw_data, double* scales,
 	    #pragma omp for
 		for (i = 0; i < J; ++i)
 		{
-			//Force the arrays to zero, I'm not sure if we still need to do this.
+			//Force the arrays to zero
 			memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 
@@ -345,6 +345,7 @@ void TestCases(double *data, const int flag)
 			for (int i = 0; i < DATA_SIZE; ++i)
 			{
 				data[i] = cos( i * dw + w0 );
+				
 				if (i >= DATA_SIZE/2 && i <= 2 * (DATA_SIZE)/3)
 				{
 					data[i] = 2 * cos(i * dw + w0);
