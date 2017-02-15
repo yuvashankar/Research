@@ -100,13 +100,14 @@
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-#define MAX_FREQUENCY 512.0
+#define MAX_FREQUENCY 60.0
 
 /**
 	\var MIN_FREQUENCY
 	\brief The minimum frequency that will be analyzed
 */
-#define MIN_FREQUENCY 0.5
+#define MIN_FREQUENCY 2.0
+	
 #define MAX_DATA_SIZE 10000000
 
 #define MIN_I FREQ_TO_SCALE(MAX_FREQUENCY)
