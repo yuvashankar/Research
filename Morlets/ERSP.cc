@@ -122,7 +122,11 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 				for (j = 0; j < n; ++j)
 				{
 					wavelet_out[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+<<<<<<< HEAD
 					wavelet_out[i * n + j] = fabs( wavelet_out[i * n + j] * wavelet_out[i * n + j] );
+=======
+					// wavelet_out[i * n + j] = fabs(wavelet_out[i * n + j] * wavelet_out[i * n + j]);
+>>>>>>> ERSP
 				}
 			}
 			/*End Wavelet Analysis*/
@@ -155,54 +159,7 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	return(0);
 }
 
-/**
-	\fn int Generate_FFTW_Wisdom(int padded_size)
-	
-	\brief Analyzes the size of the FFTW arrays and generates the optimal plan. 
-	
-	\param padded_size The size of the FFT arrays. 
 
-	\return 0 If successful
-	\return 1 if unsuccessful
-
-	This function can be used to optimize FFTW. This function will try to find the fastest FFT method based on the size of the array, and will store this information as "FFTW_plan.wise". 
-
-	This function does not need to be used, but it can significantly improve performance if it is.
-*/
-
-int Generate_FFTW_Wisdom(int padded_size)
-{
-	int success_flag = 1;
-	
-	//Array Inits
-	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
-	fftw_plan plan_forward, plan_backward;
-	
-	fftw_init_threads();
-	
-	//FFTW Memory Allocations
-    data_in            = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
-	fft_data           = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
-	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
-	fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
-
-	//FFTW Planning
-	fftw_plan_with_nthreads(1);
-	printf("Generating an Exhaustive FFTW Plan\n");
-	plan_forward  = fftw_plan_dft_1d(padded_size, data_in,            fft_data,    FFTW_FORWARD,  FFTW_EXHAUSTIVE);
-	plan_backward = fftw_plan_dft_1d(padded_size, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_EXHAUSTIVE);
-	
-	printf("Writing FFTW plan to FFTW_Plan.wise\n");
-	if (fftw_export_wisdom_to_filename("FFTW_Plan.wise") != 0)
-	{
-		success_flag = 0;
-	}
-
-	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
-	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
-
-	return(success_flag);
-}
 
 /**
 	\fn int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
@@ -251,12 +208,66 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
     	//Remove the Baseline
 	    for ( j = 0; j < n; ++j)
 	    {
+<<<<<<< HEAD
 	    	// value = pre_baseline_array[i * n + j] * pre_baseline_array[i * n + j];
 	        output[i * n + j] = (pre_baseline_array[i * n + j] - mean) / sDeviation;
+=======
+	    	value = pre_baseline_array[i * n + j] * pre_baseline_array[i * n + j];
+	        output[i * n + j] = (fabs(value) - mean) / sDeviation;
+	        // output[i * n + j] = ( pre_baseline_array[i * n + j] - mean ) / sDeviation;
+>>>>>>> ERSP
 	    }
 	}
 
 	return(0);
+}
+
+/**
+	\fn int Generate_FFTW_Wisdom(int padded_size)
+	
+	\brief Analyzes the size of the FFTW arrays and generates the optimal plan. 
+	
+	\param padded_size The size of the FFT arrays. 
+
+	\return 0 If successful
+	\return 1 if unsuccessful
+
+	This function can be used to optimize FFTW. This function will try to find the fastest FFT method based on the size of the array, and will store this information as "FFTW_plan.wise". 
+
+	This function does not need to be used, but it can significantly improve performance if it is.
+*/
+int Generate_FFTW_Wisdom(int padded_size)
+{
+	int success_flag = 1;
+	
+	//Array Inits
+	fftw_complex *data_in, *fft_data, *filter_convolution, *fftw_result;
+	fftw_plan plan_forward, plan_backward;
+	
+	fftw_init_threads();
+	
+	//FFTW Memory Allocations
+    data_in            = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+	fft_data           = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+	filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+	fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * padded_size );
+
+	//FFTW Planning
+	fftw_plan_with_nthreads(1);
+	printf("Generating an Exhaustive FFTW Plan\n");
+	plan_forward  = fftw_plan_dft_1d(padded_size, data_in,            fft_data,    FFTW_FORWARD,  FFTW_EXHAUSTIVE);
+	plan_backward = fftw_plan_dft_1d(padded_size, filter_convolution, fftw_result, FFTW_BACKWARD, FFTW_EXHAUSTIVE);
+	
+	printf("Writing FFTW plan to FFTW_Plan.wise\n");
+	if (fftw_export_wisdom_to_filename("FFTW_Plan.wise") != 0)
+	{
+		success_flag = 0;
+	}
+
+	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
+	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
+
+	return(success_flag);
 }
 
 /**
@@ -288,7 +299,11 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 
 	filter_convolution[0][0] = (fft_data[0][0]/data_size) * value;
 	filter_convolution[0][1] = (fft_data[0][1]/data_size) * value;
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> ERSP
 	filter_convolution[data_size/2][0] = 0.0;
 	filter_convolution[data_size/2][1] = 0.0;
 
