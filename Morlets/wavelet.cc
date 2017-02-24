@@ -261,11 +261,10 @@ double* IdentifyFrequencies(double* scales, int count)
 double CompleteFourierMorlet(double w, const double scale)
 {
 	double norm = 1.0/sqrt(scale);
+	w = scale * w;
 	
-	// w = scale * w;
-	// double norm = sqrt(scale);
-	double out = exp( -0.5 * ( W_0 - scale * w ) * (W_0 - scale * w) )
-                                       - K_SIGMA * (exp ( -0.5 * scale * w * w));
+	double out = exp( -0.5 * ( W_0 - w ) * (W_0 - w) )
+                                       - K_SIGMA * (exp ( -0.5 * w * w));
 	out = norm * C_SIGMA * QUAD_ROOT_PI * out;
 	return(out);
 }
