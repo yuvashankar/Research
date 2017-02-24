@@ -33,8 +33,6 @@ int main(void)
     scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
-    // TestCases(data, 5);
-
     //Populate the data array
     for (int i = 0; i < trials; ++i)
     {
@@ -51,7 +49,7 @@ int main(void)
 
 
     WriteFile(result, frequency, J, n, "DATA.log");
-    
+
     //Free up Memory
     free(data_2D);
     free(data);  free(result);

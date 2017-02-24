@@ -129,7 +129,8 @@
 	\def MAGNITUDE(x, y)
 	\brief Computes the 2- norm or the x ^ 2 + y ^ 2, of \a x and \a y
 */
-#define MAGNITUDE(x,y) (x * x) + (y * y)
+// #define MAGNITUDE(x,y) (x * x) + (y * y)
+#define MAGNITUDE(x,y) sqrt( (x * x) + (y * y) )
 
 void FillData(double * data);
 void TestCases(double *data, const int flag);
