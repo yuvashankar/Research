@@ -47,7 +47,7 @@ int main(void)
     ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
     result);
 
-    WriteFile(wavelet_result, frequency, J, n, "DATA.log");
+    WriteFile(result, frequency, J, n, "DATA.log");
 
     //Free up Memory
     free(data_2D);
