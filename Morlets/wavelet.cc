@@ -39,7 +39,7 @@ int Wavelet(double* raw_data, double* scales,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-    const int PADDED_SIZE = CalculatePaddingSize(n, 0);
+    const int PADDED_SIZE = CalculatePaddingSize(n, 1);
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
 
@@ -51,23 +51,26 @@ int Wavelet(double* raw_data, double* scales,
 	for (i = 0; i < n; ++i)
     {
     	data_in[i][0] = raw_data[i];
+		data_in[i + n][0] = raw_data[i];
+
+		data_in[i + n][1] = 0.0;
     	data_in[i][1] = 0.0;
     }
 
-    // //Force the rest of the data vector to zero just in case
-    // for (int i = n; i < PADDED_SIZE; ++i)
-    // {
-    // 	data_in[i][0] = 0.0;
-    // 	data_in[i][1] = 0.0;
-    // }
+    //Force the rest of the data vector to zero just in case
+    for (int i = n; i < PADDED_SIZE; ++i)
+    {
+    	data_in[i][0] = 0.0;
+    	data_in[i][1] = 0.0;
+    }
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
 									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
-	#pragma omp parallel num_threads(2) private(i, j) shared (result, sampling_frequency, J, n, scales,  fft_data) default(none)
-	{
+	// #pragma omp parallel num_threads(1) private(i, j) shared (result, sampling_frequency, J, n, scales,  fft_data) default(none)
+	// {
 		double value;
 
 		fftw_plan plan_backward;
@@ -76,25 +79,25 @@ int Wavelet(double* raw_data, double* scales,
 		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
 		fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
 
-		#pragma omp critical (make_plan)
-		{
+		// #pragma omp critical (make_plan)
+		// {
 			//Preapre for the plan backwards
 			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 				FFTW_BACKWARD, FFTW_ESTIMATE);
-		}
+		// }
 		
-	    #pragma omp for
+	    // #pragma omp for
 		for (i = 0; i < J; ++i)
 		{
-			//Force the arrays to zero, I'm not sure if we still need to do this.
+			//Force the arrays to zero
 			memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
 
-			filter_convolution[0][0] = fft_data[0][0] * value;
-			filter_convolution[0][1] = fft_data[0][1] * value;
+			filter_convolution[0][0] = (fft_data[0][0]/PADDED_SIZE) * value;
+			filter_convolution[0][1] = (fft_data[0][0]/PADDED_SIZE) * value;
 			
 			filter_convolution[PADDED_SIZE/2][0] = 0.0;
 			filter_convolution[PADDED_SIZE/2][1] = 0.0;
@@ -103,8 +106,10 @@ int Wavelet(double* raw_data, double* scales,
 			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 			{
 				value = CompleteFourierMorlet( j * dw , scales[i]);
-				filter_convolution[j][0] = fft_data[j][0] * value;
-				filter_convolution[j][1] = fft_data[j][1] * value;
+				filter_convolution[j][0] = (fft_data[j][0]/PADDED_SIZE) * value;
+				filter_convolution[j][1] = (fft_data[j][1]/PADDED_SIZE) * value;
+               // filter_convolution[j][0] = (fft_data[j][0]) * value;
+               // filter_convolution[j][1] = (fft_data[j][1]) * value;
 
 				filter_convolution[PADDED_SIZE- j][0] = 0.0;
 				filter_convolution[PADDED_SIZE- j][1] = 0.0;
@@ -116,7 +121,7 @@ int Wavelet(double* raw_data, double* scales,
 			//Calculate the power and store it in result
 			for (j = 0; j < n; ++j)
 			{
-				result[i * n + j] = log(MAGNITUDE(fftw_result[j][0], fftw_result[j][1]));
+				result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
 			}
 		}
 
@@ -124,7 +129,7 @@ int Wavelet(double* raw_data, double* scales,
 		fftw_destroy_plan(plan_backward);
 	    fftw_free(fftw_result);
 	    fftw_free(filter_convolution);
-	}
+	// }
 	//Sanitation Engineering
 	fftw_destroy_plan(plan_forward); 
 	fftw_free(fft_data); fftw_free(data_in);
@@ -159,6 +164,9 @@ int CalculatePaddingSize(const int array_size, const int pad_flag)
     	case 2: //Duplicate array and ramp up and ramp down output
     		out = 2 * array_size;
     		break;
+		case 3: //Repeat the array once.
+			out = 2 * array_size;
+			break;
     	default: //Else return the array size
     		out = array_size;
     		break;
@@ -249,7 +257,7 @@ double* IdentifyFrequencies(double* scales, int count)
 		\hat{\Psi}_\sigma(\omega) = c_\sigma \pi^{-\frac{1}{4}}(e^{-\frac{1}{2}(\sigma - \omega)^2} - \kappa_\sigma e^{-\frac{1}{2} \omega^2})
 	\f]
 */
-double CompleteFourierMorlet(const double w, const double scale)
+double CompleteFourierMorlet(double w, const double scale)
 {
 	// double W_0 = 6.0;
 	// double C_SIGMA = pow( (1.0 + exp(-W_0_2) - 2.0 * exp(-0.75 * W_0_2)), -0.5 );
