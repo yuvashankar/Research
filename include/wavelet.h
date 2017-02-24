@@ -37,7 +37,7 @@
 	\var W_0 
 	\brief The fundamental frequency of the Morlet Wavelet
 */
-#define W_0 12.0
+#define W_0 6.0
 
 /**
 	\var W_0_2
@@ -73,7 +73,7 @@
 
 	If none of these are specified, the array is not padded by default.
 */
-#define PAD_FLAG 3
+#define PAD_FLAG 1
 
 //Signal Constants
 
@@ -103,11 +103,7 @@
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-<<<<<<< HEAD
-#define MAX_FREQUENCY 256.0
-=======
 #define MAX_FREQUENCY 60.0
->>>>>>> ERSP
 
 /**
 	\var MIN_FREQUENCY
