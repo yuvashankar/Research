@@ -156,7 +156,7 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	const int J, int const trials, const int padding_type, 
 	double * output);
 
-double CompleteFourierMorlet(const double w, const double scale);
+double CompleteFourierMorlet(double w, const double scale);
 double CompleteRealMorlet (double x, double scale);
 double CompleteComplexMorlet(double x, double scale);
 
