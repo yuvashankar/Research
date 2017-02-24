@@ -52,15 +52,9 @@ int Wavelet(double* raw_data, double* scales,
 	for (i = 0; i < n; ++i)
     {
     	data_in[i][0] = raw_data[i];
-<<<<<<< HEAD
     	data_in[i + n][0] = raw_data[i];
 
     	data_in[i + n][1] = 0.0;
-=======
-		data_in[i + n][0] = raw_data[i];
-
-		data_in[i + n][1] = 0.0;
->>>>>>> ERSP
     	data_in[i][1] = 0.0;
     }
 
@@ -104,11 +98,7 @@ int Wavelet(double* raw_data, double* scales,
 			value = CompleteFourierMorlet(0.0, scales[i]);
 
 			filter_convolution[0][0] = (fft_data[0][0]/PADDED_SIZE) * value;
-<<<<<<< HEAD
 			filter_convolution[0][1] = (fft_data[0][1]/PADDED_SIZE) * value;
-=======
-			filter_convolution[0][1] = (fft_data[0][0]/PADDED_SIZE) * value;
->>>>>>> ERSP
 			
 			filter_convolution[PADDED_SIZE/2][0] = 0.0;
 			filter_convolution[PADDED_SIZE/2][1] = 0.0;
@@ -119,14 +109,9 @@ int Wavelet(double* raw_data, double* scales,
 				value = CompleteFourierMorlet( j * dw , scales[i]);
 				filter_convolution[j][0] = (fft_data[j][0]/PADDED_SIZE) * value;
 				filter_convolution[j][1] = (fft_data[j][1]/PADDED_SIZE) * value;
-<<<<<<< HEAD
+
 				// filter_convolution[j][0] = (fft_data[j][0]) * value;
 				// filter_convolution[j][1] = (fft_data[j][1]) * value;
-=======
-               // filter_convolution[j][0] = (fft_data[j][0]) * value;
-               // filter_convolution[j][1] = (fft_data[j][1]) * value;
->>>>>>> ERSP
-
 				filter_convolution[PADDED_SIZE- j][0] = 0.0;
 				filter_convolution[PADDED_SIZE- j][1] = 0.0;
 			}
@@ -180,15 +165,11 @@ int CalculatePaddingSize(const int array_size, const int pad_flag)
     	case 2: //Duplicate array and ramp up and ramp down output
     		out = 2 * array_size;
     		break;
-<<<<<<< HEAD
+
     	case 3: //Repeat the array once. 
     		out = 2 * array_size;
     		break;
-=======
-		case 3: //Repeat the array once.
-			out = 2 * array_size;
-			break;
->>>>>>> ERSP
+
     	default: //Else return the array size
     		out = array_size;
     		break;
@@ -282,17 +263,10 @@ double* IdentifyFrequencies(double* scales, int count)
 double CompleteFourierMorlet(double w, const double scale)
 {
 	double norm = 1.0/sqrt(scale);
-<<<<<<< HEAD
-	w = scale * w;
-	
+	w = w * scale; 
 	double out = exp( -0.5 * ( W_0 - w ) * (W_0 - w) )
                                        - K_SIGMA * (exp ( -0.5 * w * w));
-=======
-	// w = w * scale; 
-	// double norm = sqrt(scale);
-	double out = exp( -0.5 * ( W_0 - scale * w ) * (W_0 - scale * w) ) 
-					- K_SIGMA * (exp ( -0.5 * scale * w * w));
->>>>>>> ERSP
+
 	out = norm * C_SIGMA * QUAD_ROOT_PI * out;
 	return(out);
 }
