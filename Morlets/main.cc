@@ -30,7 +30,7 @@ int main(void)
     assert(data != NULL); assert(result != NULL); 
 
     //Get Scales and Frequencies
-    scales = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
+    scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
 
     //Populate the data array
