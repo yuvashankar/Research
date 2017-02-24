@@ -65,24 +65,6 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	return(writeFlag);
 }
 
-/**
-	\fn int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
-					const char filename[])
-	\brief Uses PNGWriter to plot the results of the Continuous Wavelet Transform.
-
-	\param data An num_x * num_y size data array that will be plotted
-	\param periods A num_y x 1 array of the frequency used to analyze the signal data
-	\param num_x The size of the data
-	\param num_y The number of frequencies analyzed
-	\param graph_title The title of the graph
-	\param filename The name of the file that the data will be written to. 
-
-	This function plots a two dimentional array into a png using PNGWriter. It utilizes GetRange() and GetColour() to function.
-	In order to reduce the horizontal length of the image, a stride variable was introduced that will skip a certain number of elements in the data array. THe higher this number the slimmer the resultant graph will be. 
-	
-	The lines_size plots the same pixel in a number of vertical columns. THis allows the vertical scaling to be increased and decreased. 
-*/
-
 int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
 	const char filename[])
 {
@@ -193,23 +175,7 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 	return(0);
 }
 
-/**
-	\fn int WriteFile(const double *data, const double *period, const int x, const int y, const char* filename)
 
-	\brief A function that writes the Wavelet Results to the disk. 
-
-	\param data A x x y array with the  data that is going to be written 
-	\param period A 1 x y array with the frequencies that were analyzed
-	\param x The number of samples in the signal
-	\param y The number of frequencies analyzed
-	\param filename The name of the file that will be written
-
-	\return 0 if successful
-	\return -1 if unsuccessful
-
-	This function will write the resultant data computed by Wavelet() and ERSP() into the disk so that it can be graphed by Gnuplot. 
-	One can plot the output of this function using the matrix.gplot file. 
-*/
 int  WriteFile(const double *data, const double *frequency, const int x, const int y, 
 	const char filename[])
 {
@@ -246,16 +212,7 @@ int  WriteFile(const double *data, const double *frequency, const int x, const i
     return(0);
 }
 
-/**
-	\fn int WriteGnuplotScript(const char graph_title[], const char filename[])
 
-	\param graph_title The title that the graph should be in
-	\param filename The name of the file that will be graphed
-
-	This function will generate a file called "script.gplot" that will can be used to 
-	plot data generated using WriteFile()
-	\returns 0 on success
-*/
 int WriteGnuplotScript(const char graph_title[], const char filename[])
 {
 	FILE* gnuplot_file = fopen("script.gplot", "w");
@@ -376,13 +333,7 @@ COLOUR GetColour(double v, RANGE data_range)
 }
 
 
-/**
-	\fn double Max(double* array, int size)
 
-	\brief A function that finds the Maximum of a given array
-	\param array The array to be analyzed
-	\param size The size of the array
-*/
 double Max(double * array, int size)
 {
 	double max = array[0];
@@ -405,13 +356,7 @@ double Max(double * array, int size)
 	return(max);
 }
 
-/**
-	\fn double Min(double* array, int size)
 
-	\brief A function that finds the minimum of a given array
-	\param array The array to be analyzed
-	\param size The size of the array
-*/
 double Min(double* array, int size)
 {
 	int array_index = 0;

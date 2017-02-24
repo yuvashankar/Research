@@ -5,18 +5,6 @@
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
 
-int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
-	const int n, const int J, const int sampling_frequency,
-	double* output);
-
-int FrequencyMultiply(const fftw_complex* fft_data, 
-	const int data_size, const double scale, const double dw,
-	 fftw_complex* filter_convolution);
-
-int PopulateDataArray(double* input_data, const int data_size, const int trial_number,
-	const int padded_size, const int padding_type,
-	fftw_complex* output_data);
-
 int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
 	const int J, int const trials, const int padding_type, 
 	double * output)
@@ -122,30 +110,6 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 	return(0);
 }
 
-
-
-/**
-	\fn int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
-			const int n, const int J, const int m,
-			double* output)
-	\brief A function that removes the pre stimulus noise found in EEG signals.
-
-	\param pre_stimulus A 1 x m array to store the pre stimulus data
-	\param pre_baseline_array An n x J array of the data that must be modified
-	\param n The number of samples in the entire data array
-	\param J The number of scales that were used
-	\param m The size of the array before the stimulus
-	\param output An n x J array that the function stores the result in. 
-
-	\return 0
-
-	This function follows the method outlined in the paper "Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials".
-
-	The function will remove the baseline observed in in the pre stimulus by computing the z score on only the information before the stimulus. 
-	The variable \a m is the number of samples before the stimulus was introduced. 
-
-	All arrays must be pre allocated.
-*/
 int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array, 
 	const int n, const int J, const int m,
 	double* output)
@@ -179,20 +143,6 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 	return(0);
 }
 
-/**
-	\fn int Generate_FFTW_Wisdom(int padded_size)
-	
-	\brief Analyzes the size of the FFTW arrays and generates the optimal plan. 
-	
-	\param padded_size The size of the FFT arrays. 
-
-	\return 0 If successful
-	\return 1 if unsuccessful
-
-	This function can be used to optimize FFTW. This function will try to find the fastest FFT method based on the size of the array, and will store this information as "FFTW_plan.wise". 
-
-	This function does not need to be used, but it can significantly improve performance if it is.
-*/
 int Generate_FFTW_Wisdom(int padded_size)
 {
 	int success_flag = 1;
@@ -227,24 +177,7 @@ int Generate_FFTW_Wisdom(int padded_size)
 	return(success_flag);
 }
 
-/**
-	\fn int FrequencyMultiply(const fftw_complex* fft_data, 
-			const int data_size, const double scale, const double dw,
-			fftw_complex* filter_convolution)
-	\brief Multiples the signal with the wavelet at a specific scale in the frequency domain. 
-	\param fft_data A fftw_complex * data_size array with the signal data in the frequency domain. 
-	\param data_size The size of the data array
-	\param scale THe scale of the wavelet that will be multiplied with the signal array
-	\param dw THe discrete increment in the frequency domain for the wavelet
-	\param filter_convolution A fftw_complex * data_size array with the resulted multiplication
 
-	\return 0
-
-	This function mutliples the contents of fft_data with with the wavelet specified by the variable \a scale. 
-	It stores the result in filter_convolution.
-
-	All arrays must be pre allocated.
-*/
 int FrequencyMultiply(const fftw_complex* fft_data, 
 	const int data_size, const double scale, const double dw,
 	fftw_complex* filter_convolution)
@@ -274,23 +207,7 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 	return(0);
 }
 
-/**
-	\fn int PopulateDataArray(double* input_data, const int data_size, const int padded_size, const int padding_type,
-			fftw_complex* output_data)
-	\brief A function that copies and stores the input data in an array that is padded and friendly for FFTW.
 
-	\param input_data A 1 x n array of the signal data
-	\param data_size The size of the data array
-	\param padded_size The size that the padded array needs to be
-	\param PAD_FLAG The type of padding specified
-	\param output_data  An fftw_complex * padded_size array that the data is stored in for FFTW to compute.
-
-	\return padding_type
-
-	This function takes the signal data from input_data and stores the result in an fftw_complex data array output_data.
-
-	It returns the padding type
-*/
 int PopulateDataArray(double* input_data, const int data_size, const int trial_number,
 	const int padded_size, const int padding_type,
 	fftw_complex* output_data)
