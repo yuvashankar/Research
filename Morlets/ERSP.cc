@@ -17,35 +17,6 @@ int PopulateDataArray(double* input_data, const int data_size, const int trial_n
 	const int padded_size, const int padding_type,
 	fftw_complex* output_data);
 
-/**
-	\fn int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
-	const int J, int const trials, const int padding_type, 
-	double * output)
-
-	\param raw_data A trials * n array containing the data to be analyzed
-	\param scales A 1 x J array of the scales that the wavelets will be analyzed in
-	\param sampling_frequency The frequency that the data was sampled in
-	\param n The numer of samples in each data set
-	\param J The number of scales to be analyzed
-	\param trials The number of trials conducted for the ERSP
-	\param output A n x J array with the resultant ERSP from all of the trials.
-
-	\return 0
-
-	This function conducts the Event Related Spectral Pertubation of the given data set \a raw_data.
-	It follows the method outlined by the paper: "Single-trial normalization for event-related spectral decomposition reduces sensitivity to noisy trials".
-
-	This function uses the Continuous Wavelet Transform to generate the multi-resolution analysis of the given data. 
-
-	This function is multi-threaded. 
-
-	This function deals a lot with Fast Fourier Transforms, and can be optimized by using the Generate_FFTW_Wisedom() function. If no wisdom is provided, an approximate FFT algorithm will be used. 
-
-	The variable raw_data must contain all of the data for each trial.
-
-	raw_data, scales, and output must be pre-allocated. 
-*/
-
 int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
 	const int J, int const trials, const int padding_type, 
 	double * output)
@@ -96,13 +67,11 @@ int ERSP (double * raw_data, double* scales, const int sampling_frequency, const
 		#pragma omp for
 		for ( x = 0; x < trials; ++x)
 		{
-			// memset(wavelet_out,        0.0, n * J * sizeof(double));
-			// memset(baseline_out,       0.0, n * J * sizeof(double));
-			// memset(pre_stimulus,       0.0, m     * sizeof(double));
 			memset(data_in,            0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			memset(fft_data,           0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+
 			/*Begin Wavelet Analysis*/
 			PopulateDataArray(raw_data, n, x, 
 							  PADDED_SIZE, padding_type, data_in);
@@ -195,7 +164,7 @@ int RemoveBaseline(double* pre_stimulus, double* pre_baseline_array,
 		}
 
 		//Calculate mean and standard deviation
-		mean = gsl_stats_mean(pre_stimulus, stride, m);
+		mean       = gsl_stats_mean(pre_stimulus, stride, m);
     	sDeviation = gsl_stats_sd_m(pre_stimulus, stride, m, mean);
 
     	//Remove the Baseline
