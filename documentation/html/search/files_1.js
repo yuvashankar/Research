@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ersp_2ecc',['ERSP.cc',['../_e_r_s_p_8cc.html',1,'']]]
+  ['processeeg_2eh',['processEEG.h',['../process_e_e_g_8h.html',1,'']]]
 ];

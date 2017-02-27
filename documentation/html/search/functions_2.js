@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['filldata',['FillData',['../wavelet_8h.html#a7f77d41dda595606800244954e79daad',1,'FillData(double *data):&#160;wavelet.c'],['../wavelet_8cc.html#a7f77d41dda595606800244954e79daad',1,'FillData(double *data):&#160;wavelet.cc']]],
+  ['filldata',['FillData',['../wavelet_8h.html#a7f77d41dda595606800244954e79daad',1,'wavelet.cc']]],
   ['filtertriggers',['FilterTriggers',['../process_e_e_g_8h.html#a52391f4e20341afbde4a931a3f0c3401',1,'FilterTriggers(const int code, const int button, const int numberOfRecords, const long long *triggerList, const int *readBuffer, int *outputBuffer):&#160;FilterTriggers.c'],['../_filter_triggers_8c.html#a52391f4e20341afbde4a931a3f0c3401',1,'FilterTriggers(const int code, const int button, const int numberOfRecords, const long long *triggerList, const int *readBuffer, int *outputBuffer):&#160;FilterTriggers.c']]],
-  ['findtriggers',['FindTriggers',['../process_e_e_g_8h.html#adf17b8ef5058d54d718d62fd2728ccba',1,'FindTriggers(const int *statusInput, const long long numberOfElements, long long *outputBuffer):&#160;FindTriggers.c'],['../_find_triggers_8c.html#afd0584aa4312d45d0baa4d1f79d6ac9d',1,'FindTriggers(const int *statusInput, const long long numberOfRecords, long long *outputBuffer):&#160;FindTriggers.c']]],
-  ['frequencymultiply',['FrequencyMultiply',['../_e_r_s_p_8cc.html#ac62979f131d715929fee642852d92469',1,'ERSP.cc']]]
+  ['findtriggers',['FindTriggers',['../process_e_e_g_8h.html#adf17b8ef5058d54d718d62fd2728ccba',1,'FindTriggers(const int *statusInput, const long long numberOfElements, long long *outputBuffer):&#160;FindTriggers.c'],['../_find_triggers_8c.html#afd0584aa4312d45d0baa4d1f79d6ac9d',1,'FindTriggers(const int *statusInput, const long long numberOfRecords, long long *outputBuffer):&#160;FindTriggers.c']]]
 ];
