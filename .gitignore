@@ -1,0 +1,5 @@
+*.o
+morlet
+*.log
+*.dSYM
+
