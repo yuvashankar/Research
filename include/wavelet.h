@@ -121,7 +121,7 @@
 \def FREQ_TO_SCALE(x)
 \brief Converts a given frequency \a x to a scale, handy for debugging. Note the scale is divided into sub octaves
 */
-#define FREQ_TO_SCALE(x) floor( ( log2( (W_0) / (S0 * 2 * M_PI * x) ) )/D_J)   
+#define FREQ_TO_SCALE(x) floor( ( log2( (W_0) / (S0 * 2 * M_PI * x) ) )/D_J)
 
 /*!
     \def SCALE_TO_FREQ(x)
