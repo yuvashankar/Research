@@ -10,51 +10,56 @@ int main(void)
     double t = omp_get_wtime();
 
     //Initialize the necessary arrays.
-    double *data, *data_2D, *result, *scales, *frequency;
+    double *data, *result;
+    double *scales, *frequency;
 
-    double *con_result, *wavelet_result; 
+    //Get File Size
+    int n = GetFileSize("ecstasy_of_gold.txt");
 
-    int n = DATA_SIZE;
     const int J = (int) MAX_I - MIN_I;
-
-    const int trials = 77;
 
     //Memory Allocations
     data    =  (double*) malloc(n *     sizeof(double));
-    data_2D =  (double*) malloc(n * trials * sizeof(double));
-
-    con_result =     (double*) malloc(n * J * sizeof(double));
-    wavelet_result = (double*) malloc(n * J * sizeof(double));
-
     result  =  (double*) malloc(n * J * sizeof(double));
     assert(data != NULL); assert(result != NULL); 
 
     //Get Scales and Frequencies
     scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
     frequency = IdentifyFrequencies(scales, J);
+    assert(scales != NULL); assert(frequency!= NULL);
 
-    //Populate the data array
-    for (int i = 0; i < trials; ++i)
-    {
-        TestCases(data, 5);
-        for (int j = 0; j < n; ++j)
-        {
-            data_2D[i * n + j] = data[j];
-        }
-    }
+    int readNumber = ReadFile(data, "ecstasy_of_gold.txt");
+    assert (readNumber == n);
+    
+    printf("Computing Wavelet\n");
+    Wavelet(data, scales, 
+            FS, n, J,
+            result);
 
-    // Compute the ERSP
-    ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
-    result);
+    // //Populate the data array
+    // for (int i = 0; i < trials; ++i)
+    // {
+    //     TestCases(data, 5);
+    //     for (int j = 0; j < n; ++j)
+    //     {
+    //         data_2D[i * n + j] = data[j];
+    //     }
+    // }
 
+    // // Compute the ERSP
+    // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
+    // result);
+
+    printf("Plotting Result\n");
     WriteFile(result, frequency, J, n, "DATA.log");
 
+    // Plot_PNG(result, frequency, J, n, "Continuous Wavelet Transform of a song", 
+    // "making_water.png");
+
+    printf("Done Wavelet Analysis\n");
     //Free up Memory
-    free(data_2D);
     free(data);  free(result);
     free(scales); free(frequency);
-
-    free(con_result); free(wavelet_result);
     
     //Stop and print the timer. 
     t = omp_get_wtime() - t;

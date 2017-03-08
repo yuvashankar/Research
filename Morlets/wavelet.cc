@@ -335,6 +335,37 @@ void FillData(double * data)
 	}
 }
 
+int GetFileSize(char filename[])
+{
+	FILE* signalFile = fopen(filename, "r");
+	assert(signalFile != NULL);
+	// obtain file size:
+	fseek (signalFile , 0 , SEEK_END);
+	long lSize = ftell (signalFile);
+	rewind (signalFile);
+
+	char * buffer = (char*) malloc(sizeof(char)*lSize);
+	assert(buffer != NULL);
+
+	int result = fread (buffer, 1, lSize, signalFile);
+	assert(result == lSize);
+
+	char * token = strtok(buffer, "\n");
+	
+    //Get input from text.
+	int counterVariable = 0;
+	while (token !=NULL)
+    {
+    	// data[counterVariable] = atof(token);
+    	counterVariable++;
+        token = strtok (NULL, "\n");
+
+    }
+    fclose(signalFile);
+
+    return (counterVariable);
+}
+
 
 int ReadFile(double data[], char filename[])
 {

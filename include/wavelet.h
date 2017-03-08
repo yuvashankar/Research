@@ -50,7 +50,7 @@
 	The amount of "sub octaves" or sub scales inbetween the major scales that will be used. 
 	The lower the number, the higher the resolution of the result.
 */
-#define D_J 0.0625
+#define D_J 1.0
 
 /**
 	\var PAD_FLAG
@@ -81,7 +81,7 @@
 	\var FS
 	\brief Used by TestCases() to generate sample data
 */
-#define FS 2048
+#define FS 44100
 
 /**
 	\var DT 
@@ -96,20 +96,20 @@
 #define S0 2.0 * DT
 
 #define FREQ 16.0
-#define DATA_SIZE 6144 
+#define DATA_SIZE 6144
 
 //Plotting Constants
 /**
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-#define MAX_FREQUENCY 60.0
+#define MAX_FREQUENCY 20000
 
 /**
 	\var MIN_FREQUENCY
 	\brief The minimum frequency that will be analyzed
 */
-#define MIN_FREQUENCY 2.0
+#define MIN_FREQUENCY 20
 	
 #define MAX_DATA_SIZE 10000000
 
@@ -179,6 +179,8 @@ void TestCases(double *data, const int flag);
 
 */
 int  ReadFile(double data[], char filename[]);
+
+int GetFileSize(char filename[]);
 
 /**
 	\fn int WriteFile(const double *data, const double *period, const int x, const int y, const char* filename)
