@@ -147,6 +147,7 @@ int CalculatePaddingSize(const int array_size, const int pad_flag)
 double* GenerateScales(const double minimum_frequency, const double maximum_frequency, const double s_0)
 {
 	int min_i = FREQ_TO_SCALE(maximum_frequency) + 1;
+
 	int max_i = FREQ_TO_SCALE(minimum_frequency);
 	assert(min_i > 0); assert(max_i > 0);
 	// printf("max_i = %d, min_i = %d\n", max_i, min_i);

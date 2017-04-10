@@ -4,7 +4,7 @@
 
 #include <gsl/gsl_statistics.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
     //Start the timer!
     double t = omp_get_wtime();
@@ -14,7 +14,11 @@ int main(void)
     double *scales, *frequency;
 
     //Get File Size
-    int n = GetFileSize("ecstasy_of_gold.txt");
+    int sampling_frequency = atoi( argv[1] );
+    // char file_name = argv[1];
+    int n = GetFileSize( argv[2] );
+
+    printf("sampling_frequency = %d, argv = %d, file_name = %s\n", sampling_frequency, atoi( argv[1] ), argv[2]);
 
     const int J = (int) MAX_I - MIN_I;
 
@@ -28,7 +32,7 @@ int main(void)
     frequency = IdentifyFrequencies(scales, J);
     assert(scales != NULL); assert(frequency!= NULL);
 
-    int readNumber = ReadFile(data, "ecstasy_of_gold.txt");
+    int readNumber = ReadFile(data, argv[2] );
     assert (readNumber == n);
     
     printf("Computing Wavelet\n");
