@@ -50,7 +50,7 @@
 	The amount of "sub octaves" or sub scales inbetween the major scales that will be used. 
 	The lower the number, the higher the resolution of the result.
 */
-#define D_J 1.0
+#define D_J 0.0625
 
 /**
 	\var PAD_FLAG
@@ -81,7 +81,7 @@
 	\var FS
 	\brief Used by TestCases() to generate sample data
 */
-#define FS 44100
+#define FS 500
 
 /**
 	\var DT 
@@ -93,7 +93,7 @@
 	\var S0 
 	\brief the lowest scale that can be used to compute the CWT \f$ s_0 = 2 \delta t \f$
 */
-#define S0 2.0 * DT
+#define S0 DT
 
 #define FREQ 16.0
 #define DATA_SIZE 6144
@@ -103,13 +103,13 @@
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-#define MAX_FREQUENCY 20000
+#define MAX_FREQUENCY 250
 
 /**
 	\var MIN_FREQUENCY
 	\brief The minimum frequency that will be analyzed
 */
-#define MIN_FREQUENCY 20
+#define MIN_FREQUENCY 8.0
 	
 #define MAX_DATA_SIZE 10000000
 
