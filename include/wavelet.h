@@ -93,7 +93,8 @@
 	\var S0 
 	\brief the lowest scale that can be used to compute the CWT \f$ s_0 = 2 \delta t \f$
 */
-#define S0 2.0 * DT
+// #define S0 2.0 * DT
+#define S0 DT
 
 #define FREQ 16.0
 #define DATA_SIZE 6144 

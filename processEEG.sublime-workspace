@@ -79,6 +79,30 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "Morlets/main.cc",
+			"settings":
+			{
+				"buffer_size": 1554,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Morlets/wavelet.cc",
+			"settings":
+			{
+				"buffer_size": 10470,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "include/wavelet.h",
+			"settings":
+			{
+				"buffer_size": 18735,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/Makefile/Make.sublime-build",
 	"command_palette":
@@ -108,11 +132,11 @@
 	},
 	"file_history":
 	[
-		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
 		"/Users/vinay/Google Drive/Science/Research/include/wavelet.h",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
 		"/Users/vinay/Google Drive/Science/Research/src/FilterTriggers.c",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Implementation2.tex",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Method.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Motivation.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Numerical.tex",
@@ -266,8 +290,90 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "Morlets/main.cc",
+					"settings":
+					{
+						"buffer_size": 1554,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 129.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Morlets/wavelet.cc",
+					"settings":
+					{
+						"buffer_size": 10470,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 6996.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "include/wavelet.h",
+					"settings":
+					{
+						"buffer_size": 18735,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4622.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -317,8 +423,16 @@
 		"selected_items":
 		[
 			[
+				"wavelet.h",
+				"include/wavelet.h"
+			],
+			[
 				"wavelet.cc",
 				"Morlets/wavelet.cc"
+			],
+			[
+				"main.cc",
+				"Morlets/main.cc"
 			],
 			[
 				"wavelet",
@@ -331,14 +445,6 @@
 			[
 				"",
 				"src/FilterTriggers.c"
-			],
-			[
-				"wavelet.h",
-				"include/wavelet.h"
-			],
-			[
-				"main.cc",
-				"Morlets/main.cc"
 			],
 			[
 				"esp.c",
