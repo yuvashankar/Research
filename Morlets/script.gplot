@@ -1,10 +1,9 @@
-set term x11
+set term pngcairo enhanced font 'arial,12'
+set output '/Users/vinay/Desktop/impact/data5/L4z.png' 
 set pm3d map
-set logscale z 10
 set logscale y 2
 set ticslevel 0
 set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
-set title "dee Herro"
-splot "DATA.log" matrix nonuniform with pm3d t ''
-pause -1 "Hit Return to continue"
+set title "/Users/vinay/Desktop/impact/data5/L4z"
+splot "/Users/vinay/Desktop/impact/data5/L4z.log" matrix nonuniform with pm3d t ''

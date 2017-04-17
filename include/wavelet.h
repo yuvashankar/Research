@@ -103,7 +103,7 @@
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-#define MAX_FREQUENCY 250
+#define MAX_FREQUENCY FS/2
 
 /**
 	\var MIN_FREQUENCY

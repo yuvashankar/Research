@@ -54,13 +54,26 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	char filename[])
 {
 	int writeFlag = -1;
+	char file_name_ext[255];
+	
+	strcpy(file_name_ext, filename);
+
 	switch(plot_type)
 	{
 		case 0: //Plot_PNG
-			writeFlag = Plot_PNG(data, frequency, num_x, num_y, graph_title, filename);
+			
+			strcat(file_name_ext, ".png");
+			writeFlag = Plot_PNG(data, frequency, num_x, num_y, graph_title, file_name_ext);
 			break;
-		case 1:
-			writeFlag = WriteFile(data, frequency, num_x, num_y, filename);
+
+		case 1: //GnuPlot
+
+			strcat(file_name_ext, ".log");
+
+			writeFlag = WriteFile(data, frequency, num_x, num_y, file_name_ext);
+			WriteGnuplotScript(graph_title, file_name_ext);
+			break;
+
 	}
 	return(writeFlag);
 }
@@ -218,9 +231,13 @@ int WriteGnuplotScript(const char graph_title[], const char filename[])
 	FILE* gnuplot_file = fopen("script.gplot", "w");
 	if (gnuplot_file == NULL) return -1;
 	
-	fprintf(gnuplot_file, "set term x11\n");
+	// fprintf(gnuplot_file, "set term x11\n");
+	
+	// fprintf(gnuplot_file, "set logscale z 10\n");
+
+	fprintf(gnuplot_file, "set term pngcairo enhanced font 'arial,12'\n");
+	fprintf(gnuplot_file, "%s%s%s","set output '", graph_title,  ".png' \n");
 	fprintf(gnuplot_file, "set pm3d map\n");
-	fprintf(gnuplot_file, "set logscale z 10\n");
 	fprintf(gnuplot_file, "set logscale y 2\n");
 	fprintf(gnuplot_file, "set ticslevel 0\n");
 	fprintf(gnuplot_file, "set xlabel \"time (s)\"\n");
@@ -231,7 +248,7 @@ int WriteGnuplotScript(const char graph_title[], const char filename[])
 	//Plot filename
 	// plot "DATA.log" matrix nonuniform with pm3d t ''
 	fprintf(gnuplot_file, "%s%s%s\n", "splot \"", filename, "\" matrix nonuniform with pm3d t ''");
-	fprintf(gnuplot_file, "pause -1 \"Hit Return to continue\"");
+	// fprintf(gnuplot_file, "pause -1 \"Hit Return to continue\"");
 
 	return(0);
 }

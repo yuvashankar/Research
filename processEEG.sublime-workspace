@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"read",
+				"readNumber"
+			],
+			[
+				"dot",
+				"dot_location"
+			],
+			[
+				"file",
+				"file_name"
+			],
+			[
 				"padding",
 				"padding_type"
 			],
@@ -108,25 +120,27 @@
 	},
 	"file_history":
 	[
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/MasterThesis.tex",
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Application.tex",
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Numerical.tex",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/Plot.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/matrix.gplot",
+		"/Users/vinay/Google Drive/Science/Research/src/matrix.gplot",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/makefile",
 		"/Users/vinay/Google Drive/Science/Research/include/wavelet.h",
 		"/Users/vinay/Google Drive/Science/Research/src/FilterTriggers.c",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Implementation2.tex",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Method.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Motivation.tex",
-		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Numerical.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/SafeDose Ltd./Cover_Letter/VinayYuvashankarCoverLetter.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/SafeDose Ltd./Resume/VinayYuvashankarResume.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Background.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/Abhrams Innovation Inc./Cover Letter/VinayYuvashankarCoverLetter.tex",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/CleanData.cc",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/ERSP.cc",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/Plot.cc",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/matrix.gplot",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/makefile",
 		"/Users/vinay/Documents/Archives/Education/Undergraduate/Year 4/4F03/Assignments/A3/final_code/julia.c",
-		"/Users/vinay/Google Drive/Science/Thesis/Thesis/MasterThesis.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/ThesisBib.bib",
 		"/Users/vinay/Google Drive/Career Planning/Applications/Perimeter-Instutite/Resume/VinayYuvashankarResume.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/Perimeter-Instutite/Cover_Letter/VinayYuvashankarCoverLetter.tex",
@@ -186,6 +200,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"maximum_frequency",
+			"GenerateScales",
 			"S0",
 			"BioConnect",
 			"Let",
@@ -317,12 +333,36 @@
 		"selected_items":
 		[
 			[
-				"wavelet.cc",
-				"Morlets/wavelet.cc"
+				"matrix.g",
+				"Morlets/matrix.gplot"
+			],
+			[
+				"makefile",
+				"Morlets/makefile"
+			],
+			[
+				"main.c",
+				"Morlets/main.cc"
+			],
+			[
+				"plot",
+				"Morlets/Plot.cc"
 			],
 			[
 				"wavelet",
 				"include/wavelet.h"
+			],
+			[
+				"main.cc",
+				"Morlets/main.cc"
+			],
+			[
+				"wavelet.h",
+				"include/wavelet.h"
+			],
+			[
+				"wavelet.cc",
+				"Morlets/wavelet.cc"
 			],
 			[
 				"wave",
@@ -331,14 +371,6 @@
 			[
 				"",
 				"src/FilterTriggers.c"
-			],
-			[
-				"wavelet.h",
-				"include/wavelet.h"
-			],
-			[
-				"main.cc",
-				"Morlets/main.cc"
 			],
 			[
 				"esp.c",
@@ -351,14 +383,6 @@
 			[
 				"ersp.c",
 				"Morlets/ERSP.cc"
-			],
-			[
-				"makefile",
-				"Morlets/makefile"
-			],
-			[
-				"main.c",
-				"Morlets/main.cc"
 			],
 			[
 				"morlet/main.c",

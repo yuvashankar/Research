@@ -9,16 +9,28 @@ int main(int argc, char *argv[])
     //Start the timer!
     double t = omp_get_wtime();
 
+    //Test Input Arguments
+    if (argc < 2)
+    {
+        printf("Not enough input arguments\n");
+        return -1;
+    }
+
     //Initialize the necessary arrays.
     double *data, *result;
     double *scales, *frequency;
 
+
+    //Get the file name
+    char file_name[255];
+    char * dot_pointer = strchr(argv[2], '.');
+    int dot_location = dot_pointer - argv[2] + 1;
+    memcpy(file_name, argv[2], dot_location - 1);
+
     //Get File Size
     int sampling_frequency = atoi( argv[1] );
-    // char file_name = argv[1];
     int n = GetFileSize( argv[2] );
-
-    printf("sampling_frequency = %d, argv = %d, file_name = %s\n", sampling_frequency, atoi( argv[1] ), argv[2]);
+    
 
     const int J = (int) MAX_I - MIN_I;
 
@@ -32,33 +44,19 @@ int main(int argc, char *argv[])
     frequency = IdentifyFrequencies(scales, J);
     assert(scales != NULL); assert(frequency!= NULL);
 
-    int readNumber = ReadFile(data, argv[2] );
+    int readNumber = ReadFile( data, argv[2] );
     assert (readNumber == n);
     
     printf("Computing Wavelet\n");
     Wavelet(data, scales, 
-            FS, n, J,
+            sampling_frequency, n, J,
             result);
 
-    // //Populate the data array
-    // for (int i = 0; i < trials; ++i)
-    // {
-    //     TestCases(data, 5);
-    //     for (int j = 0; j < n; ++j)
-    //     {
-    //         data_2D[i * n + j] = data[j];
-    //     }
-    // }
-
-    // // Compute the ERSP
-    // ERSP (data_2D, scales, FS, n, J, trials, PAD_FLAG, 
-    // result);
-
     printf("Plotting Result\n");
-    WriteFile(result, frequency, J, n, "DATA.log");
 
-    // Plot_PNG(result, frequency, J, n, "Continuous Wavelet Transform of a song", 
-    // "making_water.png");
+    Plot(result, frequency, J, n, 1,
+        file_name,
+        file_name);
 
     printf("Done Wavelet Analysis\n");
     //Free up Memory
