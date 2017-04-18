@@ -99,7 +99,7 @@ struct edfparamblock{
         int    buf_offset;
         double bitvalue;
         int    annotation;
-        long long sample_pntr;
+        int64_t sample_pntr;
       };
 
 struct edfhdrblock{
@@ -119,7 +119,7 @@ struct edfhdrblock{
         char      plus_technician[81];
         char      plus_equipment[81];
         char      plus_recording_additional[81];
-        long long l_starttime;
+        int64_t l_starttime;
         int       startdate_day;
         int       startdate_month;
         int       startdate_year;
@@ -129,7 +129,7 @@ struct edfhdrblock{
         char      reserved[45];
         int       hdrsize;
         int       edfsignals;
-        long long datarecords;
+        int64_t datarecords;
         int       recordsize;
         int       annot_ch[EDFLIB_MAXSIGNALS];
         int       nr_annot_chns;
@@ -140,9 +140,9 @@ struct edfhdrblock{
         int       bdfplus;
         int       discontinuous;
         int       signal_write_sequence_pos;
-        long long starttime_offset;
+        int64_t starttime_offset;
         double    data_record_duration;
-        long long long_data_record_duration;
+        int64_t long_data_record_duration;
         int       annots_in_file;
         int       annotlist_sz;
         int       total_annot_bytes;
@@ -152,15 +152,15 @@ struct edfhdrblock{
 
 
 static struct edf_annotationblock{
-        long long onset;
+        int64_t onset;
         char duration[16];
         char annotation[EDFLIB_MAX_ANNOTATION_LEN + 1];
        } *annotationslist[EDFLIB_MAXFILES];
 
 
 static struct edf_write_annotationblock{
-        long long onset;
-        long long duration;
+        int64_t onset;
+        int64_t duration;
         char annotation[EDFLIB_WRITE_MAX_ANNOTATION_LEN + 1];
        } *write_annotationslist[EDFLIB_MAXFILES];
 
@@ -172,11 +172,11 @@ static struct edfhdrblock *hdrlist[EDFLIB_MAXFILES];
 static struct edfhdrblock * edflib_check_edf_file(FILE *, int *);
 static int edflib_is_integer_number(char *);
 static int edflib_is_number(char *);
-static long long edflib_get_long_duration(char *);
+static int64_t edflib_get_long_duration(char *);
 static int edflib_get_annotations(struct edfhdrblock *, int, int);
 static int edflib_is_duration_number(char *);
 static int edflib_is_onset_number(char *);
-static long long edflib_get_long_time(char *);
+static int64_t edflib_get_long_time(char *);
 static int edflib_write_edf_header(struct edfhdrblock *);
 static void edflib_latin1_to_ascii(char *, int);
 static void edflib_latin12utf8(char *, int);
@@ -187,9 +187,9 @@ static int edflib_sprint_number_nonlocalized(char *, double);
 /*
 static int edflib_sprint_int_number_nonlocalized(char *, int, int, int);
 */
-static int edflib_sprint_ll_number_nonlocalized(char *, long long, int, int);
+static int edflib_sprint_ll_number_nonlocalized(char *, int64_t, int, int);
 static int edflib_fprint_int_number_nonlocalized(FILE *, int, int, int);
-static int edflib_fprint_ll_number_nonlocalized(FILE *, long long, int, int);
+static int edflib_fprint_ll_number_nonlocalized(FILE *, int64_t, int, int);
 
 
 
@@ -370,7 +370,7 @@ int edfopen_file_readonly(const char *path, struct edf_hdr_struct *edfhdr, int r
 
   hdr->annots_in_file = 0;
 
-  edfhdr->annotations_in_file = 0LL;
+  edfhdr->annotations_in_file = (int64_t) 0;
 
   if((!(hdr->edfplus))&&(!(hdr->bdfplus)))
   {
@@ -460,7 +460,7 @@ int edfclose_file(int handle)
       datrecsize,
       nmemb;
 
-  long long offset,
+  int64_t offset,
             datarecords;
 
   char str[EDFLIB_ANNOTATION_BYTES * 2];
@@ -487,7 +487,7 @@ int edfclose_file(int handle)
 
   if(hdr->writemode)
   {
-    if(hdr->datarecords == 0LL)
+    if(hdr->datarecords == (int64_t) 0)
     {
       if(edflib_write_edf_header(hdr))
       {
@@ -518,9 +518,9 @@ int edfclose_file(int handle)
       }
     }
 
-    if(hdr->datarecords<100000000LL)
+    if(hdr->datarecords< (int64_t) 100000000)
     {
-      fseeko(hdr->file_hdl, 236LL, SEEK_SET);
+      fseeko(hdr->file_hdl, (int64_t) 236, SEEK_SET);
       p = edflib_fprint_int_number_nonlocalized(hdr->file_hdl, (int)(hdr->datarecords), 0, 0);
       if(p < 2)
       {
@@ -528,9 +528,9 @@ int edfclose_file(int handle)
       }
     }
 
-    datarecords = 0LL;
+    datarecords = (int64_t) 0;
 
-    offset = (long long)((hdr->edfsignals + hdr->nr_annot_chns + 1) * 256);
+    offset = (int64_t)((hdr->edfsignals + hdr->nr_annot_chns + 1) * 256);
 
     datrecsize = hdr->total_annot_bytes;
 
@@ -538,13 +538,13 @@ int edfclose_file(int handle)
     {
       if(hdr->edf)
       {
-        offset += (long long)(hdr->edfparam[i].smp_per_record * 2);
+        offset += (int64_t)(hdr->edfparam[i].smp_per_record * 2);
 
         datrecsize += (hdr->edfparam[i].smp_per_record * 2);
       }
       else
       {
-        offset += (long long)(hdr->edfparam[i].smp_per_record * 3);
+        offset += (int64_t)(hdr->edfparam[i].smp_per_record * 3);
 
         datrecsize += (hdr->edfparam[i].smp_per_record * 3);
       }
@@ -578,23 +578,23 @@ int edfclose_file(int handle)
         str[p++] =  0;
       }
 
-      n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->onset / 10000LL, 0, 1);
+      n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->onset / (int64_t) 10000, 0, 1);
       p += n;
-      if(annot2->onset % 10000LL)
+      if(annot2->onset % (int64_t) 10000)
       {
         str[p++] = '.';
-        n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->onset % 10000LL, 4, 0);
+        n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->onset % (int64_t) 10000, 4, 0);
         p += n;
       }
-      if(annot2->duration>=0LL)
+      if(annot2->duration>= (int64_t) 0)
       {
         str[p++] = 21;
-        n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->duration / 10000LL, 0, 0);
+        n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->duration / (int64_t) 10000, 0, 0);
         p += n;
-        if(annot2->duration % 10000LL)
+        if(annot2->duration % (int64_t) 10000)
         {
           str[p++] = '.';
-          n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->duration % 10000LL, 4, 0);
+          n = edflib_sprint_ll_number_nonlocalized(str + p, annot2->duration % (int64_t) 10000, 4, 0);
           p += n;
         }
       }
@@ -660,9 +660,9 @@ int edfclose_file(int handle)
 }
 
 
-long long edfseek(int handle, int edfsignal, long long offset, int whence)
+int64_t edfseek(int handle, int edfsignal, int64_t offset, int whence)
 {
-  long long smp_in_file;
+  int64_t smp_in_file;
 
   int channel;
 
@@ -722,16 +722,16 @@ long long edfseek(int handle, int edfsignal, long long offset, int whence)
     hdrlist[handle]->edfparam[channel].sample_pntr = smp_in_file;
   }
 
-  if(hdrlist[handle]->edfparam[channel].sample_pntr < 0LL)
+  if(hdrlist[handle]->edfparam[channel].sample_pntr < (int64_t) 0)
   {
-    hdrlist[handle]->edfparam[channel].sample_pntr = 0LL;
+    hdrlist[handle]->edfparam[channel].sample_pntr = (int64_t) 0;
   }
 
   return(hdrlist[handle]->edfparam[channel].sample_pntr);
 }
 
 
-long long edftell(int handle, int edfsignal)
+int64_t edftell(int handle, int edfsignal)
 {
   int channel;
 
@@ -809,7 +809,7 @@ void edfrewind(int handle, int edfsignal)
 
   channel = hdrlist[handle]->mapped_signals[edfsignal];
 
-  hdrlist[handle]->edfparam[channel].sample_pntr = 0LL;
+  hdrlist[handle]->edfparam[channel].sample_pntr = (int64_t) 0;
 }
 
 
@@ -823,7 +823,7 @@ int edfread_physical_samples(int handle, int edfsignal, int n, double *buf)
   double phys_bitvalue,
          phys_offset;
 
-  long long smp_in_file,
+  int64_t smp_in_file,
             offset,
             sample_pntr,
             smp_per_record,
@@ -874,14 +874,14 @@ int edfread_physical_samples(int handle, int edfsignal, int n, double *buf)
 
   channel = hdrlist[handle]->mapped_signals[edfsignal];
 
-  if(n<0LL)
+  if(n<(int64_t) 0)
   {
     return(-1);
   }
 
-  if(n==0LL)
+  if(n== (int64_t) 0)
   {
-    return(0LL);
+    return((int64_t) 0);
   }
 
   hdr = hdrlist[handle];
@@ -904,7 +904,7 @@ int edfread_physical_samples(int handle, int edfsignal, int n, double *buf)
 
     if(n==0)
     {
-      return(0LL);
+      return((int64_t) 0);
     }
 
     if(n<0)
@@ -1006,7 +1006,7 @@ int edfread_raw_samples(int handle, int edfsignal, int n, int *buf)
       i,
       channel;
 
-  long long smp_in_file,
+  int64_t smp_in_file,
             offset,
             sample_pntr,
             smp_per_record,
@@ -1057,14 +1057,14 @@ int edfread_raw_samples(int handle, int edfsignal, int n, int *buf)
 
   channel = hdrlist[handle]->mapped_signals[edfsignal];
 
-  if(n<0LL)
+  if(n< (int64_t) 0)
   {
     return(-1);
   }
 
-  if(n==0LL)
+  if(n==(int64_t)0)
   {
-    return(0LL);
+    return( (int64_t) 0);
   }
 
   hdr = hdrlist[handle];
@@ -1087,7 +1087,7 @@ int edfread_raw_samples(int handle, int edfsignal, int n, int *buf)
 
     if(n==0)
     {
-      return(0LL);
+      return((int64_t) 0);
     }
 
     if(n<0)
@@ -1179,7 +1179,7 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
       i,
       channel;
 
-  long long smp_in_file,
+  int64_t smp_in_file,
             offset,
             sample_pntr,
             smp_per_record,
@@ -1230,14 +1230,14 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
 
   channel = hdrlist[handle]->mapped_signals[edfsignal];
 
-  if(n<0LL)
+  if(n< (int64_t) 0)
   {
     return(-1);
   }
 
-  if(n==0LL)
+  if(n== (int64_t) 0)
   {
-    return(0LL);
+    return((int64_t) 0);
   }
 
   hdr = hdrlist[handle];
@@ -1260,7 +1260,7 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
 
     if(n==0)
     {
-      return(0LL);
+      return((int64_t)0);
     }
 
     if(n<0)
@@ -2745,7 +2745,7 @@ static struct edfhdrblock * edflib_check_edf_file(FILE *inputfile, int *edf_erro
 
   edfhdr->hdrsize = edfhdr->edfsignals * 256 + 256;
 
-  fseeko(inputfile, 0LL, SEEK_END);
+  fseeko(inputfile, (int64_t) 0, SEEK_END);
   if(ftello(inputfile)!=(edfhdr->recordsize * edfhdr->datarecords + edfhdr->hdrsize))
   {
     *edf_error = EDFLIB_FILE_CONTAINS_FORMAT_ERRORS;
@@ -2933,11 +2933,11 @@ static int edflib_is_number(char *str)
 }
 
 
-static long long edflib_get_long_duration(char *str)
+static int64_t edflib_get_long_duration(char *str)
 {
   int i, len=8, hasdot=0, dotposition=0;
 
-  long long value=0, radix;
+  int64_t value=0, radix;
 
   for(i=0; i<8; i++)
   {
@@ -2964,7 +2964,7 @@ static long long edflib_get_long_duration(char *str)
 
     for(i=dotposition-1; i>=0; i--)
     {
-        value += ((long long)(str[i] - 48)) * radix;
+        value += ((int64_t)(str[i] - 48)) * radix;
         radix *= 10;
     }
 
@@ -2972,7 +2972,7 @@ static long long edflib_get_long_duration(char *str)
 
     for(i=dotposition+1; i<len; i++)
     {
-        value += ((long long)(str[i] - 48)) * radix;
+        value += ((int64_t)(str[i] - 48)) * radix;
         radix /= 10;
     }
   }
@@ -2982,7 +2982,7 @@ static long long edflib_get_long_duration(char *str)
 
     for(i=len-1; i>=0; i--)
     {
-        value += ((long long)(str[i] - 48)) * radix;
+        value += ((int64_t)(str[i] - 48)) * radix;
         radix *= 10;
     }
   }
@@ -3023,7 +3023,7 @@ static int edflib_get_annotations(struct edfhdrblock *edfhdr, int hdl, int read_
        *duration_in_txt;
 
 
-  long long data_record_duration,
+  int64_t data_record_duration,
             elapsedtime,
             time_tmp=0;
 
@@ -3092,7 +3092,7 @@ static int edflib_get_annotations(struct edfhdrblock *edfhdr, int hdl, int read_
     return(1);
   }
 
-  if(fseeko(inputfile, (long long)((edfsignals + 1) * 256), SEEK_SET))
+  if(fseeko(inputfile, (int64_t)((edfsignals + 1) * 256), SEEK_SET))
   {
     free(cnv_buf);
     free(scratchpad);
@@ -3436,11 +3436,11 @@ static int edflib_is_onset_number(char *str)
 
 
 
-static long long edflib_get_long_time(char *str)
+static int64_t edflib_get_long_time(char *str)
 {
   int i, len, hasdot=0, dotposition=0;
 
-  long long value=0, radix;
+  int64_t value=0, radix;
 
   str = str + 1;
 
@@ -3462,7 +3462,7 @@ static long long edflib_get_long_time(char *str)
 
     for(i=dotposition-1; i>=0; i--)
     {
-        value += ((long long)(str[i] - 48)) * radix;
+        value += ((int64_t)(str[i] - 48)) * radix;
         radix *= 10;
     }
 
@@ -3470,7 +3470,7 @@ static long long edflib_get_long_time(char *str)
 
     for(i=dotposition+1; i<len; i++)
     {
-        value += ((long long)(str[i] - 48)) * radix;
+        value += ((int64_t)(str[i] - 48)) * radix;
         radix /= 10;
     }
   }
@@ -3480,7 +3480,7 @@ static long long edflib_get_long_time(char *str)
 
     for(i=len-1; i>=0; i--)
     {
-        value += ((long long)(str[i] - 48)) * radix;
+        value += ((int64_t)(str[i] - 48)) * radix;
         radix *= 10;
     }
   }
@@ -3997,19 +3997,19 @@ int edf_set_datarecord_duration(int handle, int duration)
     return(-1);
   }
 
-  hdrlist[handle]->long_data_record_duration = (long long)duration * 100LL;
+  hdrlist[handle]->long_data_record_duration = (int64_t)duration * (int64_t) 100;
 
-  if(hdrlist[handle]->long_data_record_duration < (EDFLIB_TIME_DIMENSION * 10LL))
+  if(hdrlist[handle]->long_data_record_duration < (EDFLIB_TIME_DIMENSION * (int64_t) 10))
   {
-    hdrlist[handle]->long_data_record_duration /= 10LL;
+    hdrlist[handle]->long_data_record_duration /= (int64_t) 10;
 
-    hdrlist[handle]->long_data_record_duration *= 10LL;
+    hdrlist[handle]->long_data_record_duration *= (int64_t) 10;
   }
   else
   {
-    hdrlist[handle]->long_data_record_duration /= 100LL;
+    hdrlist[handle]->long_data_record_duration /= (int64_t) 100;
 
-    hdrlist[handle]->long_data_record_duration *= 100LL;
+    hdrlist[handle]->long_data_record_duration *= (int64_t) 100;
   }
 
   hdrlist[handle]->data_record_duration = ((double)(hdrlist[handle]->long_data_record_duration)) / EDFLIB_TIME_DIMENSION;
@@ -6178,7 +6178,7 @@ int edf_set_startdatetime(int handle, int startdate_year, int startdate_month, i
 }
 
 
-int edfwrite_annotation_utf8(int handle, long long onset, long long duration, const char *description)
+int edfwrite_annotation_utf8(int handle, int64_t onset, int64_t duration, const char *description)
 {
   int i;
 
@@ -6205,7 +6205,7 @@ int edfwrite_annotation_utf8(int handle, long long onset, long long duration, co
     return(-1);
   }
 
-  if(onset<0LL)
+  if(onset<(int64_t) 0)
   {
     return(-1);
   }
@@ -6250,7 +6250,7 @@ int edfwrite_annotation_utf8(int handle, long long onset, long long duration, co
 }
 
 
-int edfwrite_annotation_latin1(int handle, long long onset, long long duration, const char *description)
+int edfwrite_annotation_latin1(int handle, int64_t onset, int64_t duration, const char *description)
 {
   struct edf_write_annotationblock *list_annot, *malloc_list;
 
@@ -6277,7 +6277,7 @@ int edfwrite_annotation_latin1(int handle, long long onset, long long duration, 
     return(-1);
   }
 
-  if(onset<0LL)
+  if(onset< (int64_t) 0)
   {
     return(-1);
   }
@@ -6511,11 +6511,11 @@ static int edflib_fprint_int_number_nonlocalized(FILE *file, int q, int minimum,
 /* if sign is zero, only negative numbers will have the sign '-' character */
 /* if sign is one, the sign '+' or '-' character will always be printed */
 /* returns the amount of characters printed */
-static int edflib_fprint_ll_number_nonlocalized(FILE *file, long long q, int minimum, int sign)
+static int edflib_fprint_ll_number_nonlocalized(FILE *file, int64_t q, int minimum, int sign)
 {
   int flag=0, z, i, j=0;
 
-  long long base = 1000000000000000000LL;
+  int64_t base = (int64_t) 1000000000000000000;
 
   if(minimum < 0)
   {
@@ -6527,7 +6527,7 @@ static int edflib_fprint_ll_number_nonlocalized(FILE *file, long long q, int min
     flag = 1;
   }
 
-  if(q < 0LL)
+  if(q < (int64_t) 0)
   {
     fputc('-', file);
 
@@ -6565,7 +6565,7 @@ static int edflib_fprint_ll_number_nonlocalized(FILE *file, long long q, int min
       flag = 1;
     }
 
-    base /= 10LL;
+    base /= (int64_t) 10;
   }
 
   if(!flag)
@@ -6648,11 +6648,11 @@ static int edflib_sprint_int_number_nonlocalized(char *str, int q, int minimum, 
 /* if sign is zero, only negative numbers will have the sign '-' character */
 /* if sign is one, the sign '+' or '-' character will always be printed */
 /* returns the amount of characters printed */
-static int edflib_sprint_ll_number_nonlocalized(char *str, long long q, int minimum, int sign)
+static int edflib_sprint_ll_number_nonlocalized(char *str, int64_t q, int minimum, int sign)
 {
   int flag=0, z, i, j=0;
 
-  long long base = 1000000000000000000LL;
+  int64_t base = (int64_t) 1000000000000000000;
 
   if(minimum < 0)
   {
@@ -6664,7 +6664,7 @@ static int edflib_sprint_ll_number_nonlocalized(char *str, long long q, int mini
     flag = 1;
   }
 
-  if(q < 0LL)
+  if(q < (int64_t) 0)
   {
     str[j++] = '-';
 
@@ -6696,7 +6696,7 @@ static int edflib_sprint_ll_number_nonlocalized(char *str, long long q, int mini
       flag = 1;
     }
 
-    base /= 10LL;
+    base /= (int64_t) 10;
   }
 
   if(!flag)

@@ -45,7 +45,7 @@
 
 
 
-#define EDFLIB_TIME_DIMENSION (10000000LL)
+#define EDFLIB_TIME_DIMENSION ((int64_t)10000000)
 #define EDFLIB_MAXSIGNALS 512
 #define EDFLIB_MAX_ANNOTATION_LEN 512
 
@@ -101,7 +101,7 @@ extern "C" {
 
 struct edf_param_struct{         /* this structure contains all the relevant EDF-signal parameters of one signal */
   char   label[17];              /* label (name) of the signal, null-terminated string */
-  long long smp_in_file;         /* number of samples of this signal in the file */
+  int64_t smp_in_file;         /* number of samples of this signal in the file */
   double phys_max;               /* physical maximum, usually the maximum input of the ADC */
   double phys_min;               /* physical minimum, usually the minimum input of the ADC */
   int    dig_max;                /* digital maximum, usually the maximum output of the ADC, can not not be higher than 32767 for EDF or 8388607 for BDF */
@@ -114,7 +114,7 @@ struct edf_param_struct{         /* this structure contains all the relevant EDF
 
 
 struct edf_annotation_struct{                           /* this structure is used for annotations */
-        long long onset;                                /* onset time of the event, expressed in units of 100 nanoSeconds and relative to the starttime in the header */
+        int64_t onset;                                /* onset time of the event, expressed in units of 100 nanoSeconds and relative to the starttime in the header */
         char duration[16];                              /* duration time, this is a null-terminated ASCII text-string */
         char annotation[EDFLIB_MAX_ANNOTATION_LEN + 1]; /* description of the event in UTF-8, this is a null terminated string */
        };
@@ -124,11 +124,11 @@ struct edf_hdr_struct{                     /* this structure contains all the re
   int       handle;                        /* a handle (identifier) used to distinguish the different files */
   int       filetype;                      /* 0: EDF, 1: EDFplus, 2: BDF, 3: BDFplus, a negative number means an error */
   int       edfsignals;                    /* number of EDF signals in the file, annotation channels are NOT included */
-  long long file_duration;                 /* duration of the file expressed in units of 100 nanoSeconds */
+  int64_t file_duration;                 /* duration of the file expressed in units of 100 nanoSeconds */
   int       startdate_day;
   int       startdate_month;
   int       startdate_year;
-  long long starttime_subsecond;                          /* starttime offset expressed in units of 100 nanoSeconds. Is always less than 10000000 (one second). Only used by EDFplus and BDFplus */
+  int64_t starttime_subsecond;                          /* starttime offset expressed in units of 100 nanoSeconds. Is always less than 10000000 (one second). Only used by EDFplus and BDFplus */
   int       starttime_second;
   int       starttime_minute;
   int       starttime_hour;
@@ -143,9 +143,9 @@ struct edf_hdr_struct{                     /* this structure contains all the re
   char      technician[81];                               /* null-terminated string, is always empty when filetype is EDF or BDF */
   char      equipment[81];                                /* null-terminated string, is always empty when filetype is EDF or BDF */
   char      recording_additional[81];                     /* null-terminated string, is always empty when filetype is EDF or BDF */
-  long long datarecord_duration;                          /* duration of a datarecord expressed in units of 100 nanoSeconds */
-  long long datarecords_in_file;                          /* number of datarecords in the file */
-  long long annotations_in_file;                          /* number of annotations in the file */
+  int64_t datarecord_duration;                          /* duration of a datarecord expressed in units of 100 nanoSeconds */
+  int64_t datarecords_in_file;                          /* number of datarecords in the file */
+  int64_t annotations_in_file;                          /* number of annotations in the file */
   struct edf_param_struct signalparam[EDFLIB_MAXSIGNALS]; /* array of structs which contain the relevant signal parameters */
        };
 
@@ -199,7 +199,7 @@ int edfread_raw_samples(int handle, int edfsignal, int n, int *buf);
 */
 
 
-long long edfseek(int handle, int edfsignal, long long offset, int whence);
+int64_t edfseek(int handle, int edfsignal, int64_t offset, int whence);
 
 /* The edfseek() function sets the sample position indicator for the edfsignal pointed to by edfsignal. */
 /* The new position, measured in samples, is obtained by adding offset samples to the position specified by whence. */
@@ -209,7 +209,7 @@ long long edfseek(int handle, int edfsignal, long long offset, int whence);
 /* note that every signal has it's own independent sample position indicator and edfseek() affects only one of them */
 
 
-long long edftell(int handle, int edfsignal);
+int64_t edftell(int handle, int edfsignal);
 
 /* The edftell() function obtains the current value of the sample position indicator for the edfsignal pointed to by edfsignal. */
 /* Returns the current offset. Otherwise, -1 is returned */
@@ -568,7 +568,7 @@ int edf_blockwrite_digital_samples(int handle, int *buf);
 /* Returns 0 on success, otherwise -1 */
 
 
-int edfwrite_annotation_utf8(int handle, long long onset, long long duration, const char *description);
+int edfwrite_annotation_utf8(int handle, int64_t onset, int64_t duration, const char *description);
 
 /* writes an annotation/event to the file */
 /* onset is relative to the starttime and startdate of the file */
@@ -580,7 +580,7 @@ int edfwrite_annotation_utf8(int handle, long long onset, long long duration, co
 /* and before closing the file */
 
 
-int edfwrite_annotation_latin1(int handle, long long onset, long long duration, const char *description);
+int edfwrite_annotation_latin1(int handle, int64_t onset, int64_t duration, const char *description);
 
 /* writes an annotation/event to the file */
 /* onset is relative to the starttime and startdate of the file */

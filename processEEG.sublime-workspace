@@ -79,30 +79,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "Morlets/main.cc",
-			"settings":
-			{
-				"buffer_size": 1554,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Morlets/wavelet.cc",
-			"settings":
-			{
-				"buffer_size": 10470,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "include/wavelet.h",
-			"settings":
-			{
-				"buffer_size": 18735,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/Makefile/Make.sublime-build",
 	"command_palette":
@@ -132,9 +108,20 @@
 	},
 	"file_history":
 	[
+		"/Users/vinay/Google Drive/Science/Testing/main.c",
+		"/Users/vinay/Google Drive/Science/Research/src/main.cc",
+		"/Users/vinay/Google Drive/Science/Research/src/ERSP.cc",
+		"/Users/vinay/Google Drive/Science/Research/src/FilterTriggers.cc",
+		"/Users/vinay/Google Drive/Science/Research/include/processEEG.h",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/makefile",
 		"/Users/vinay/Google Drive/Science/Research/include/wavelet.h",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
+		"/Users/vinay/Google Drive/Science/Research/src/main.c",
+		"/Users/vinay/Google Drive/Science/Research/src/makefile",
+		"/Users/vinay/Google Drive/Science/Research/src/FindTriggers.cc",
+		"/Users/vinay/Google Drive/Science/Research/src/FindTriggers.c",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
+		"/Users/vinay/Google Drive/Science/Research/src/edflib.c",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
 		"/Users/vinay/Google Drive/Science/Research/src/FilterTriggers.c",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Implementation2.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Method.tex",
@@ -148,7 +135,6 @@
 		"/Users/vinay/Google Drive/Science/Research/Morlets/ERSP.cc",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/Plot.cc",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/matrix.gplot",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/makefile",
 		"/Users/vinay/Documents/Archives/Education/Undergraduate/Year 4/4F03/Assignments/A3/final_code/julia.c",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/MasterThesis.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/ThesisBib.bib",
@@ -157,11 +143,9 @@
 		"/Users/vinay/Google Drive/Science/Research/Morlets/convolution.cc",
 		"/Users/vinay/Google Drive/Science/Research/Convolution/main.cc",
 		"/Users/vinay/Google Drive/Science/Research/Convolution/convolution.cc",
-		"/Users/vinay/Google Drive/Science/Research/src/main.c",
 		"/Users/vinay/Google Drive/Science/Research/processEEG.sublime-project",
 		"/Users/vinay/Google Drive/Science/Research/processEEG.sublime-workspace",
 		"/Users/vinay/Google Drive/Research/ScpDump/newtimef.m",
-		"/Users/vinay/Google Drive/Science/Research/src/FindTriggers.c",
 		"/Users/vinay/Library/Application Support/Sublime Text 2/Packages/User/Distraction Free.sublime-settings",
 		"/Users/vinay/Google Drive/Research/Source/src/FilterTriggers.c",
 		"/Users/vinay/Google Drive/Research/Source/include/processEEG.h",
@@ -207,9 +191,18 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"OBJ",
+			"FindTriggers",
+			"numberOfTriggers",
+			"LL",
+			"data",
+			"samplesToRead",
+			"int ERSP",
+			"int Wavelet",
+			"Wavelet",
 			"S0",
 			"BioConnect",
 			"Let",
@@ -290,90 +283,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "Morlets/main.cc",
-					"settings":
-					{
-						"buffer_size": 1554,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 129.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "Morlets/wavelet.cc",
-					"settings":
-					{
-						"buffer_size": 10470,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 6996.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "include/wavelet.h",
-					"settings":
-					{
-						"buffer_size": 18735,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 4622.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -423,6 +334,42 @@
 		"selected_items":
 		[
 			[
+				"maincc",
+				"src/main.cc"
+			],
+			[
+				"makefile",
+				"Morlets/makefile"
+			],
+			[
+				"processeeg.h",
+				"include/processEEG.h"
+			],
+			[
+				"wavelet",
+				"include/wavelet.h"
+			],
+			[
+				"",
+				"src/ERSP.cc"
+			],
+			[
+				"main.cc",
+				"src/main.cc"
+			],
+			[
+				"main.c",
+				"src/main.c"
+			],
+			[
+				"filter",
+				"src/FilterTriggers.c"
+			],
+			[
+				"find",
+				"src/FindTriggers.c"
+			],
+			[
 				"wavelet.h",
 				"include/wavelet.h"
 			],
@@ -431,20 +378,8 @@
 				"Morlets/wavelet.cc"
 			],
 			[
-				"main.cc",
-				"Morlets/main.cc"
-			],
-			[
-				"wavelet",
-				"include/wavelet.h"
-			],
-			[
 				"wave",
 				"include/wavelet.h"
-			],
-			[
-				"",
-				"src/FilterTriggers.c"
 			],
 			[
 				"esp.c",
@@ -457,14 +392,6 @@
 			[
 				"ersp.c",
 				"Morlets/ERSP.cc"
-			],
-			[
-				"makefile",
-				"Morlets/makefile"
-			],
-			[
-				"main.c",
-				"Morlets/main.cc"
 			],
 			[
 				"morlet/main.c",
@@ -481,10 +408,6 @@
 			[
 				"conv",
 				"Morlets/convolution.cc"
-			],
-			[
-				"find",
-				"src/FindTriggers.c"
 			],
 			[
 				"out",

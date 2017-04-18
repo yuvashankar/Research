@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include "edflib.h"
+#include "processEEG.h"
+#include <wavelet.h>
 
 /**
 	\fn int OpenFile(const char* fileName, struct edf_hdr_struct *header)

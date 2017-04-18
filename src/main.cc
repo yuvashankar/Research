@@ -5,11 +5,10 @@
  The first argument must be the file that you are analyzing. 
  */
 
-
 #include "processEEG.h"
 #include <assert.h>
-#include <hdf5.h>
 #include <float.h>
+#include <wavelet.h>
 
 int main(int argc, char const *argv[])
 {
@@ -23,6 +22,7 @@ int main(int argc, char const *argv[])
         waveletFlag,
         writeFlag,
         samplesToRead,
+        numberOfTriggers,
         J; //needed by Wavelet
 
     int* rawStatus, 
@@ -32,16 +32,16 @@ int main(int argc, char const *argv[])
     double sampleFrequency,
         dj, dt, s0;
 
-    long long numberOfRecords,
-        numberOfTriggers;
+    int64_t numberOfRecords;
 
     double *tempBuffer,
+        *data,
         *result, //The Final Result
         *period, //The Corrosponding Frequencies
         *wavelet_result, //What Wavelet spits out
         *baseline_out; //What Baseline spits out
 
-    long long * triggerList;
+    int64_t * triggerList;
     
     struct edf_hdr_struct edfHeader;
 
@@ -55,17 +55,17 @@ int main(int argc, char const *argv[])
 
     //Get File Information
     handle = edfHeader.handle;
-    sampleFrequency = ( ( double )edfHeader.signalparam[1].smp_in_datarecord /
-                        ( double )edfHeader.datarecord_duration               ) * EDFLIB_TIME_DIMENSION;
+    sampleFrequency = ( ( double ) edfHeader.signalparam[1].smp_in_datarecord /
+                        ( double ) edfHeader.datarecord_duration              ) * EDFLIB_TIME_DIMENSION;
     numberOfChannels = edfHeader.edfsignals;
     numberOfRecords = edfHeader.signalparam[numberOfChannels - 1].smp_in_file;
     channel = numberOfChannels - 1; //The status channel.
     samplesToRead = (PRE_EVENT_TIME + POST_EVENT_TIME) * sampleFrequency;
 
-    //Allocate Necessary Memory...why yes I am OCD.
-    rawStatus =         (int*) malloc( numberOfRecords  * sizeof      (int) );
-    triggerList = (long long*) malloc( MAXIMUM_TRIGGERS * sizeof(long long) );
-    tempBuffer =     (double*) malloc( samplesToRead    * sizeof   (double) );
+    //Allocate Necessary Memory
+    rawStatus   =    (int*)     malloc( numberOfRecords  * sizeof   (int)     );
+    triggerList =    (int64_t*) malloc( MAXIMUM_TRIGGERS * sizeof   (int64_t) );
+    tempBuffer  =    (double*)  malloc( samplesToRead    * sizeof   (double)  );
     assert(rawStatus != NULL); assert(triggerList!= NULL); assert(tempBuffer!= NULL);
 
     //Read the status Signal --> Output to rawStatus
@@ -98,17 +98,21 @@ int main(int argc, char const *argv[])
 
     //Filter the Triggers to what you want.
     filteredTriggerNumber = FilterTriggers(1, 2, numberOfTriggers, triggerList,
-        buffer, filteredBuffer);
+                                            buffer, filteredBuffer);
     printf("Number of Filtered Triggers Found: %d\n", filteredTriggerNumber);
     
     //Begin Wavelet Analysis
-    dj = 0.0625;
-    dt = 1.0/sampleFrequency;
-    s0 = 2 * dt;
+    // dj = 0.0625;
+    // dt = 1.0/sampleFrequency;
+    // s0 = 2 * dt;
+    
+    J           = (int) MAX_I - MIN_I;
+    data        = (double*)  malloc( samplesToRead * filteredTriggerNumber * sizeof(double));
+    assert(data != NULL);
 
-    J = (int) ceil(log2 ( 1.0/(s0 * MIN_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) )/dj);
-    int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
-    // J = log2( (samplesToRead * dt)/s0 )/dj;
+    // J = (int) ceil(log2 ( 1.0/(s0 * MIN_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) )/dj);
+    // int start = (int) floor( log2( 1.0/(s0 * MAX_FREQUENCY * FOURIER_WAVELENGTH_FACTOR) ) /dj);
+    // // J = log2( (samplesToRead * dt)/s0 )/dj;
 
     //Wavelet Memory Allocations
     result =         (double*) malloc(J * samplesToRead * sizeof(double));
@@ -123,33 +127,15 @@ int main(int argc, char const *argv[])
     {
         edfseek(handle, 0, filteredBuffer[i], EDFSEEK_SET);
         
-        // readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
-        TestCases(tempBuffer, 3);
-        
+        readFlag = edfread_physical_samples(handle, 4, samplesToRead, tempBuffer);
+        // TestCases(tempBuffer, 3);
+
         //Preform a Z-Score on the read data. 
         CleanData(tempBuffer, samplesToRead);
 
-        //Preform the Wavelet Analysis
-        waveletFlag = Wavelet(tempBuffer, period,
-            sampleFrequency, samplesToRead, s0, J, MAX_FREQUENCY,
-            wavelet_result);
-        assert(waveletFlag!= -1);
-
-        RemoveBaseline(wavelet_result, samplesToRead, J, filteredTriggerNumber, sampleFrequency, baseline_out);
-        for (int j = start; j < J; ++j)
-        {
-            for (int k = 0; k < samplesToRead; ++k)
-            {
-                result[j * samplesToRead + k] += baseline_out[j * samplesToRead + k];
-            }
-        }   
-    }
-
-    for (int i = start; i < J; ++i)
-    {
         for (int j = 0; j < samplesToRead; ++j)
         {
-            result[i * samplesToRead + j] = result[i * samplesToRead + j] / filteredTriggerNumber;
+            data[i * samplesToRead + j] = tempBuffer[j];
         }
     }
 
@@ -174,7 +160,7 @@ int main(int argc, char const *argv[])
     free(tempBuffer);
     free(triggerList);
     free(rawStatus);
-    // free(data);
+    free(data);
     fclose(debug_file);
     printf("Memory Cleaned and I'm done\n");
 

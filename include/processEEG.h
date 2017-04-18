@@ -24,13 +24,13 @@
 //Functions that are going to be used.
 int OpenFile(const char* fileName, struct edf_hdr_struct *header);
 
-long long FindTriggers(const int * statusInput, const long long numberOfElements, 
-	long long * outputBuffer);
+int FindTriggers(const int * statusInput, const int64_t numberOfElements, 
+	int64_t * outputBuffer);
 
 int FilterTriggers(const int code, 
     const int button, 
     const int numberOfRecords, 
-    const long long * triggerList,
+    int64_t * triggerList,
     const int * readBuffer, 
     int * outputBuffer);
 

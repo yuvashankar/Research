@@ -1,10 +1,14 @@
 /**
     \file "FilterTriggers.c"
 */
+#include <inttypes.h>
+#include "processEEG.h"
+#include <wavelet.h>
+
 
 /**
     \fn int FilterTriggers(const int code, const int button, const int numberOfRecords, 
-            const long long * triggerList,
+            const int64_t * triggerList,
             const int * readBuffer, 
             int * outputBuffer)
 
@@ -21,9 +25,10 @@
 
     \return counterVariable The number of triggers found.
 */
-
-int FilterTriggers(const int code, const int button, const int numberOfRecords, 
-    const long long * triggerList,
+int FilterTriggers(const int code, 
+    const int button, 
+    const int numberOfRecords, 
+    const int64_t * triggerList,
     const int * readBuffer, 
     int * outputBuffer)
 {
