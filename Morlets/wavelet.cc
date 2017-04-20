@@ -5,6 +5,7 @@
 #include "wavelet.h"
 #include <omp.h>
 #include <assert.h>
+#include <gsl/gsl_statistics.h>
 
 #define TEST 0.00001
 
@@ -17,23 +18,25 @@ int Wavelet(double* raw_data, double* scales,
 	fftw_complex *data_in, *fft_data;
 	fftw_plan plan_forward;
 
+
 	//Calculate Padding Required
     const int PADDED_SIZE = CalculatePaddingSize(n, 1);
+    // const int PADDED_SIZE = n;
 
-    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SEC in Hz
+    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SAMPLE in RAD/SEC
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
 
-	//populate the FFTW data vector. 
+	//populate the FFTW data vector
 	for (i = 0; i < n; ++i)
     {
     	data_in[i][0] = raw_data[i];
-    	data_in[i + n][0] = raw_data[i];
+    	// data_in[i + n][0] = raw_data[i];
 
-    	data_in[i + n][1] = 0.0;
-    	data_in[i][1] = 0.0;
+    	// data_in[i + n][1] = 0.0;
+    	data_in[i    ][1] = 0.0;
     }
 
     //Force the rest of the data vector to zero just in case
@@ -42,6 +45,9 @@ int Wavelet(double* raw_data, double* scales,
     	data_in[i][0] = 0.0;
     	data_in[i][1] = 0.0;
     }
+
+    double *temp = (double*) malloc(n * sizeof(double));
+    FILE* debug_file = fopen("debug.log", "w");
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
@@ -75,8 +81,8 @@ int Wavelet(double* raw_data, double* scales,
 			//Compute the Fourier Morlet at 0 and N/2
 			value = CompleteFourierMorlet(0.0, scales[i]);
 
-			filter_convolution[0][0] = (fft_data[0][0]/PADDED_SIZE) * value;
-			filter_convolution[0][1] = (fft_data[0][1]/PADDED_SIZE) * value;
+			filter_convolution[0][0] = ( fft_data[0][0] / PADDED_SIZE ) * value;
+			filter_convolution[0][1] = ( fft_data[0][1] / PADDED_SIZE ) * value;
 			
 			filter_convolution[PADDED_SIZE/2][0] = 0.0;
 			filter_convolution[PADDED_SIZE/2][1] = 0.0;
@@ -85,8 +91,8 @@ int Wavelet(double* raw_data, double* scales,
 			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 			{
 				value = CompleteFourierMorlet( j * dw , scales[i]);
-				filter_convolution[j][0] = (fft_data[j][0]/PADDED_SIZE) * value;
-				filter_convolution[j][1] = (fft_data[j][1]/PADDED_SIZE) * value;
+				filter_convolution[j][0] = ( fft_data[j][0] / PADDED_SIZE ) * value;
+				filter_convolution[j][1] = ( fft_data[j][1] / PADDED_SIZE ) * value;
 
 				// filter_convolution[j][0] = (fft_data[j][0]) * value;
 				// filter_convolution[j][1] = (fft_data[j][1]) * value;
@@ -101,8 +107,22 @@ int Wavelet(double* raw_data, double* scales,
 			for (j = 0; j < n; ++j)
 			{
 				result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				temp[j] = result[i * n + j];
 			}
+			
+			// double total = 0;
+			// for (int j = 0; j < n; ++j)
+			// {
+			// 	total += temp[j];
+			// }
+
+			// double variance = gsl_stats_variance(temp, 1, n);
+			// fprintf(debug_file, "%.16f\t%.16f\t%.16f\n", SCALE_TO_FREQ(scales[i]), variance, total);
+
 		}
+
+		free(temp);
+		fclose(debug_file);
 
 		//FFTW sanitation engineering. 
 		fftw_destroy_plan(plan_backward);
@@ -180,7 +200,8 @@ double* IdentifyFrequencies(double* scales, int count)
 
 double CompleteFourierMorlet(double w, const double scale)
 {
-	double norm = 1.0/sqrt(scale);
+	// double norm = 1.0/sqrt(scale);
+	double norm = sqrt(scale);
 	w = w * scale; 
 	double out = exp( -0.5 * ( W_0 - w ) * (W_0 - w) )
                                        - K_SIGMA * (exp ( -0.5 * w * w));
@@ -189,26 +210,24 @@ double CompleteFourierMorlet(double w, const double scale)
 	return(out);
 }
 
-
-
-void TestCases(double *data, const int flag)
+void TestCases(double *data, const int flag, double freq, double sampling_frequency, int data_size)
 {
-	// Fit a FREQ signal at two points
-	// double DT = 1./FS;
-	double fsig = FREQ/FS;
-	double dw = 2*M_PI*fsig;
+	// Fit a freq signal at two points
+	// double DT = 1./sampling_frequency;
+	double fsig = freq/sampling_frequency;
+	double dw = 2 * M_PI * fsig;
 	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 
 	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
 	
-	int t = 2 * FS; //At 2 seconds. 
+	int t = 2 * sampling_frequency; //At 2 seconds. 
 
 	switch(flag)
 	{
 		//Impulse at T = 2 seconds
 		case 1:		
-			for (int i = 0; i < DATA_SIZE; ++i)
+			for (int i = 0; i < data_size; ++i)
 			{
 				data[i] = 0.0;
 			}
@@ -218,15 +237,15 @@ void TestCases(double *data, const int flag)
 		
 		//Multiple Sines at t = 1500
 		case 2:
-			for (int i = DATA_SIZE/2; i < DATA_SIZE/2 + 2*one_peri; ++i)
+			for (int i = data_size/2; i < data_size/2 + 2*one_peri; ++i)
 			{
-				data[i] = sin((i - DATA_SIZE/2)* dw + w0) + sin((i - DATA_SIZE/2)* 2* dw + w0);
+				data[i] = sin((i - data_size/2)* dw + w0) + sin((i - data_size/2)* 2* dw + w0);
 			}
 			break;
 
 		//Multiple Sines at all times
 		case 3:
-			for (int i = 0; i < DATA_SIZE; ++i)
+			for (int i = 0; i < data_size; ++i)
 			{
 				data[i] = sin(i*dw + w0) + sin(i*2*dw + w0);
 			}
@@ -234,19 +253,19 @@ void TestCases(double *data, const int flag)
 
 		//Single sine at t = 1.0s;
 		case 4: 
-			for (int i = DATA_SIZE/3; i < DATA_SIZE/3 + 2 * one_peri; ++i)
+			for (int i = data_size/3; i < data_size/3 + 2 * one_peri; ++i)
 			{
-				data[i] = sin( (i - DATA_SIZE/2) * dw + w0 );
+				data[i] = sin( (i - data_size/2) * dw + w0 );
 			}
 			break;
 
 		
 		case 5:
-			for (int i = 0; i < DATA_SIZE; ++i)
+			for (int i = 0; i < data_size; ++i)
 			{
 				data[i] = cos( i * dw + w0 );
 				
-				if (i >= DATA_SIZE/2 && i <= 2 * (DATA_SIZE)/3)
+				if (i >= data_size/2 && i <= 2 * (data_size)/3)
 				{
 					data[i] = 2 * cos(i * dw + w0);
 				}
@@ -254,10 +273,10 @@ void TestCases(double *data, const int flag)
 			break;
 
 		case 6:
-			for (int i = 0; i < DATA_SIZE; ++i)
+			for (int i = 0; i < data_size; ++i)
 			{
 				data[i] = cos(i * dw + w0 );
-				if (i >= DATA_SIZE/3 && i <= DATA_SIZE/2)
+				if (i >= data_size/3 && i <= data_size/2)
 				{
 					data[i] = cos(i * (dw - 0.005) + w0);
 				}
@@ -266,12 +285,12 @@ void TestCases(double *data, const int flag)
 
 		//Frequency Sweep
 		case 7:
-			for (int i = 0; i < DATA_SIZE; ++i)
+			for (int i = 0; i < data_size; ++i)
 			{
-				// fsig = frequency/FS;
+				// fsig = frequency/sampling_frequency;
 				// dw = 2*M_PI*fsig;
 
-				data[i] = sin(w0 + 2 * M_PI * (MIN_FREQUENCY + (frequency_increment/2) * pow(i/FS, 2)) );
+				data[i] = sin(w0 + 2 * M_PI * (MIN_FREQUENCY + (frequency_increment/2) * pow(i/sampling_frequency, 2)) );
 
 				// frequency += frequency_increment; 
 			}
@@ -279,7 +298,7 @@ void TestCases(double *data, const int flag)
 			
 		//Single sine all the way through. 
 		case 8:
-			for (int i = 0; i < DATA_SIZE; ++i)
+			for (int i = 0; i < data_size; ++i)
 			{
 				data[i] = sin(i*dw + w0);
 			}

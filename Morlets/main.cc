@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
     //Get File Size
     int sampling_frequency = atoi( argv[1] );
     int n = GetFileSize( argv[2] );
+    // int n = 3 * sampling_frequency;
     
 
     const int J = (int) MAX_I - MIN_I;
@@ -46,7 +47,8 @@ int main(int argc, char *argv[])
 
     int readNumber = ReadFile( data, argv[2] );
     assert (readNumber == n);
-    
+    // TestCases( data, 8, 2.0 , sampling_frequency, n);
+
     printf("Computing Wavelet\n");
     Wavelet(data, scales, 
             sampling_frequency, n, J,
@@ -54,7 +56,7 @@ int main(int argc, char *argv[])
 
     printf("Plotting Result\n");
 
-    Plot(result, frequency, J, n, 1,
+    Plot(result, frequency, J, n, 1, sampling_frequency,
         file_name,
         file_name);
 

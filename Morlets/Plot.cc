@@ -49,7 +49,7 @@ RANGE GetRange(double* array, int size);
 void CalculateLog(double * array, int size);
 COLOUR GetColour(double v,RANGE data_range);
 
-int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
+int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type, int sampling_frequency,
 	char graph_title[],
 	char filename[])
 {
@@ -70,7 +70,7 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 
 			strcat(file_name_ext, ".log");
 
-			writeFlag = WriteFile(data, frequency, num_x, num_y, file_name_ext);
+			writeFlag = WriteFile(data, frequency, num_x, num_y, sampling_frequency, file_name_ext);
 			WriteGnuplotScript(graph_title, file_name_ext);
 			break;
 
@@ -96,7 +96,7 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 	const int time_text_width = 15;
 
 
-	char  font_location[] = "../lib/VeraMono.ttf";
+	char  font_location[] = "/VeraMono.ttf";
 	char x_label[] = "Time (s)";
 	char y_label[] = "Frequency (Hz)";
 	char temp_string[4];
@@ -189,7 +189,7 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 }
 
 
-int  WriteFile(const double *data, const double *frequency, const int x, const int y, 
+int  WriteFile(const double *data, const double *frequency, const int x, const int y, int sampling_frequency,
 	const char filename[])
 {
 
@@ -200,7 +200,7 @@ int  WriteFile(const double *data, const double *frequency, const int x, const i
     fprintf(out_file, "%d\t", x);
     for (int i = 0; i < y; ++i)
     {
-    	fprintf(out_file, "%f\t", (double) i/FS);
+    	fprintf(out_file, "%f\t", (double) i/sampling_frequency);
     }
     fprintf(out_file, "\n");
 
