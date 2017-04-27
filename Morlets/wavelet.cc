@@ -14,23 +14,21 @@
 int Find_Peaks(double* array, double* frequency, int n, int J)
 {
 	FILE* maximum_file = fopen("maximum.log", "w");
+	ARRAY_DATA *maximum_array = (ARRAY_DATA*) malloc (J * sizeof(ARRAY_DATA));
 
-	double max = array[0];
-	// int array_index = 0;
-	int size = n * J;
-
-	double *maximum_array = (double*) malloc(J * sizeof(double));
-
-	//Find the local maximum at every frequency. 
+	//Find the local maximum at every frequency
 	for (int i = 0; i < J; ++i)
 	{
-		double max = array[i * n];
+		ARRAY_DATA max;
+		max.value = array[i * n];
+		max.index = i * n;
 
 		for (int j = 0; j < n; ++j)
 		{
-			if (array[i * n + j] > max)
+			if (array[i * n + j] > max.value)
 			{
-				max = array[i * n + j];
+				max.value = array[i * n + j];
+				max.index = i * n + j;
 			}
 		}
 
@@ -39,21 +37,19 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 	}
 
 	//Find Global maximum
-	ARRAY_DATA global_max = Max(maximum_array, J);
+	// ARRAY_DATA global_max = Max(maximum_array, J);
 
-	//Calculate the deravitive of the signal.
-	double sign = (maximum_array[1] - maximum_array[0]) / (frequency[1] - frequency[0]);
+	//Calculate the deravitive of the signal and isolate the peaks
+	double sign = (maximum_array[1].value - maximum_array[0].value) / (frequency[1] - frequency[0]);
 	for (int i = 0; i < J - 1; ++i)
 	{
-		double slope = (maximum_array[i + 1] - maximum_array[i]) / (frequency[i + 1] - frequency[i]);
+		double slope = (maximum_array[i + 1].value - maximum_array[i].value) / (frequency[i + 1] - frequency[i]);
 		if (signbit(slope) != signbit(sign) && sign < 0)
 		{
 			printf("Local_maximum found at %f, slope = %f\n", frequency[i], slope);
 			
 		}
 		sign = slope;
-
-		// printf("slope = %f, frequency = %f\n", slope, frequency[i]);
 	}
 
 
