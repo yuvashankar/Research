@@ -47,12 +47,14 @@ int main(int argc, char *argv[])
 
     int readNumber = ReadFile( data, argv[2] );
     assert (readNumber == n);
-    // TestCases( data, 8, 2.0 , sampling_frequency, n);
+    // TestCases( data, 8, 128.0 , sampling_frequency, n);
 
     printf("Computing Wavelet\n");
     Wavelet(data, scales, 
             sampling_frequency, n, J,
             result);
+
+    Find_Peaks(result, frequency, n, J);
 
     printf("Plotting Result\n");
 

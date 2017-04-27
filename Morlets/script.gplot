@@ -1,9 +1,9 @@
 set term pngcairo enhanced font 'arial,12'
-set output 'DATAx.png' 
+set output '/Users/vinay/Desktop/impact/data1/L2x.png' 
 set pm3d map
 set logscale y 2
 set ticslevel 0
 set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
-set title "DATAx"
-splot "DATAx.log" matrix nonuniform with pm3d t ''
+set title "/Users/vinay/Desktop/impact/data1/L2x"
+splot "/Users/vinay/Desktop/impact/data1/L2x.log" matrix nonuniform with pm3d t ''

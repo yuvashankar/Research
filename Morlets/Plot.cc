@@ -45,6 +45,8 @@ typedef struct
 } RANGE;
 
 
+
+
 RANGE GetRange(double* array, int size);
 void CalculateLog(double * array, int size);
 COLOUR GetColour(double v,RANGE data_range);
@@ -351,26 +353,31 @@ COLOUR GetColour(double v, RANGE data_range)
 
 
 
-double Max(double * array, int size)
+ARRAY_DATA Max(double * array, int size)
 {
 	double max = array[0];
 	int array_index = 0;
+
+	ARRAY_DATA out;
 
 	for (int i = 0; i < size; ++i)
 	{
 		if (array[i] > max)
 		{
 			max = array[i];
-			if (max != max)
-			{
-				printf("Naan Alert!\n");
-			}
+			// if (max != max)
+			// {
+			// 	printf("Naan Alert!\n");
+			// }
 			array_index = i;
 		}
 	}
 
-	printf("Max: Array[%d] = %.17f\n", array_index, array[array_index]);
-	return(max);
+	out.value = max;
+	out.index = array_index;
+
+	// printf("Max: Array[%d] = %.17f\n", array_index, array[array_index]);
+	return(out);
 }
 
 
