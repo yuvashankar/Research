@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
 
     int readNumber = ReadFile( data, argv[2] );
     assert (readNumber == n);
+
+    printf("n = %d, J = %d\n", n, J);
     // TestCases( data, 8, 128.0 , sampling_frequency, n);
 
     printf("Computing Wavelet\n");

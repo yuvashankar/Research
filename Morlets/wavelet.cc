@@ -9,12 +9,11 @@
 
 #define TEST 0.00001
 
-
-
 int Find_Peaks(double* array, double* frequency, int n, int J)
 {
-	FILE* maximum_file = fopen("maximum.log", "w");
+	FILE*       maximum_file  = fopen("maximum.log", "w");
 	ARRAY_DATA *maximum_array = (ARRAY_DATA*) malloc (J * sizeof(ARRAY_DATA));
+	ARRAY_DATA *local_maximum = (ARRAY_DATA*) malloc (J * sizeof(ARRAY_DATA));
 
 	//Find the local maximum at every frequency
 	for (int i = 0; i < J; ++i)
@@ -33,32 +32,42 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 		}
 
 		maximum_array[i] = max;
-		fprintf(maximum_file, "%f\t%f\n", frequency[i], maximum_array[i]);
+		// fprintf(maximum_file, "%f\t%f\n", frequency[i], maximum_array[i].value);
 	}
-
-	//Find Global maximum
-	// ARRAY_DATA global_max = Max(maximum_array, J);
 
 	//Calculate the deravitive of the signal and isolate the peaks
 	double sign = (maximum_array[1].value - maximum_array[0].value) / (frequency[1] - frequency[0]);
+	int max_count = 0;
 	for (int i = 0; i < J - 1; ++i)
 	{
 		double slope = (maximum_array[i + 1].value - maximum_array[i].value) / (frequency[i + 1] - frequency[i]);
 		if (signbit(slope) != signbit(sign) && sign < 0)
 		{
-			printf("Local_maximum found at %f, slope = %f\n", frequency[i], slope);
-			
+			// printf("Local_maximum found at %f\n", frequency[i]);
+			local_maximum[max_count] = maximum_array[i];
+			max_count++;
 		}
 		sign = slope;
 	}
 
+	//Now analyze the time domain information
+	// for (int i = 0; i < max_count; ++i)
+	// {
+		div_t bic = div(local_maximum[1].index, n);
+		printf("quot = %d, rem = %d\n", bic.quot, bic.rem);
+		for (int i = 0; i < n; ++i)
+		{
+			fprintf(maximum_file, "%f\t%.17f\n", (double) i/FS, array[bic.quot * n + i]);
+		}
+		
+
+	// }
 
 
 	fclose(maximum_file);
 	free(maximum_array);
-
+	free(local_maximum);
 	return(0);
-
 }
 
 int Wavelet(double* raw_data, double* scales, 
