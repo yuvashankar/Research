@@ -8,12 +8,15 @@
 #include <gsl/gsl_statistics.h>
 
 #define TEST 0.00001
+#define SETTLING_PERCENTAGE 0.02
 
 int Find_Peaks(double* array, double* frequency, int n, int J)
 {
 	FILE*       maximum_file  = fopen("maximum.log", "w");
 	ARRAY_DATA *maximum_array = (ARRAY_DATA*) malloc (J * sizeof(ARRAY_DATA));
 	ARRAY_DATA *local_maximum = (ARRAY_DATA*) malloc (J * sizeof(ARRAY_DATA));
+	int local_maximum_location[J];
+	double* temp = (double*) malloc(n * sizeof(double));
 
 	//Find the local maximum at every frequency
 	for (int i = 0; i < J; ++i)
@@ -45,20 +48,81 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 		{
 			// printf("Local_maximum found at %f\n", frequency[i]);
 			local_maximum[max_count] = maximum_array[i];
+			local_maximum_location[max_count] = i;
 			max_count++;
 		}
 		sign = slope;
 	}
 
-	//Now analyze the time domain information
+	
+	for (int i = 0; i < max_count; ++i)
+	{
+
+		// div_t arr_index = div(local_maximum[i].index, n);
+		int arr_index1 = local_maximum_location[i];
+
+		// printf("Local_maximum_location %d, array_index = %d\n", arr_index1, arr_index.quot);
+		//Copy data into memory block
+		for (int j = 0; j < n; ++j)
+		{
+			temp[j] = array[arr_index1 * n + j];
+		}
+
+		ARRAY_DATA impact_site = Max(temp, n);
+
+		int system_setteled = 0;
+		int setteled_index = 0;
+		for (int j = impact_site.index; j < n; ++j)
+		{
+			if (temp[j] < SETTLING_PERCENTAGE * impact_site.value && system_setteled == 0)
+			{
+				setteled_index = j;
+				system_setteled = 1;
+			}
+		}
+		printf("settled_index = %d, impact_site.index = %d\n", setteled_index, impact_site.index);
+		double setteled_time = (double) (setteled_index - impact_site.index)/FS;
+		printf("Frequency: %f, Settled Time = %f\n", frequency[arr_index1], setteled_time);
+
+	}
+
+	// printf("Impact Value = %f, Impact Time = %f\n", impact_site.value, (double) impact_site.index/FS);
+
+	// //Now analyze the time domain information
 	// for (int i = 0; i < max_count; ++i)
 	// {
-		div_t bic = div(local_maximum[1].index, n);
-		printf("quot = %d, rem = %d\n", bic.quot, bic.rem);
-		for (int i = 0; i < n; ++i)
-		{
-			fprintf(maximum_file, "%f\t%.17f\n", (double) i/FS, array[bic.quot * n + i]);
-		}
+	// 	div_t arr_index = div(local_maximum[i].index, n);
+
+	// 	//Copy data into memory block
+	// 	for (int j = 0; j < n; ++j)
+	// 	{
+	// 		temp[i] = array[arr_index.quot * n + j];
+	// 	}
+
+	// 	ARRAY_DATA impact_site = Max(temp, n);
+
+	// 	int system_setteled = 0;
+	// 	int setteled_index = 0;
+	// 	for (int j = impact_site.index; j < n; ++j)
+	// 	{
+	// 		printf("Setteled Index = %f\n", SETTLING_PERCENTAGE * impact_site.value);
+
+	// 		if (temp[j] < SETTLING_PERCENTAGE * impact_site.value && system_setteled == 0)
+	// 		{
+	// 			setteled_index = j;
+	
+	// 			system_setteled = 1;
+	// 		}
+	// 	}
+
+	// 	double setteled_time = (double) (setteled_index/FS) - (double) (impact_site.index/FS); 
+	// 	// printf("Setteled Time = %f\n", setteled_time);
+		
+	// 	// printf("quot = %d, rem = %d\n", bic.quot, bic.rem);
+	// 	// for (int i = 0; i < n; ++i)
+	// 	// {
+	// 	// 	fprintf(maximum_file, "%f\t%.17f\n", (double) i/FS, arrayx[bic.quot * n + i]);
+	// 	// }
 		
 
 	// }
@@ -67,6 +131,7 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 	fclose(maximum_file);
 	free(maximum_array);
 	free(local_maximum);
+	free (temp);
 	return(0);
 }
 
