@@ -87,7 +87,7 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 	
 	printf("File Name = %s\n", filename);
 
-	const int lines_size = 10; //Adjusts vertical scaling.
+	const int lines_size = 2; //Adjusts vertical scaling.
 	const int stride = 2; //Stride needs to be even. Adjusts horizontal scaling
 	const int image_width  = (num_x/stride) + 2 * PLOT_OX;
 	const int image_height = lines_size * num_y+ 2 * PLOT_OY;
@@ -135,6 +135,11 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 				graph_title,
 				0.0, 0.0, 0.0);
 
+	png.square(	PLOT_OX - 1, PLOT_OY - 1,
+				image_width - PLOT_OX + 1, image_height - PLOT_OY,
+				0.0, 0.0, 0.0);
+
+
 	//Plot the Graph itself.
 	for ( i = 1; i <= num_x/stride; ++i)
 	{
@@ -156,7 +161,7 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 			}
 
 			//Add Frequency Markers
-			if (j % 5 == 0)
+			if (j % 15 == 0)
 			{
 				png.filledsquare( PLOT_OX - 20, PLOT_OY + (height - j*lines_size) - 4,
 						PLOT_OX, PLOT_OY + (height - j*lines_size) + 4,
@@ -189,6 +194,45 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 		}
 
 	}
+
+	//Make ColourBar
+	int colour_bar_width = 25;
+	double dv = (r.maximum - r.minimum) / (lines_size * num_y);
+	double start = r.maximum;
+
+	sprintf(temp_string, "%.3f", start);
+
+	png.plot_text( font_location, tic_font_size,
+				image_width - (PLOT_OX/2) + 25, PLOT_OY + (height) , 0.0,
+				temp_string,
+				0.0, 0.0, 0.0);
+
+	//Draw Border on ColourBar
+	png.square(	image_width - (PLOT_OX / 2) - 1, PLOT_OY + (height) + 1,
+				image_width - (PLOT_OX / 2) + colour_bar_width, PLOT_OY + (height - lines_size * num_y) - 1,
+				0.0, 0.0, 0.0);
+
+	for (int i = 0; i < lines_size * num_y; ++i)
+	{
+		COLOUR c = GetColour(start, r);
+
+		for (int j = 0; j < colour_bar_width; ++j)
+		{
+			png.plot(image_width - (PLOT_OX / 2) + j , PLOT_OY + (height - i), 
+					c.r, c.g, c.b);
+		}
+
+		start = start - dv;
+	}
+
+
+	sprintf(temp_string, "%.3f", start);
+
+	png.plot_text( font_location, tic_font_size,
+				image_width - (PLOT_OX/2) + 25, PLOT_OY + (height - lines_size * num_y), 0.0,
+				temp_string,
+				0.0, 0.0, 0.0);
+
 	png.close();
 	return(0);
 }
