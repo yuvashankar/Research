@@ -10,6 +10,69 @@
 #define TEST 0.00001
 #define SETTLING_PERCENTAGE 0.02
 
+double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, int n, int window_size)
+{
+	//Variable Declarations
+	int i, j;
+	fftw_complex *data_in, *fft_data;
+	fftw_plan plan_forward;
+	double* result;
+
+	// FILE * STFT_FILE = fopen("STFT_Result.log", "w");
+
+	int num_windows = ceil((double) n / window_size); 
+	assert(num_windows > 0);
+
+	// const int PADDED_SIZE = CalculatePaddingSize(window_size, 1);
+	const int PADDED_SIZE = window_size;
+
+
+	result =   (double*)        malloc(num_windows * PADDED_SIZE * sizeof(double));
+	data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+
+	//Calculate the FFT of the data and store it in fft_data
+	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
+									FFTW_FORWARD, FFTW_ESTIMATE);
+
+	for (i = 0; i < num_windows; ++i)
+	{
+		memset(data_in,  0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+		memset(fft_data, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
+
+		//Fill Data into FFT Array
+		for (j = 0; j < window_size; ++j)
+		{
+			if (i * window_size + j < n)
+			{
+				data_in[j][0] = raw_data[i * window_size + j];
+				data_in[j][1] = 0.0;
+			}
+			else
+			{
+				data_in[j][0] = 0.0;
+				data_in[j][1] = 0.0;
+			}
+		}
+		
+		fftw_execute(plan_forward);
+
+		for (j = 0; j < window_size / 2; ++j)
+		{
+			result[j * num_windows + i] = MAGNITUDE(fft_data[j][0], fft_data[j][1]);
+			// fprintf(STFT_FILE, "%d\t%f\t%d\n", j, result[j * num_windows + i], j * num_windows + i);
+		}
+
+	}
+
+	// fclose(STFT_FILE);
+	fftw_destroy_plan(plan_forward); 
+	fftw_free(data_in); fftw_free(fft_data);
+
+	return(result);
+}
+
+
 int Find_Peaks(double* array, double* frequency, int n, int J)
 {
 	FILE*       maximum_file  = fopen("maximum.log", "w");
@@ -32,7 +95,7 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 				max.index = i * n + j;
 			}
 		}
-		
+
 		maximum_array[i] = max;
 		fprintf(maximum_file, "%f\t%f\n", frequency[i], maximum_array[i].value);
 	}
@@ -100,8 +163,8 @@ int Wavelet(double* raw_data, double* scales,
 
 
 	//Calculate Padding Required
-    const int PADDED_SIZE = CalculatePaddingSize(n, 1);
-    // const int PADDED_SIZE = n;
+    // const int PADDED_SIZE = CalculatePaddingSize(n, 1);
+    const int PADDED_SIZE = n;
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SAMPLE in RAD/SEC
 
@@ -119,12 +182,12 @@ int Wavelet(double* raw_data, double* scales,
     	data_in[i    ][1] = 0.0;
     }
 
-    //Force the rest of the data vector to zero just in case
-    for (int i = n; i < PADDED_SIZE; ++i)
-    {
-    	data_in[i][0] = 0.0;
-    	data_in[i][1] = 0.0;
-    }
+    // //Force the rest of the data vector to zero just in case
+    // for (int i = n; i < PADDED_SIZE; ++i)
+    // {
+    // 	data_in[i][0] = 0.0;
+    // 	data_in[i][1] = 0.0;
+    // }
 
     double *temp = (double*) malloc(n * sizeof(double));
     FILE* debug_file = fopen("debug.log", "w");
@@ -171,11 +234,10 @@ int Wavelet(double* raw_data, double* scales,
 			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
 			{
 				value = CompleteFourierMorlet( j * dw , scales[i]);
+
 				filter_convolution[j][0] = ( fft_data[j][0] / PADDED_SIZE ) * value;
 				filter_convolution[j][1] = ( fft_data[j][1] / PADDED_SIZE ) * value;
 
-				// filter_convolution[j][0] = (fft_data[j][0]) * value;
-				// filter_convolution[j][1] = (fft_data[j][1]) * value;
 				filter_convolution[PADDED_SIZE- j][0] = 0.0;
 				filter_convolution[PADDED_SIZE- j][1] = 0.0;
 			}
@@ -186,18 +248,18 @@ int Wavelet(double* raw_data, double* scales,
 			//Calculate the power and store it in result
 			for (j = 0; j < n; ++j)
 			{
-				result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				result[i * n + j] = (1.0/sqrt(scales[i])) * MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
 				temp[j] = result[i * n + j];
 			}
 			
-			// double total = 0;
-			// for (int j = 0; j < n; ++j)
-			// {
-			// 	total += temp[j];
-			// }
+			double total = 0;
+			for (int j = 0; j < n; ++j)
+			{
+				total += temp[j];
+			}
 
-			// double variance = gsl_stats_variance(temp, 1, n);
-			// fprintf(debug_file, "%.16f\t%.16f\t%.16f\n", SCALE_TO_FREQ(scales[i]), variance, total);
+			double variance = gsl_stats_variance(temp, 1, n);
+			fprintf(debug_file, "%.16f\t%.16f\t%.16f\n", SCALE_TO_FREQ(scales[i]), variance, total);
 
 		}
 
@@ -380,7 +442,7 @@ void TestCases(double *data, const int flag, double freq, double sampling_freque
 		case 8:
 			for (int i = 0; i < data_size; ++i)
 			{
-				data[i] = sin(i*dw + w0);
+				data[i] = sin(i*dw + w0) + sin(2*i*dw + w0) + sin(4*i*dw + w0) + sin(8*i*dw + w0) + + sin(16*i*dw + w0) + + sin(32*i*dw + w0);
 			}
 			break;
 	}

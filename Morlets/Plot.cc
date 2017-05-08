@@ -190,6 +190,40 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 	return(0);
 }
 
+int WriteSTFTFile(const double *data, const int x, const int y, int sampling_frequency, const char filename[])
+{
+	FILE* out_file=fopen(filename,"w");
+    if (out_file == NULL) return -1;
+
+    //Number of columns
+    fprintf(out_file, "%d\t", x);
+    
+    //Y Tics
+    for (int i = 0; i < y; ++i)
+    {
+    	fprintf(out_file, "%16ef\t", (double) (i * WINDOW_SIZE)/ sampling_frequency);
+    }
+    fprintf(out_file, "\n");
+
+    //XTics
+    for (int i = 0; i < x; ++i)
+    {
+    	//Feed Frequency
+    	fprintf(out_file, "%f\t", (double) i);
+
+    	//Feed Data
+        for (int j = 0; j < y; ++j)
+        {
+            // value = Magnitude(result[i*n + j], result[i*n + j]);
+            fprintf(out_file, "%.16e\t", data[i*y + j]);
+        }
+        //Ready for the next line.
+        fprintf(out_file, "\n");
+    }
+
+    fclose(out_file);
+    return(0);
+}
 
 int  WriteFile(const double *data, const double *frequency, const int x, const int y, int sampling_frequency,
 	const char filename[])
