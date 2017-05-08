@@ -31,8 +31,9 @@ int main(int argc, char *argv[])
 
     //Get File Size
     int sampling_frequency = atoi( argv[1] );
-    // int n = GetFileSize( argv[2] );
-    int n = 3 * sampling_frequency;
+    
+    int n = GetFileSize( argv[2] );
+    // int n = 3 * sampling_frequency;
     
 
     const int J = (int) MAX_I - MIN_I;
@@ -47,9 +48,9 @@ int main(int argc, char *argv[])
     frequency = IdentifyFrequencies(scales, J);
     assert(scales != NULL); assert(frequency!= NULL);
 
-    // int readNumber = ReadFile( data, argv[2] );
-    // assert (readNumber == n);
-    TestCases( data, 8, 128.0 , sampling_frequency, n);
+    int readNumber = ReadFile( data, argv[2] );
+    assert (readNumber == n);
+    // TestCases( data, 8, 128.0 , sampling_frequency, n);
 
     stft_result = ShortTimeFourierTransform(data, sampling_frequency, n, WINDOW_SIZE);
     WriteSTFTFile(stft_result, WINDOW_SIZE/2, ceil( (double) n / WINDOW_SIZE), sampling_frequency, "STFT_Result.log");
@@ -64,11 +65,11 @@ int main(int argc, char *argv[])
     Find_Peaks(result, frequency, n, J);
 
     ARRAY_DATA global_max = Max(result, n * J);
-    printf("n = %d, global_max = %.64f\n", n, global_max.value);
+    printf("n = %d, global_max = %.16f\n", n, global_max.value);
 
     printf("Plotting Result\n");
 
-    Plot(result, frequency, J, n, 1, sampling_frequency,
+    Plot(result, frequency, J, n, 0, sampling_frequency,
         file_name,
         file_name);
 

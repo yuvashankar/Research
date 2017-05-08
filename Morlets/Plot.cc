@@ -65,7 +65,7 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 		case 0: //Plot_PNG
 			
 			strcat(file_name_ext, ".png");
-			writeFlag = Plot_PNG(data, frequency, num_x, num_y, graph_title, file_name_ext);
+			writeFlag = Plot_PNG(data, frequency, num_y, num_x, graph_title, file_name_ext);
 			break;
 
 		case 1: //GnuPlot
@@ -85,10 +85,13 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 {
 	int i, j, k;
 	
+	printf("File Name = %s\n", filename);
+
 	const int lines_size = 10; //Adjusts vertical scaling.
-	const int stride = 4; //Stride needs to be even. Adjusts horizontal scaling
+	const int stride = 2; //Stride needs to be even. Adjusts horizontal scaling
 	const int image_width  = (num_x/stride) + 2 * PLOT_OX;
 	const int image_height = lines_size * num_y+ 2 * PLOT_OY;
+
 	const int height = lines_size * num_y;
 
 	const int label_font_size = 30;
@@ -98,7 +101,8 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 	const int time_text_width = 15;
 
 
-	char  font_location[] = "/VeraMono.ttf";
+	char  font_location[] = "../lib/OpenSans-Regular.ttf";
+
 	char x_label[] = "Time (s)";
 	char y_label[] = "Frequency (Hz)";
 	char temp_string[4];
@@ -106,30 +110,30 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 	CalculateLog( data, num_x * num_y );
 
 	RANGE r = GetRange(data, num_x*num_y);
-	// printf("New Max = %f, New Min = %f\n", r.maximum, r.minimum);
+	// // printf("New Max = %f, New Min = %f\n", r.maximum, r.minimum);
 
-	pngwriter png( image_width, image_height , 0 , filename);
+	pngwriter png( image_width, image_height , 1.0 , filename);
 
 	// X_label
 	int x_text_width = png.get_text_width(font_location, label_font_size, x_label);
 	png.plot_text( font_location, label_font_size,
 				(0.5*image_width - 0.5*x_text_width), 0.5*PLOT_OY, 0.0,
 				x_label,
-				1.0, 1.0, 1.0);
+				0.0, 0.0, 0.0);
 	
 	//Y_Label
 	int y_text_width = png.get_text_width(font_location, label_font_size, y_label);
 	png.plot_text( font_location, label_font_size,
 				0.25*PLOT_OY, (0.5*image_height - 0.5*y_text_width), M_PI*0.5,
 				y_label,
-				1.0, 1.0, 1.0);
+				0.0, 0.0, 0.0);
 
 	//Title
 	int title_text_width = png.get_text_width(font_location, label_font_size, graph_title);
 	png.plot_text( font_location, title_font_size,
 				(0.5*image_width - title_text_width), (image_height - 0.5*PLOT_OY), 0.0,
 				graph_title,
-				1.0, 1.0, 1.0);
+				0.0, 0.0, 0.0);
 
 	//Plot the Graph itself.
 	for ( i = 1; i <= num_x/stride; ++i)
@@ -152,20 +156,20 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 			}
 
 			//Add Frequency Markers
-			if (j % 15 == 0)
+			if (j % 5 == 0)
 			{
 				png.filledsquare( PLOT_OX - 20, PLOT_OY + (height - j*lines_size) - 4,
 						PLOT_OX, PLOT_OY + (height - j*lines_size) + 4,
-						1.0, 1.0, 1.0);
+						0.0, 0.0, 0.0);
 
 				sprintf(temp_string, "%.1f", periods[j]);
 
-				// int freq_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
-				// int freq_text_width = 15;
+				// // int freq_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
+
 				png.plot_text(font_location, tic_font_size, 
-					PLOT_OX - 30 - freq_text_width, PLOT_OY + (height - j*lines_size) - 0.5*tic_font_size, 0.0, 
+					PLOT_OX - 60 - freq_text_width, PLOT_OY + (height - j*lines_size) - 0.5*tic_font_size, 0.0, 
 					temp_string, 
-					1.0, 1.0, 1.0);
+					0.0, 0.0, 0.0);
 			}
 		}
 		// ADD A TIME MARKER
@@ -173,16 +177,15 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 		{
 			png.filledsquare( PLOT_OX + i - 4, PLOT_OY,
 							  PLOT_OX + i + 4, PLOT_OY - 20,
-							1.0, 1.0, 1.0);
+							0.0, 0.0, 0.0);
 
 			sprintf(temp_string, "%.1d", (stride * i)/FS);
 			
-			// int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
-			// int time_text_width = 15;
+			// // int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
 			png.plot_text( font_location, tic_font_size,
 				PLOT_OX + i - 4 - 0.5* time_text_width, PLOT_OY - 50, 0.0,
 				temp_string,
-				1.0, 1.0, 1.0);
+				0.0, 0.0, 0.0);
 		}
 
 	}
@@ -267,12 +270,12 @@ int WriteGnuplotScript(const char graph_title[], const char filename[])
 	FILE* gnuplot_file = fopen("script.gplot", "w");
 	if (gnuplot_file == NULL) return -1;
 	
-	// fprintf(gnuplot_file, "set term x11\n");
+	fprintf(gnuplot_file, "set term x11\n");
 	
 	// fprintf(gnuplot_file, "set logscale z 10\n");
 
-	fprintf(gnuplot_file, "set term pngcairo enhanced font 'arial,12'\n");
-	fprintf(gnuplot_file, "%s%s%s","set output '", graph_title,  ".png' \n");
+	// fprintf(gnuplot_file, "set term pngcairo enhanced font 'arial,12'\n");
+	// fprintf(gnuplot_file, "%s%s%s","set output '", graph_title,  ".png' \n");
 	fprintf(gnuplot_file, "set pm3d map\n");
 	fprintf(gnuplot_file, "set logscale y 2\n");
 	fprintf(gnuplot_file, "set ticslevel 0\n");
@@ -284,7 +287,7 @@ int WriteGnuplotScript(const char graph_title[], const char filename[])
 	//Plot filename
 	// plot "DATA.log" matrix nonuniform with pm3d t ''
 	fprintf(gnuplot_file, "%s%s%s\n", "splot \"", filename, "\" matrix nonuniform with pm3d t ''");
-	// fprintf(gnuplot_file, "pause -1 \"Hit Return to continue\"");
+	fprintf(gnuplot_file, "pause -1 \"Hit Return to continue\"");
 
 	return(0);
 }
