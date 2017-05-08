@@ -248,7 +248,7 @@ int Wavelet(double* raw_data, double* scales,
 			//Calculate the power and store it in result
 			for (j = 0; j < n; ++j)
 			{
-				result[i * n + j] = (1.0/sqrt(scales[i])) * MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				result[i * n + j] = (2.636206183/sqrt(scales[i])) * MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
 				temp[j] = result[i * n + j];
 			}
 			
