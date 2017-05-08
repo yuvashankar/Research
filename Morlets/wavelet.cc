@@ -9,6 +9,7 @@
 
 #define TEST 0.00001
 #define SETTLING_PERCENTAGE 0.02
+#define NORMALIZATION_FACTOR 0.375402913609157562
 
 double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, int n, int window_size)
 {
@@ -248,7 +249,7 @@ int Wavelet(double* raw_data, double* scales,
 			//Calculate the power and store it in result
 			for (j = 0; j < n; ++j)
 			{
-				result[i * n + j] = (2.636206183/sqrt(scales[i])) * MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				result[i * n + j] = (1.0/ ( NORMALIZATION_FACTOR * sqrt(scales[i]) ) ) * MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
 				temp[j] = result[i * n + j];
 			}
 			
@@ -442,7 +443,7 @@ void TestCases(double *data, const int flag, double freq, double sampling_freque
 		case 8:
 			for (int i = 0; i < data_size; ++i)
 			{
-				data[i] = sin(i*dw + w0) + sin(2*i*dw + w0) + sin(4*i*dw + w0) + sin(8*i*dw + w0) + + sin(16*i*dw + w0) + + sin(32*i*dw + w0);
+				data[i] = sin(i*dw + w0);
 			}
 			break;
 	}

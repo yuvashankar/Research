@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
     // int readNumber = ReadFile( data, argv[2] );
     // assert (readNumber == n);
-    TestCases( data, 8, 1.0 , sampling_frequency, n);
+    TestCases( data, 8, 128.0 , sampling_frequency, n);
 
     stft_result = ShortTimeFourierTransform(data, sampling_frequency, n, WINDOW_SIZE);
     WriteSTFTFile(stft_result, WINDOW_SIZE/2, ceil( (double) n / WINDOW_SIZE), sampling_frequency, "STFT_Result.log");
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     Find_Peaks(result, frequency, n, J);
 
     ARRAY_DATA global_max = Max(result, n * J);
-    printf("n = %d, global_max = %f\n", n, global_max.value);
+    printf("n = %d, global_max = %.64f\n", n, global_max.value);
 
     printf("Plotting Result\n");
 
