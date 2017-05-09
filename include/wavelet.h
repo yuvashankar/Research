@@ -61,7 +61,7 @@ typedef struct
 	The amount of "sub octaves" or sub scales inbetween the major scales that will be used. 
 	The lower the number, the higher the resolution of the result.
 */
-#define D_J 0.25
+#define D_J 0.03125
 
 /**
 	\var PAD_FLAG
