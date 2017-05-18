@@ -132,11 +132,13 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 
 		ARRAY_DATA impact_site = Max(temp, n);
 
+		double local_mean = gsl_stats_mean(temp, 1, impact_site.index);
+		
 		int system_setteled = 0;
 		int setteled_index = 0;
 		for (int j = impact_site.index; j < n; ++j)
 		{
-			if (temp[j] < SETTLING_PERCENTAGE * impact_site.value && system_setteled == 0)
+			if (temp[j] < SETTLING_PERCENTAGE * local_mean && system_setteled == 0)
 			{
 				setteled_index = j;
 				double setteled_time = (double) (setteled_index - impact_site.index)/FS;
@@ -359,7 +361,7 @@ void TestCases(double *data, const int flag, double freq, double sampling_freque
 	// double DT = 1./sampling_frequency;
 	double fsig = freq/sampling_frequency;
 	double dw = 2 * M_PI * fsig;
-	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
+	double w0 =  M_PI/4; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 
 	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
@@ -443,7 +445,7 @@ void TestCases(double *data, const int flag, double freq, double sampling_freque
 		case 8:
 			for (int i = 0; i < data_size; ++i)
 			{
-				data[i] = sin(i*dw + w0);
+				data[i] = 2 * cos(i*dw + w0);
 			}
 			break;
 	}

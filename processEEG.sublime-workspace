@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"local",
+				"local_mean"
+			],
+			[
 				"read",
 				"readNumber"
 			],
@@ -120,11 +124,11 @@
 	},
 	"file_history":
 	[
+		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/MasterThesis.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Application.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Numerical.tex",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
-		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/Plot.cc",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/matrix.gplot",
 		"/Users/vinay/Google Drive/Science/Research/src/matrix.gplot",
@@ -333,6 +337,14 @@
 		"selected_items":
 		[
 			[
+				"wavelet.cc",
+				"Morlets/wavelet.cc"
+			],
+			[
+				"main.cc",
+				"Morlets/main.cc"
+			],
+			[
 				"matrix.g",
 				"Morlets/matrix.gplot"
 			],
@@ -353,16 +365,8 @@
 				"include/wavelet.h"
 			],
 			[
-				"main.cc",
-				"Morlets/main.cc"
-			],
-			[
 				"wavelet.h",
 				"include/wavelet.h"
-			],
-			[
-				"wavelet.cc",
-				"Morlets/wavelet.cc"
 			],
 			[
 				"wave",
