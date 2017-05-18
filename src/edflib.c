@@ -37,6 +37,7 @@
 
 
 #include "edflib.h"
+#include <stdio.h>
 
 
 #define EDFLIB_VERSION 111
@@ -1283,7 +1284,7 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
   smp_per_record = hdr->edfparam[channel].smp_per_record;
 
   jump = hdr->recordsize - (smp_per_record * bytes_per_smpl);
-
+  
   if(hdr->edf)
   {
     for(i=0; i<n; i++)
@@ -1346,7 +1347,7 @@ int edfread_digital_samples(int handle, int edfsignal, int n, int *buf)
       sample_pntr++;
     }
   }
-
+  // printf("Malloc'd buffer and Filtered Buffer i = %d\n", i);
   hdr->edfparam[channel].sample_pntr = sample_pntr;
 
   return(n);

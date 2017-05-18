@@ -1,16 +1,21 @@
-set term x11
+#set term postscript enhanced colour font 'Helv, 10'
+#set output 'Result.ps'
+#set term x11
+#set term pngcairo enhanced font 'arial,12'
+#set output 'Result.png'
 set pm3d map
 
-#set logscale z 10
+set logscale z 10
 set logscale y 2
 
+#shows where the tics start
 set ticslevel 0
+
+set rmargin 55
 
 set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
-set title " ESRP of channel 4"
+set title "Time-Frequency graph of x(t)"
 
-set yrange [0.5:128]
 splot "DATA.log" matrix nonuniform with pm3d t ''
-#splot "Main_debug.log" matrix nonuniform with pm3d t ''
 pause -1 "Hit Return to continue"

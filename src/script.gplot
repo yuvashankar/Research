@@ -1,0 +1,9 @@
+set term pngcairo enhanced font 'arial,12'
+set output 'Channel 4.png' 
+set pm3d map
+set logscale y 2
+set ticslevel 0
+set xlabel "time (s)"
+set ylabel "Frequency (Hz)"
+set title "Channel 4"
+splot "Channel_4.log" matrix nonuniform with pm3d t ''
