@@ -164,44 +164,25 @@ int Wavelet(double* raw_data, double* scales,
 	fftw_complex *data_in, *fft_data;
 	fftw_plan plan_forward;
 
-
 	//Calculate Padding Required
-    // const int PADDED_SIZE = CalculatePaddingSize(n, 1);
-    const int PADDED_SIZE = n;
+    const int PADDED_SIZE = CalculatePaddingSize(n, 0);
+    // const int PADDED_SIZE = n;
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SAMPLE in RAD/SEC
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
-
-	//populate the FFTW data vector
-	for (i = 0; i < n; ++i)
-    {
-    	data_in[i][0] = raw_data[i];
-    	// data_in[i + n][0] = raw_data[i];
-
-    	// data_in[i + n][1] = 0.0;
-    	data_in[i    ][1] = 0.0;
-    }
-
-    // //Force the rest of the data vector to zero just in case
-    // for (int i = n; i < PADDED_SIZE; ++i)
-    // {
-    // 	data_in[i][0] = 0.0;
-    // 	data_in[i][1] = 0.0;
-    // }
-
-    double *temp = (double*) malloc(n * sizeof(double));
-    FILE* debug_file = fopen("debug.log", "w");
+	PopulateDataArray(raw_data, n, 0, 
+							  PADDED_SIZE, 0, data_in);
 
 	//Calculate the FFT of the data and store it in fft_data
 	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
 									FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
-	// #pragma omp parallel num_threads(1) private(i, j) shared (result, sampling_frequency, J, n, scales,  fft_data) default(none)
-	// {
+	#pragma omp parallel private(i, j) shared (result, sampling_frequency, J, n, scales,  fft_data) default(none)
+	{
 		double value;
 
 		fftw_plan plan_backward;
@@ -210,40 +191,22 @@ int Wavelet(double* raw_data, double* scales,
 		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
 		fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
 
-		// #pragma omp critical (make_plan)
-		// {
+		#pragma omp critical (make_plan)
+		{
 			//Preapre for the plan backwards
 			plan_backward = fftw_plan_dft_1d(PADDED_SIZE, filter_convolution, fftw_result, 
 				FFTW_BACKWARD, FFTW_ESTIMATE);
-		// }
+		}
 		
-	    // #pragma omp for
+	    #pragma omp for
 		for (i = 0; i < J; ++i)
 		{
 			//Force the arrays to zero
 			memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 
-			//Compute the Fourier Morlet at 0 and N/2
-			value = CompleteFourierMorlet(0.0, scales[i]);
-
-			filter_convolution[0][0] = ( fft_data[0][0] / PADDED_SIZE ) * value;
-			filter_convolution[0][1] = ( fft_data[0][1] / PADDED_SIZE ) * value;
-			
-			filter_convolution[PADDED_SIZE/2][0] = 0.0;
-			filter_convolution[PADDED_SIZE/2][1] = 0.0;
-
-			//Compute the Fourier Morlet Convolution in between
-			for (j = 1; j < PADDED_SIZE/2 - 1; ++j)
-			{
-				value = CompleteFourierMorlet( j * dw , scales[i]);
-
-				filter_convolution[j][0] = ( fft_data[j][0] / PADDED_SIZE ) * value;
-				filter_convolution[j][1] = ( fft_data[j][1] / PADDED_SIZE ) * value;
-
-				filter_convolution[PADDED_SIZE- j][0] = 0.0;
-				filter_convolution[PADDED_SIZE- j][1] = 0.0;
-			}
+			FrequencyMultiply(fft_data, PADDED_SIZE, scales[i], dw, 
+								  filter_convolution);
 
 			//Take the inverse FFT. 
 			fftw_execute(plan_backward);
@@ -252,28 +215,18 @@ int Wavelet(double* raw_data, double* scales,
 			for (j = 0; j < n; ++j)
 			{
 				result[i * n + j] = (1.0/ ( NORMALIZATION_FACTOR * sqrt(scales[i]) ) ) * MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
-				temp[j] = result[i * n + j];
 			}
-			
-			double total = 0;
-			for (int j = 0; j < n; ++j)
-			{
-				total += temp[j];
-			}
-
-			double variance = gsl_stats_variance(temp, 1, n);
-			fprintf(debug_file, "%.16f\t%.16f\t%.16f\n", SCALE_TO_FREQ(scales[i]), variance, total);
-
 		}
 
-		free(temp);
-		fclose(debug_file);
+		// free(temp);
+		// fclose(debug_file);
 
 		//FFTW sanitation engineering. 
 		fftw_destroy_plan(plan_backward);
 	    fftw_free(fftw_result);
 	    fftw_free(filter_convolution);
-	// }
+	}
+	
 	//Sanitation Engineering
 	fftw_destroy_plan(plan_forward); 
 	fftw_free(fft_data); fftw_free(data_in);

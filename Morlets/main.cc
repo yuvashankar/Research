@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     //Initialize the necessary arrays.
     double *data, *result;
     double *scales, *frequency;
-    double* stft_result;
+    // double* stft_result;
 
 
 
@@ -51,10 +51,9 @@ int main(int argc, char *argv[])
     assert (readNumber == n);
     // TestCases( data, 8, 16.0 , sampling_frequency, n);
 
-    stft_result = ShortTimeFourierTransform(data, sampling_frequency, n, WINDOW_SIZE);
-    WriteSTFTFile(stft_result, WINDOW_SIZE/2, ceil( (double) n / WINDOW_SIZE), sampling_frequency, "STFT_Result.log");
+    // stft_result = ShortTimeFourierTransform(data, sampling_frequency, n, WINDOW_SIZE);
+    // WriteSTFTFile(stft_result, WINDOW_SIZE/2, ceil( (double) n / WINDOW_SIZE), sampling_frequency, "STFT_Result.log");
 
-    
 
     printf("Computing Wavelet\n");
     Wavelet(data, scales, 
@@ -63,8 +62,8 @@ int main(int argc, char *argv[])
 
     Find_Peaks(result, frequency, n, J);
 
-    ARRAY_DATA global_max = Max(result, n * J);
-    printf("n = %d, global_max = %.16f\n", n, global_max.value);
+    // ARRAY_DATA global_max = Max(result, n * J);
+    // printf("n = %d, global_max = %.16f\n", n, global_max.value);
 
     printf("Plotting Result\n");
 
@@ -74,7 +73,7 @@ int main(int argc, char *argv[])
 
     printf("Done Wavelet Analysis\n");
     //Free up Memory
-    free(stft_result);
+    // free(stft_result);
 
     free(data);  free(result);
     free(scales); free(frequency);
