@@ -104,10 +104,6 @@ typedef struct
 	\var S0 
 	\brief the lowest scale that can be used to compute the CWT \f$ s_0 = 2 \delta t \f$
 */
-<<<<<<< HEAD
-// #define S0 2.0 * DT
-=======
->>>>>>> music_analysis
 #define S0 DT
 
 #define FREQ 128
@@ -214,11 +210,8 @@ int GetFileSize(char filename[]);
 	This function will write the resultant data computed by Wavelet() and ERSP() into the disk so that it can be graphed by Gnuplot. 
 	One can plot the output of this function using the matrix.gplot file. 
 */
-<<<<<<< HEAD
-int WriteFile(const double *data, const double *frequency, const int x, const int y, 
-=======
+
 int  WriteFile(const double *data, const double *frequency, const int x, const int y, int sampling_frequency,
->>>>>>> music_analysis
 	const char filename[]);
 
 /**
