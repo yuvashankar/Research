@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"local",
+				"local_mean"
+			],
+			[
+				"read",
+				"readNumber"
+			],
+			[
+				"dot",
+				"dot_location"
+			],
+			[
+				"file",
+				"file_name"
+			],
+			[
 				"padding",
 				"padding_type"
 			],
@@ -108,11 +124,22 @@
 	},
 	"file_history":
 	[
+<<<<<<< HEAD
 		"/Users/vinay/Google Drive/Science/Testing/main.c",
 		"/Users/vinay/Google Drive/Science/Research/src/main.cc",
 		"/Users/vinay/Google Drive/Science/Research/src/ERSP.cc",
 		"/Users/vinay/Google Drive/Science/Research/src/FilterTriggers.cc",
 		"/Users/vinay/Google Drive/Science/Research/include/processEEG.h",
+=======
+		"/Users/vinay/Google Drive/Science/Research/Morlets/wavelet.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/main.cc",
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/MasterThesis.tex",
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Application.tex",
+		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Numerical.tex",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/Plot.cc",
+		"/Users/vinay/Google Drive/Science/Research/Morlets/matrix.gplot",
+		"/Users/vinay/Google Drive/Science/Research/src/matrix.gplot",
+>>>>>>> music_analysis
 		"/Users/vinay/Google Drive/Science/Research/Morlets/makefile",
 		"/Users/vinay/Google Drive/Science/Research/include/wavelet.h",
 		"/Users/vinay/Google Drive/Science/Research/src/main.c",
@@ -126,17 +153,18 @@
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Implementation2.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Method.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Motivation.tex",
-		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Numerical.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/SafeDose Ltd./Cover_Letter/VinayYuvashankarCoverLetter.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/SafeDose Ltd./Resume/VinayYuvashankarResume.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/Section/Background.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/Abhrams Innovation Inc./Cover Letter/VinayYuvashankarCoverLetter.tex",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/CleanData.cc",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/ERSP.cc",
+<<<<<<< HEAD
 		"/Users/vinay/Google Drive/Science/Research/Morlets/Plot.cc",
 		"/Users/vinay/Google Drive/Science/Research/Morlets/matrix.gplot",
+=======
+>>>>>>> music_analysis
 		"/Users/vinay/Documents/Archives/Education/Undergraduate/Year 4/4F03/Assignments/A3/final_code/julia.c",
-		"/Users/vinay/Google Drive/Science/Thesis/Thesis/MasterThesis.tex",
 		"/Users/vinay/Google Drive/Science/Thesis/Thesis/ThesisBib.bib",
 		"/Users/vinay/Google Drive/Career Planning/Applications/Perimeter-Instutite/Resume/VinayYuvashankarResume.tex",
 		"/Users/vinay/Google Drive/Career Planning/Applications/Perimeter-Instutite/Cover_Letter/VinayYuvashankarCoverLetter.tex",
@@ -194,6 +222,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+<<<<<<< HEAD
 			"OBJ",
 			"FindTriggers",
 			"numberOfTriggers",
@@ -203,6 +232,10 @@
 			"int ERSP",
 			"int Wavelet",
 			"Wavelet",
+=======
+			"maximum_frequency",
+			"GenerateScales",
+>>>>>>> music_analysis
 			"S0",
 			"BioConnect",
 			"Let",
@@ -338,6 +371,7 @@
 				"src/main.cc"
 			],
 			[
+<<<<<<< HEAD
 				"makefile",
 				"Morlets/makefile"
 			],
@@ -364,6 +398,30 @@
 			[
 				"filter",
 				"src/FilterTriggers.c"
+=======
+				"main.cc",
+				"Morlets/main.cc"
+			],
+			[
+				"matrix.g",
+				"Morlets/matrix.gplot"
+			],
+			[
+				"makefile",
+				"Morlets/makefile"
+			],
+			[
+				"main.c",
+				"Morlets/main.cc"
+			],
+			[
+				"plot",
+				"Morlets/Plot.cc"
+			],
+			[
+				"wavelet",
+				"include/wavelet.h"
+>>>>>>> music_analysis
 			],
 			[
 				"find",
@@ -374,12 +432,21 @@
 				"include/wavelet.h"
 			],
 			[
+<<<<<<< HEAD
 				"wavelet.cc",
 				"Morlets/wavelet.cc"
 			],
 			[
 				"wave",
 				"include/wavelet.h"
+=======
+				"wave",
+				"include/wavelet.h"
+			],
+			[
+				"",
+				"src/FilterTriggers.c"
+>>>>>>> music_analysis
 			],
 			[
 				"esp.c",

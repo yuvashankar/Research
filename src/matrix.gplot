@@ -17,5 +17,9 @@ set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
 set title "Time-Frequency graph of x(t)"
 
+<<<<<<< HEAD
+=======
+$set yrange [0.5:128]
+>>>>>>> music_analysis
 splot "DATA.log" matrix nonuniform with pm3d t ''
 pause -1 "Hit Return to continue"

@@ -11,12 +11,18 @@
 
 #include <omp.h>
 
+typedef struct 
+{
+	double value;
+	int    index;
+} ARRAY_DATA;
+
 //Global Constants
 
 /*! \def QUAD_ROOT_PI 
-	\brief the quad root of pi (\f$ \pi^{-0.25} \f$) computed to machine precision
+\brief the quad root of pi (\f$ \pi^{-0.25} \f$) computed to machine precision
 */
-#define QUAD_ROOT_PI 0.7511255444649425
+#define QUAD_ROOT_PI 0.75112554446494248
 
 /** 	
 	\var C_SIGMA 
@@ -24,14 +30,17 @@
 
  	\f[ C_\sigma = (1 + e^{-\sigma^2} - 2e^{-\frac{3\sigma^2}{4}})^{-\frac{1}{2}} \f]
 */
-#define C_SIGMA 1.00000000000187941284040286940
+#define C_SIGMA 1.0000000000018794
+
+
 /**
 	\var K_SIGMA
 	\brief A constant needed to compute the Morlet Wavelet precalculated to machine eps
 
 	\f[ \kappa_\sigma = e^{-\frac{\sigma^2}{2}} \f]
 */
-#define K_SIGMA 1.52299797447126284361366292335e-08
+#define K_SIGMA 1.522997974471262843e-08
+
 
 /**
 	\var W_0 
@@ -39,18 +48,20 @@
 */
 #define W_0 6.0
 
+
 /**
 	\var W_0_2
 	\brief The fundamental frequency of the Morlet Wavelet squared
 */
 #define W_0_2 36.0
 
+
 /**
 	\var D_J
 	The amount of "sub octaves" or sub scales inbetween the major scales that will be used. 
 	The lower the number, the higher the resolution of the result.
 */
-#define D_J 0.0625
+#define D_J 0.03125
 
 /**
 	\var PAD_FLAG
@@ -81,7 +92,7 @@
 	\var FS
 	\brief Used by TestCases() to generate sample data
 */
-#define FS 2048
+#define FS 500
 
 /**
 	\var DT 
@@ -93,24 +104,27 @@
 	\var S0 
 	\brief the lowest scale that can be used to compute the CWT \f$ s_0 = 2 \delta t \f$
 */
+<<<<<<< HEAD
 // #define S0 2.0 * DT
+=======
+>>>>>>> music_analysis
 #define S0 DT
 
-#define FREQ 16.0
-#define DATA_SIZE 6144 
+#define FREQ 128
+#define DATA_SIZE 6144
 
 //Plotting Constants
 /**
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-#define MAX_FREQUENCY 60.0
+#define MAX_FREQUENCY FS/2
 
 /**
 	\var MIN_FREQUENCY
 	\brief The minimum frequency that will be analyzed
 */
-#define MIN_FREQUENCY 2.0
+#define MIN_FREQUENCY 0.5
 	
 #define MAX_DATA_SIZE 10000000
 
@@ -166,7 +180,7 @@ void FillData(double * data);
 	<tr><td> 7 					<td> Frequency Sweet from MIN_FREQUENCY to MAX_FREQUENCY
 	</table>
 */
-void TestCases(double *data, const int flag);
+void TestCases(double *data, const int flag, double freq, double sampling_frequency, int data_size);
 
 /**
 	\fn int ReadFile(double data[], char filename[])
@@ -180,6 +194,8 @@ void TestCases(double *data, const int flag);
 
 */
 int  ReadFile(double data[], char filename[]);
+
+int GetFileSize(char filename[]);
 
 /**
 	\fn int WriteFile(const double *data, const double *period, const int x, const int y, const char* filename)
@@ -198,7 +214,11 @@ int  ReadFile(double data[], char filename[]);
 	This function will write the resultant data computed by Wavelet() and ERSP() into the disk so that it can be graphed by Gnuplot. 
 	One can plot the output of this function using the matrix.gplot file. 
 */
+<<<<<<< HEAD
 int WriteFile(const double *data, const double *frequency, const int x, const int y, 
+=======
+int  WriteFile(const double *data, const double *frequency, const int x, const int y, int sampling_frequency,
+>>>>>>> music_analysis
 	const char filename[]);
 
 /**
@@ -233,7 +253,7 @@ int WriteGnuplotScript(const char graph_title[], const char filename[]);
 int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
 	const char filename[]);
 
-int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
+int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type, int sampling_frequency,
 	char graph_title[],
 	char filename[]);
 
@@ -434,7 +454,7 @@ int Generate_FFTW_Wisdom(int padded_size);
 	\param array The array to be analyzed
 	\param size The size of the array
 */
-double Max(double * array, int size);
+ARRAY_DATA Max(double * array, int size);
 
 /**
 	\fn double Min(double* array, int size)
@@ -513,4 +533,13 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 int PopulateDataArray(double* input_data, const int data_size, const int trial_number,
 	const int padded_size, const int padding_type,
 	fftw_complex* output_data);
+
+
+int Find_Peaks(double* array, double* frequency, int n, int J);
+
+double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, int n, int window_size);
+
+
+#define WINDOW_SIZE 500
+int WriteSTFTFile(const double *data, const int x, const int y, int sampling_frequency, const char filename[]);
 

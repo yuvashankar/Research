@@ -2,4 +2,6 @@
 morlet
 *.log
 *.dSYM
+*.txt
+
 

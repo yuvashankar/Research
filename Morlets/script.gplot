@@ -1,10 +1,11 @@
-set term x11
+#set term x11
+set term pngcairo enhanced font 'arial,12
+set output 'STFT_Low_Res.png'
 set pm3d map
-set logscale z 10
 set logscale y 2
 set ticslevel 0
 set xlabel "time (s)"
 set ylabel "Frequency (Hz)"
-set title "dee Herro"
-splot "DATA.log" matrix nonuniform with pm3d t ''
-pause -1 "Hit Return to continue"
+set title "STFT of x(t)"
+splot "STFT_Result.log" matrix nonuniform with pm3d t ''
+#pause -1 "Hit Return to continue"
