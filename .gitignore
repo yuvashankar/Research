@@ -1,5 +1,7 @@
 *.o
 morlet
+ERSP
+*.png
 *.log
 *.dSYM
 *.txt
