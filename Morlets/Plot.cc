@@ -409,32 +409,32 @@ COLOUR GetColour(double v, RANGE data_range)
    double dv = data_range.maximum - data_range.minimum;
 
 
-   // c.r = 1.0 - (v - data_range.minimum) / dv;
-	c.g = 1.0 - (v - data_range.minimum) / dv;
-	c.b = 1.0 - (v - data_range.minimum) / dv;
+ //   // c.r = 1.0 - (v - data_range.minimum) / dv;
+	// c.g = 1.0 - (v - data_range.minimum) / dv;
+	// c.b = 1.0 - (v - data_range.minimum) / dv;
    
 
 
-   // if (v < (data_range.minimum + 0.25 * dv)) 
-   // {
-   //    c.r = 0.0;
-   //    c.g = 4 * (v - data_range.minimum) / dv;
-   // } 
-   // else if (v < (data_range.minimum + 0.5 * dv)) 
-   // {
-   //    c.r = 0.0;
-   //    c.b = 1 + 4 * (data_range.minimum + 0.25 * dv - v) / dv;
-   // } 
-   // else if (v < (data_range.minimum + 0.75 * dv)) 
-   // {
-   //    c.r = 4 * (v - data_range.minimum - 0.5 * dv) / dv;
-   //    c.b = 0.0;
-   // } 
-   // else 
-   // {
-   //    c.g = 1 + 4 * (data_range.minimum + 0.75 * dv - v) / dv;
-   //    c.b = 0.0;
-   // }
+   if (v < (data_range.minimum + 0.25 * dv)) 
+   {
+      c.r = 0.0;
+      c.g = 4 * (v - data_range.minimum) / dv;
+   } 
+   else if (v < (data_range.minimum + 0.5 * dv)) 
+   {
+      c.r = 0.0;
+      c.b = 1 + 4 * (data_range.minimum + 0.25 * dv - v) / dv;
+   } 
+   else if (v < (data_range.minimum + 0.75 * dv)) 
+   {
+      c.r = 4 * (v - data_range.minimum - 0.5 * dv) / dv;
+      c.b = 0.0;
+   } 
+   else 
+   {
+      c.g = 1 + 4 * (data_range.minimum + 0.75 * dv - v) / dv;
+      c.b = 0.0;
+   }
 
    return(c);
 }

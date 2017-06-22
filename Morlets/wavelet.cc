@@ -77,6 +77,8 @@ double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, 
 int Find_Peaks(double* array, double* frequency, int n, int J)
 {
 	FILE*       maximum_file  = fopen("maximum.log", "w");
+	FILE*		debug_file    = fopen("debug.log",   "w");
+
 	ARRAY_DATA *maximum_array = (ARRAY_DATA*) malloc (J * sizeof(ARRAY_DATA));
 	int local_maximum_location[J];
 	double* temp = (double*) malloc(n * sizeof(double));
@@ -125,8 +127,8 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 		for (int j = 0; j < n; ++j)
 		{
 			temp[j] = array[arr_index * n + j];
-			// if (i == 1)
-			// 	fprintf(maximum_file, "%f\t%.16f\n", (double) j/FS, array[arr_index * n + j]);
+			if (i == 1)
+				fprintf(debug_file, "%f\t%.16f\n", (double) j/FS, array[arr_index * n + j]);
 			
 		}
 
@@ -141,6 +143,7 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 			if (temp[j] < SETTLING_PERCENTAGE * local_mean && system_setteled == 0)
 			{
 				setteled_index = j;
+
 				double setteled_time = (double) (setteled_index - impact_site.index)/FS;
 				printf("Frequency[%d]: %f, Settled Time = %f\n", i, frequency[arr_index], setteled_time);
 				system_setteled = 1;
@@ -156,7 +159,7 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 }
 
 int Wavelet(double* raw_data, double* scales, 
-	double sampling_frequency, int n, int J,
+	double sampling_frequency, int n, int J, int padding_type,
 	double* result)
 {
 	//Variable Declarations
@@ -165,7 +168,7 @@ int Wavelet(double* raw_data, double* scales,
 	fftw_plan plan_forward;
 
 	//Calculate Padding Required
-    const int PADDED_SIZE = CalculatePaddingSize(n, 0);
+    const int PADDED_SIZE = CalculatePaddingSize(n, padding_type);
     // const int PADDED_SIZE = n;
 
     const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SAMPLE in RAD/SEC
@@ -174,11 +177,10 @@ int Wavelet(double* raw_data, double* scales,
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
 	PopulateDataArray(raw_data, n, 0, 
-							  PADDED_SIZE, 0, data_in);
+							  PADDED_SIZE, padding_type, data_in);
 
 	//Calculate the FFT of the data and store it in fft_data
-	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
-									FFTW_FORWARD, FFTW_ESTIMATE);
+	plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, FFTW_FORWARD, FFTW_ESTIMATE);
 	fftw_execute(plan_forward);
 
 	#pragma omp parallel private(i, j) shared (result, sampling_frequency, J, n, scales,  fft_data) default(none)
@@ -205,16 +207,17 @@ int Wavelet(double* raw_data, double* scales,
 			memset(filter_convolution, 0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 			memset(fftw_result,        0.0, sizeof( fftw_complex ) * PADDED_SIZE);
 
+			//Multiply in the Frequency domain
 			FrequencyMultiply(fft_data, PADDED_SIZE, scales[i], dw, 
 								  filter_convolution);
-
+			
 			//Take the inverse FFT. 
 			fftw_execute(plan_backward);
 		    
 			//Calculate the power and store it in result
 			for (j = 0; j < n; ++j)
 			{
-				result[i * n + j] = (1.0/ ( NORMALIZATION_FACTOR * sqrt(scales[i]) ) ) * MAGNITUDE(fftw_result[j][0], fftw_result[j][1]);
+				result[i * n + j] = MAGNITUDE(fftw_result[j][0], fftw_result[j][1]) / ( NORMALIZATION_FACTOR * sqrt(scales[i]) );
 			}
 		}
 
@@ -319,7 +322,7 @@ void TestCases(double *data, const int flag, double freq, double sampling_freque
 
 	double frequency_increment = (MAX_FREQUENCY - MIN_FREQUENCY)/ 3.0; //3.0 seconds. 
 	
-	int t = 2 * sampling_frequency; //At 2 seconds. 
+	int t = 1.5 * sampling_frequency; //At 2 seconds. 
 
 	switch(flag)
 	{

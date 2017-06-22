@@ -352,7 +352,7 @@ double CWT_Dirac_Complex(double time, double scale);
 
 */
 int Wavelet(double* raw_data, double* scales, 
-	double sampling_frequency, int n, int J,
+	double sampling_frequency, int n, int J, int padding_type,
 	double* result);
 
 /**

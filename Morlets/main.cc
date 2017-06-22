@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     int sampling_frequency = atoi( argv[1] );
     
     int n = GetFileSize( argv[2] );
-    // int n = 15 * sampling_frequency;
+    // int n = 3 * sampling_frequency;
     
 
     const int J = (int) MAX_I - MIN_I;
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
     int readNumber = ReadFile( data, argv[2] );
     assert (readNumber == n);
-    // TestCases( data, 8, 16.0 , sampling_frequency, n);
+    // TestCases( data, 1, 16.0 , sampling_frequency, n);
 
     // stft_result = ShortTimeFourierTransform(data, sampling_frequency, n, WINDOW_SIZE);
     // WriteSTFTFile(stft_result, WINDOW_SIZE/2, ceil( (double) n / WINDOW_SIZE), sampling_frequency, "STFT_Result.log");
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
     printf("Computing Wavelet\n");
     Wavelet(data, scales, 
-            sampling_frequency, n, J,
+            sampling_frequency, n, J, 2,
             result);
 
     Find_Peaks(result, frequency, n, J);
