@@ -54,6 +54,14 @@ int main(int argc, char *argv[])
     // stft_result = ShortTimeFourierTransform(data, sampling_frequency, n, WINDOW_SIZE);
     // WriteSTFTFile(stft_result, WINDOW_SIZE/2, ceil( (double) n / WINDOW_SIZE), sampling_frequency, "STFT_Result.log");
 
+    FILE* dft_out = fopen("DFT_RESULT.log", "w");
+    double* DFT_Result = FFT(data, n);
+    for (int i = 0; i < n; ++i)
+    {
+        fprintf(dft_out, "%f\t%f\n", (i * sampling_frequency)/n, DFT_Result[i]);
+    }
+    fclose(dft_out);
+    free(DFT_Result);
 
     printf("Computing Wavelet\n");
     Wavelet(data, scales, 

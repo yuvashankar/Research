@@ -73,6 +73,34 @@ double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, 
 	return(result);
 }
 
+double* FFT(double * raw_data, int n)
+{
+	fftw_complex *data_in, *fft_data;
+	const int PADDED_SIZE = n;
+	double * result =   (double*)        malloc( PADDED_SIZE * sizeof(double) );
+	data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+
+	//Fill Data Array
+	for (int i = 0; i < n; ++i)
+	{
+		data_in[i][0] = raw_data[i];
+		data_in[i][1] = 0.0;
+	}
+
+	//Calculate the FFT of the data and store it in fft_data
+	fftw_plan plan_forward = fftw_plan_dft_1d(PADDED_SIZE, data_in, fft_data, 
+									FFTW_FORWARD, FFTW_ESTIMATE);
+
+	fftw_execute(plan_forward);
+
+	for (int i = 0; i < n/2; ++i)
+	{
+		result[i] = MAGNITUDE(fft_data[i][0], fft_data[i][1]);
+	}
+
+	return(result);
+}
 
 int Find_Peaks(double* array, double* frequency, int n, int J)
 {
