@@ -8,10 +8,9 @@
 #include <gsl/gsl_statistics.h>
 
 #define TEST 0.00001
-#define SETTLING_PERCENTAGE 1.02
 #define NORMALIZATION_FACTOR 0.375402913609157562
 
-double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, int n, int window_size)
+double* ShortTimeFourierTransform(double * raw_data, int n, int window_size)
 {
 	//Variable Declarations
 	int i, j;
@@ -101,108 +100,6 @@ double* FFT(double * raw_data, int n)
 	return(result);
 }
 
-int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, int J)
-{
-	FILE*       maximum_file  = fopen("maximum.log", "w");
-	FILE*		debug_file    = fopen("debug.log",   "w");
-
-	ARRAY_DATA *maximum_array = (ARRAY_DATA*) malloc (J * sizeof(ARRAY_DATA));
-	int local_maximum_location[J];
-	double* temp = (double*) malloc(n * sizeof(double));
-
-	//Find the local maximum at every frequency
-	for (int i = 0; i < J; ++i)
-	{
-		ARRAY_DATA max;
-		max.value = array[i * n];
-		max.index = i * n;
-
-		for (int j = 0; j < n; ++j)
-		{
-			if (array[i * n + j] > max.value)
-			{
-				max.value = array[i * n + j];
-				max.index = i * n + j;
-			}
-		}
-
-		maximum_array[i] = max;
-		fprintf(maximum_file, "%f\t%f\n", frequency[i], maximum_array[i].value);
-	}
-
-	//Calculate the deravitive of the signal and isolate the peaks
-	double sign = (maximum_array[1].value - maximum_array[0].value) / (frequency[1] - frequency[0]);
-	int    max_count = 0;
-	for (int i = 0; i < J - 1; ++i)
-	{
-		double slope = (maximum_array[i + 1].value - maximum_array[i].value) / (frequency[i + 1] - frequency[i]);
-		if (signbit(slope) != signbit(sign) && sign < 0)
-		{
-			local_maximum_location[max_count] = i;
-			max_count++;
-		}
-
-		sign = slope;
-	}
-
-	for (int i = 0; i < max_count; ++i)
-	{
-		int arr_index = local_maximum_location[i];
-
-		//Copy data into memory block
-		for (int j = 0; j < n; ++j)
-		{
-			temp[j] = array[arr_index * n + j];
-			if (i == 1)
-			{
-				// fprintf(debug_file, "%f\t%.16f\n", (double) j/FS, log2(array[arr_index * n + j]) );
-			}
-				
-			
-		}
-
-		ARRAY_DATA impact_site = Max(temp, n);
-
-		double local_mean = gsl_stats_mean(temp, 1, impact_site.index);
-		
-		int system_setteled = 0;
-		ARRAY_DATA setteled_site;
-		for (int j = impact_site.index; j < n; ++j)
-		{
-			if (temp[j] < SETTLING_PERCENTAGE * local_mean && system_setteled == 0)
-			{
-				setteled_site.index = j;
-				setteled_site.value = temp[j];
-				
-				double dampening_ratio = Determine_Dampening_Ratio(impact_site, setteled_site, sampling_frequency);
-				double setteled_time = (double) (setteled_site.index - impact_site.index)/sampling_frequency;
-				printf("Frequency[%d]: %f, Settled Time = %f, Dampening Ratio = %f\n", i, frequency[arr_index], setteled_time, dampening_ratio);
-				system_setteled = 1;
-			}
-		}
-	}
-	
-	fclose(maximum_file);
-	free(maximum_array);
-	free(temp);
-	return(0);
-}
-
-double Determine_Dampening_Ratio(ARRAY_DATA impact_location, ARRAY_DATA settled_location, int sampling_frequency)
-{
-	double dampening_ratio = 0.0;
-
-	double rise =  (double) log2( settled_location.value ) - log2( impact_location.value );
-	double run = (double) ( settled_location.index - impact_location.index ) / sampling_frequency;
-
-	// printf("Rise = %f, Run = %f\n", rise, run);
-
-	dampening_ratio = rise / run;
-
-	return dampening_ratio;
-
-}
-
 int Wavelet(double* raw_data, double* scales, 
 	double sampling_frequency, int n, int J, int padding_type,
 	double* result)
@@ -230,7 +127,7 @@ int Wavelet(double* raw_data, double* scales,
 
 	#pragma omp parallel private(i, j) shared (result, sampling_frequency, J, n, scales,  fft_data) default(none)
 	{
-		double value;
+		// double value;
 
 		fftw_plan plan_backward;
 		fftw_complex *filter_convolution, *fftw_result;
@@ -333,7 +230,6 @@ double* GenerateScales(const double minimum_frequency, const double maximum_freq
 
 double* IdentifyFrequencies(double* scales, int count)
 {
-
 	double * frequency = (double*) malloc( count * sizeof(double) );
 
 	for (int i = 0; i < count; ++i)
@@ -341,7 +237,6 @@ double* IdentifyFrequencies(double* scales, int count)
 		frequency[i] = (W_0)/(scales[i] * 2 * M_PI);
 	}
 	return(frequency);
-
 }
 
 double CompleteFourierMorlet(double w, const double scale)
@@ -470,35 +365,6 @@ int WriteDebug(const double *data, const int length, const int sampling_frequenc
     
     fclose(out_file);
     return 0;
-}
-
-void FillData(double * data)
-{
-	// Fit a FREQ signal at two points
-	// double DT = 1./FS;
-	double fsig = FREQ/FS;
-	double dw = 2*M_PI*fsig;
-	double w0 =  0.01; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
-	int one_peri = (int)1./fsig;
-	printf("FS  %.2d   Pitch %.f   Discrete Period = %d \n",FS,FREQ,one_peri);
-
-	for (int i = 0; i < DATA_SIZE; ++i)
-	{
-		data[i] = 0.0;
-	}
-
-	// //Impulse Sample
-	// data[2000] = 1.0;
-	int i;
-	// double t=0;
-	for(i=0;i<DATA_SIZE;i++){
-		// data[i] = sin(i*dw) + sin(i*dw*4);
-		data[i]=0.;
-		// if((i>200)&(i<400))data[i]=sin( (i-200)*dw+w0);
-		if((i>0.25*DATA_SIZE)&(i<0.25*DATA_SIZE+one_peri)) data[i]=sin( (i-200)*dw+w0);
-		if((i>0.5*DATA_SIZE)&(i<0.5*DATA_SIZE+2*one_peri))data[i]=sin( (i-1000)*dw+w0);
-		if((i>0.75*DATA_SIZE)&(i<0.75*DATA_SIZE+3*one_peri))data[i]=sin( (i-2000)*dw+w0);
-	}
 }
 
 int GetFileSize(char filename[])

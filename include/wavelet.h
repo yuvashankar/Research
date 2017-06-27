@@ -153,7 +153,7 @@ typedef struct
 
 	Similar to TestCases()
 */
-void FillData(double * data);
+// void FillData(double * data);
 
 /**
 	\fn void TestCases(double *data, const int flag)
@@ -530,13 +530,10 @@ int PopulateDataArray(double* input_data, const int data_size, const int trial_n
 
 int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, int J);
 
-double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, int n, int window_size);
+double* ShortTimeFourierTransform(double * raw_data, int n, int window_size);
 
 
 #define WINDOW_SIZE 500
 int WriteSTFTFile(const double *data, const int x, const int y, int sampling_frequency, const char filename[]);
 
 double* FFT(double * raw_data, int n);
-
-double Determine_Dampening_Ratio(ARRAY_DATA impact_location, ARRAY_DATA settled_location, int sampling_frequency);
-
