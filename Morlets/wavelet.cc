@@ -8,7 +8,7 @@
 #include <gsl/gsl_statistics.h>
 
 #define TEST 0.00001
-#define SETTLING_PERCENTAGE 0.02
+#define SETTLING_PERCENTAGE 1.02
 #define NORMALIZATION_FACTOR 0.375402913609157562
 
 double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, int n, int window_size)
@@ -63,7 +63,6 @@ double* ShortTimeFourierTransform(double * raw_data, double sampling_frequency, 
 			result[j * num_windows + i] = MAGNITUDE(fft_data[j][0], fft_data[j][1]);
 			// fprintf(STFT_FILE, "%d\t%f\t%d\n", j, result[j * num_windows + i], j * num_windows + i);
 		}
-
 	}
 
 	// fclose(STFT_FILE);
@@ -102,7 +101,7 @@ double* FFT(double * raw_data, int n)
 	return(result);
 }
 
-int Find_Peaks(double* array, double* frequency, int n, int J)
+int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, int J)
 {
 	FILE*       maximum_file  = fopen("maximum.log", "w");
 	FILE*		debug_file    = fopen("debug.log",   "w");
@@ -146,7 +145,6 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 		sign = slope;
 	}
 
-	
 	for (int i = 0; i < max_count; ++i)
 	{
 		int arr_index = local_maximum_location[i];
@@ -156,7 +154,10 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 		{
 			temp[j] = array[arr_index * n + j];
 			if (i == 1)
-				fprintf(debug_file, "%f\t%.16f\n", (double) j/FS, array[arr_index * n + j]);
+			{
+				// fprintf(debug_file, "%f\t%.16f\n", (double) j/FS, log2(array[arr_index * n + j]) );
+			}
+				
 			
 		}
 
@@ -165,25 +166,41 @@ int Find_Peaks(double* array, double* frequency, int n, int J)
 		double local_mean = gsl_stats_mean(temp, 1, impact_site.index);
 		
 		int system_setteled = 0;
-		int setteled_index = 0;
+		ARRAY_DATA setteled_site;
 		for (int j = impact_site.index; j < n; ++j)
 		{
 			if (temp[j] < SETTLING_PERCENTAGE * local_mean && system_setteled == 0)
 			{
-				setteled_index = j;
-
-				double setteled_time = (double) (setteled_index - impact_site.index)/FS;
-				printf("Frequency[%d]: %f, Settled Time = %f\n", i, frequency[arr_index], setteled_time);
+				setteled_site.index = j;
+				setteled_site.value = temp[j];
+				
+				double dampening_ratio = Determine_Dampening_Ratio(impact_site, setteled_site, sampling_frequency);
+				double setteled_time = (double) (setteled_site.index - impact_site.index)/sampling_frequency;
+				printf("Frequency[%d]: %f, Settled Time = %f, Dampening Ratio = %f\n", i, frequency[arr_index], setteled_time, dampening_ratio);
 				system_setteled = 1;
 			}
 		}
 	}
-
-
+	
 	fclose(maximum_file);
 	free(maximum_array);
 	free(temp);
 	return(0);
+}
+
+double Determine_Dampening_Ratio(ARRAY_DATA impact_location, ARRAY_DATA settled_location, int sampling_frequency)
+{
+	double dampening_ratio = 0.0;
+
+	double rise =  (double) log2( settled_location.value ) - log2( impact_location.value );
+	double run = (double) ( settled_location.index - impact_location.index ) / sampling_frequency;
+
+	// printf("Rise = %f, Run = %f\n", rise, run);
+
+	dampening_ratio = rise / run;
+
+	return dampening_ratio;
+
 }
 
 int Wavelet(double* raw_data, double* scales, 
