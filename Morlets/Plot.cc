@@ -65,7 +65,7 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 		case 0: //Plot_PNG
 			
 			strcat(file_name_ext, ".png");
-			writeFlag = Plot_PNG(data, frequency, num_y, num_x, graph_title, file_name_ext);
+			writeFlag = Plot_PNG(data, frequency, sampling_frequency, num_y, num_x, graph_title, file_name_ext);
 			break;
 
 		case 1: //GnuPlot
@@ -80,7 +80,7 @@ int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type,
 	return(writeFlag);
 }
 
-int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
+int Plot_PNG(double * data, double * periods, int sampling_frequency, int num_x, int num_y, char graph_title[], 
 	const char filename[])
 {
 	int i, j, k;
@@ -178,13 +178,13 @@ int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_t
 			}
 		}
 		// ADD A TIME MARKER
-		if( (stride * i) % FS == 0 )
+		if( (stride * i) % sampling_frequency == 0 )
 		{
 			png.filledsquare( PLOT_OX + i - 4, PLOT_OY,
 							  PLOT_OX + i + 4, PLOT_OY - 20,
 							0.0, 0.0, 0.0);
 
-			sprintf(temp_string, "%.1d", (stride * i)/FS);
+			sprintf(temp_string, "%.1d", (stride * i)/sampling_frequency);
 			
 			// // int time_text_width = png.get_text_width(font_location, tic_font_size, temp_string);
 			png.plot_text( font_location, tic_font_size,
@@ -272,7 +272,7 @@ int WriteSTFTFile(const double *data, const int x, const int y, int sampling_fre
     return(0);
 }
 
-int  WriteFile(const double *data, const double *frequency, const int x, const int y, int sampling_frequency,
+int WriteFile(const double *data, const double *frequency, const int x, const int y, int sampling_frequency,
 	const char filename[])
 {
 

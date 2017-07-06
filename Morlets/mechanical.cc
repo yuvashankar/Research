@@ -9,6 +9,7 @@ double Determine_Dampening_Ratio(ARRAY_DATA impact_location, ARRAY_DATA settled_
 
 int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, int J)
 {
+	FILE* debug_file = fopen("debug.log", "w");
 	ARRAY_DATA *maximum_array = (ARRAY_DATA*) malloc(J * sizeof(ARRAY_DATA));
 	double *temp              = (double*)     malloc(n * sizeof(double)    );
 	int local_maximum_location[J];
@@ -57,10 +58,10 @@ int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, 
 		for (int j = 0; j < n; ++j)
 		{
 			temp[j] = array[arr_index * n + j];
-			if (i == 1)
-			{
-				// fprintf(debug_file, "%f\t%.16f\n", (double) j/FS, log2(array[arr_index * n + j]) );
-			}
+			// if (i == 1)
+			// {
+			// 	fprintf(debug_file, "%f\t%.16f\n", (double) j/FS, log2(array[arr_index * n + j]) );
+			// }
 		}
 
 		ARRAY_DATA impact_site = Max(temp, n);
@@ -84,6 +85,7 @@ int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, 
 		}
 	}
 	
+	fclose(debug_file);
 	// fclose(maximum_file);
 	free(maximum_array);
 	free(temp);

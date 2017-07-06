@@ -3,8 +3,8 @@
 // double CompleteRealMorlet (double x, double scale);
 // double CompleteComplexMorlet(double x, double scale);
 
-int CWT_Convolution(double *data, double * scales, int data_size, int num_of_scales, 
-	double* result)
+int CWT_Convolution(double *data, double * scales, int data_size, int num_of_scales, double d_t,
+    double* result)
 {
 	double *conWindow, *complexWindow;
     double *realResult, *complexResult;
@@ -31,7 +31,7 @@ int CWT_Convolution(double *data, double * scales, int data_size, int num_of_sca
         {
             conWindow[j] =       CompleteRealMorlet(temp, scales[i]);
             complexWindow[j] = - CompleteComplexMorlet(temp, scales[i]); //Complex Conjucate
-            temp += DT;
+            temp += d_t;
         }
 
         Convolute(data, conWindow, complexWindow, data_size, conSize,

@@ -30,12 +30,14 @@ int main(int argc, char *argv[])
 
     //Get File Size
     int sampling_frequency = atoi( argv[1] );
+    double d_t = 1.0/ (double) sampling_frequency;
     
     int n = GetFileSize( argv[2] );
     // int n = 3 * sampling_frequency;
     
-
-    const int J = (int) MAX_I - MIN_I;
+    // const int J = MAX_I - MIN_I;
+    const int J = (int) freq_to_scale(MIN_FREQUENCY, d_t) - freq_to_scale(MAX_FREQUENCY, d_t);
+    assert (J > 0);
 
     //Memory Allocations
     data    =  (double*) malloc(n *     sizeof(double));
@@ -43,7 +45,7 @@ int main(int argc, char *argv[])
     assert(data != NULL); assert(result != NULL); 
 
     //Get Scales and Frequencies
-    scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, S0);
+    scales    = GenerateScales(MIN_FREQUENCY, MAX_FREQUENCY, d_t);
     frequency = IdentifyFrequencies(scales, J);
     assert(scales != NULL); assert(frequency!= NULL);
 

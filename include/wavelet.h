@@ -92,19 +92,19 @@ typedef struct
 	\var FS
 	\brief Used by TestCases() to generate sample data
 */
-#define FS 500
+// #define FS 500
 
 /**
 	\var DT 
 	\brief \f$ \delta t = \frac{1}{f_s} \f$
 */
-#define DT 1.0/FS
+// #define DT 1.0/FS
 
 /**
 	\var S0 
 	\brief the lowest scale that can be used to compute the CWT \f$ s_0 = 2 \delta t \f$
 */
-#define S0 DT
+// #define S0 DT
 
 #define FREQ 128
 #define DATA_SIZE 6144
@@ -114,7 +114,8 @@ typedef struct
 	\var MAX_FREQUENCY
 	\brief The maximum frequency that will be analyzed
 */
-#define MAX_FREQUENCY FS/2
+// #define MAX_FREQUENCY FS/2
+#define MAX_FREQUENCY 128.0	
 
 /**
 	\var MIN_FREQUENCY
@@ -124,15 +125,15 @@ typedef struct
 	
 #define MAX_DATA_SIZE 10000000
 
-#define MIN_I FREQ_TO_SCALE(MAX_FREQUENCY)
-#define MAX_I FREQ_TO_SCALE(MIN_FREQUENCY)
+// #define MIN_I FREQ_TO_SCALE(MAX_FREQUENCY)
+// #define MAX_I FREQ_TO_SCALE(MIN_FREQUENCY)
 
 //Macros
 /*!
 \def FREQ_TO_SCALE(x)
 \brief Converts a given frequency \a x to a scale, handy for debugging. Note the scale is divided into sub octaves
 */
-#define FREQ_TO_SCALE(x) floor( ( log2( (W_0) / (S0 * 2 * M_PI * x) ) )/D_J)
+// #define FREQ_TO_SCALE(x) floor( ( log2( (W_0) / (S0 * 2 * M_PI * x) ) )/D_J)
 
 /*!
     \def SCALE_TO_FREQ(x)
@@ -243,7 +244,7 @@ int WriteGnuplotScript(const char graph_title[], const char filename[]);
 	
 	The lines_size plots the same pixel in a number of vertical columns. THis allows the vertical scaling to be increased and decreased. 
 */
-int Plot_PNG(double * data, double * periods, int num_x, int num_y, char graph_title[], 
+int Plot_PNG(double * data, double * periods, int sampling_frequency, int num_x, int num_y, char graph_title[], 
 	const char filename[]);
 
 int Plot(double * data, double * frequency, int num_x, int num_y, int plot_type, int sampling_frequency,
@@ -406,7 +407,7 @@ double* IdentifyFrequencies(double* scales, int count);
 void Convolute(double *data, double *conWindow, double * complexWindow, int data_size, int conSize,
 	double* realResult, double* complexResult);
 
-int CWT_Convolution(double *data, double * scales, int data_size, int num_of_scales, 
+int CWT_Convolution(double *data, double * scales, int data_size, int num_of_scales, double d_t,
 	double* result);
 
 /**
@@ -537,3 +538,5 @@ double* ShortTimeFourierTransform(double * raw_data, int n, int window_size);
 int WriteSTFTFile(const double *data, const int x, const int y, int sampling_frequency, const char filename[]);
 
 double* FFT(double * raw_data, int n);
+
+int freq_to_scale(double frequency, double s_0);

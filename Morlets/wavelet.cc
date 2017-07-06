@@ -132,8 +132,8 @@ int Wavelet(double* raw_data, double* scales,
 		fftw_plan plan_backward;
 		fftw_complex *filter_convolution, *fftw_result;
 
-		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
-		fftw_result  = 		 (fftw_complex *) fftw_malloc( sizeof( fftw_complex )* PADDED_SIZE );
+		filter_convolution = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
+		fftw_result        = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 
 		#pragma omp critical (make_plan)
 		{
@@ -205,13 +205,10 @@ int CalculatePaddingSize(const int array_size, const int pad_flag)
 	return(out);
 }
 
-
-
 double* GenerateScales(const double minimum_frequency, const double maximum_frequency, const double s_0)
 {
-	int min_i = FREQ_TO_SCALE(maximum_frequency) + 1;
-
-	int max_i = FREQ_TO_SCALE(minimum_frequency);
+	int min_i = freq_to_scale(maximum_frequency, s_0) + 1;
+	int max_i = freq_to_scale(minimum_frequency, s_0);
 	assert(min_i > 0); assert(max_i > 0);
 	// printf("max_i = %d, min_i = %d\n", max_i, min_i);
 
@@ -225,6 +222,12 @@ double* GenerateScales(const double minimum_frequency, const double maximum_freq
 		scales[i] = s_0 * pow(2, counterVariable * D_J);
 	}
 	return(scales);
+}
+
+int freq_to_scale(double frequency, double s_0)
+{
+	int out = floor( ( log2( (W_0) / (s_0 * 2 * M_PI * frequency) ) )/D_J);
+	return(out);
 }
 
 
