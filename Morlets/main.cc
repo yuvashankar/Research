@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
     int sampling_frequency = atoi( argv[1] );
     double d_t = 1.0/ (double) sampling_frequency;
     
-    int n = GetFileSize( argv[2] );
-    // int n = 3 * sampling_frequency;
+    // int n = GetFileSize( argv[2] );
+    int n = 3 * sampling_frequency;
     
     // const int J = MAX_I - MIN_I;
     const int J = (int) freq_to_scale(MIN_FREQUENCY, d_t) - freq_to_scale(MAX_FREQUENCY, d_t);
@@ -49,9 +49,16 @@ int main(int argc, char *argv[])
     frequency = IdentifyFrequencies(scales, J);
     assert(scales != NULL); assert(frequency!= NULL);
 
-    int readNumber = ReadFile( data, argv[2] );
-    assert (readNumber == n);
-    // TestCases( data, 1, 16.0 , sampling_frequency, n);
+    // int readNumber = ReadFile( data, argv[2] );
+    // assert (readNumber == n);
+    TestCases( data, 9, 16.0 , sampling_frequency, n);
+
+    FILE* data_file = fopen("data.log", "w");
+    for (int i = 0; i < n; ++i)
+    {
+        fprintf(data_file, "%f\t%f\n", (double) i/sampling_frequency, (double) data[i]);
+    }
+    fclose(data_file);
 
     // stft_result = ShortTimeFourierTransform(data, sampling_frequency, n, WINDOW_SIZE);
     // WriteSTFTFile(stft_result, WINDOW_SIZE/2, ceil( (double) n / WINDOW_SIZE), sampling_frequency, "STFT_Result.log");

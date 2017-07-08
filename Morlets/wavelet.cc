@@ -113,7 +113,7 @@ int Wavelet(double* raw_data, double* scales,
     const int PADDED_SIZE = CalculatePaddingSize(n, padding_type);
     // const int PADDED_SIZE = n;
 
-    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE); //NOT IN RAD/SAMPLE in RAD/SEC
+    const double dw = (2 * M_PI * sampling_frequency)/(PADDED_SIZE);
 
     data_in  = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
 	fft_data = (fftw_complex *) fftw_malloc( sizeof( fftw_complex ) * PADDED_SIZE );
@@ -260,6 +260,12 @@ void TestCases(double *data, const int flag, double freq, double sampling_freque
 	// double DT = 1./sampling_frequency;
 	double fsig = freq/sampling_frequency;
 	double dw = 2 * M_PI * fsig;
+	double dampning_ratio = 0.014;
+	double dwn = (2 * M_PI * dw)/ (sqrt(1 - dampning_ratio * dampning_ratio));
+	// double dwn = sqrt(1 - dampning_ratio * dampning_ratio);
+	printf("dw = %f, dampning_ratio = %f, dwn = %f\n", dw, dampning_ratio, dwn);
+
+
 	double w0 =  M_PI/4; // A SMALL PHASE SHIFT SO ITS NOT ALL INTERGER ALIGNED
 	int one_peri = (int)1./fsig;
 
@@ -345,6 +351,13 @@ void TestCases(double *data, const int flag, double freq, double sampling_freque
 			for (int i = 0; i < data_size; ++i)
 			{
 				data[i] = 2 * cos(i*dw + w0);
+			}
+			break;
+		//Dampened Cosine
+		case 9:
+			for (int i = 0; i < data_size; ++i)
+			{
+				data[i] = exp( -dampning_ratio * i * dwn) * cos(i*dw + w0);
 			}
 			break;
 	}

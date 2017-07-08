@@ -32,7 +32,7 @@ int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, 
 		}
 
 		maximum_array[i] = max;
-		// fprintf(maximum_file, "%f\t%f\n", frequency[i], maximum_array[i].value);
+		fprintf(debug_file, "%f\t%f\n", frequency[i], maximum_array[i].value);
 	}
 
 	//Calculate the deravitive of the signal and isolate the peaks
@@ -58,10 +58,10 @@ int Find_Peaks(double* array, double* frequency, int sampling_frequency, int n, 
 		for (int j = 0; j < n; ++j)
 		{
 			temp[j] = array[arr_index * n + j];
-			// if (i == 1)
-			// {
-			// 	fprintf(debug_file, "%f\t%.16f\n", (double) j/FS, log2(array[arr_index * n + j]) );
-			// }
+			if (i == 1)
+			{
+				// fprintf(debug_file, "%f\t%.16f\n", (double) j/sampling_frequency, array[arr_index * n + j] );
+			}
 		}
 
 		ARRAY_DATA impact_site = Max(temp, n);
