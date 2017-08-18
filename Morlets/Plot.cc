@@ -5,6 +5,7 @@
 #include "wavelet.h"
 #include <pngwriter.h>
 #include <float.h>
+#include <gsl/gsl_statistics.h>
 #include <cmath>
 
 //Plotting Constants
@@ -12,13 +13,13 @@
 	\var PLOT_OY
 	\brief The amount of vertical black space in the plot
 */
-#define PLOT_OY 200
+#define PLOT_OY 500
 
 /**
 	\var PLOT_OX
 	\brief The amount of horizontal black space in the plot
 */
-#define PLOT_OX 200
+#define PLOT_OX 500
 
 /**
 	
@@ -85,9 +86,9 @@ int Plot_PNG(double * data, double * periods, int sampling_frequency, int num_x,
 {
 	int i, j, k;
 	
-	printf("File Name = %s\n", filename);
+	printf("Plotting %s\n", filename);
 
-	const int lines_size = 2; //Adjusts vertical scaling.
+	const int lines_size = 10; //Adjusts vertical scaling.
 	const int stride = 2; //Stride needs to be even. Adjusts horizontal scaling
 	const int image_width  = (num_x/stride) + 2 * PLOT_OX;
 	const int image_height = lines_size * num_y+ 2 * PLOT_OY;
@@ -95,10 +96,10 @@ int Plot_PNG(double * data, double * periods, int sampling_frequency, int num_x,
 	const int height = lines_size * num_y;
 
 	const int label_font_size = 30;
-	const int tic_font_size   = 15;
+	const int tic_font_size   = 30;
 	const int title_font_size = 40;
-	const int freq_text_width = 15;
-	const int time_text_width = 15;
+	const int freq_text_width = 40;
+	const int time_text_width = 40;
 
 
 	char  font_location[] = "../lib/OpenSans-Regular.ttf";
@@ -311,16 +312,17 @@ int WriteFile(const double *data, const double *frequency, const int x, const in
 
 int WriteGnuplotScript(const char graph_title[], const char filename[])
 {
+	
 	FILE* gnuplot_file = fopen("script.gplot", "w");
 	if (gnuplot_file == NULL) return -1;
 	
 	fprintf(gnuplot_file, "set term x11\n");
 	
-	// fprintf(gnuplot_file, "set logscale z 10\n");
+	fprintf(gnuplot_file, "set logscale z 10\n");
 
 	// fprintf(gnuplot_file, "set term pngcairo enhanced font 'arial,12'\n");
-	// fprintf(gnuplot_file, "%s%s%s","set output '", graph_title,  ".png' \n");
-	fprintf(gnuplot_file, "set pm3d map\n");
+	// fprintf(gnuplot_file, "%s%s%s","set output '", filename,  ".png' \n");
+	// fprintf(gnuplot_file, "set pm3d map\n");
 	fprintf(gnuplot_file, "set logscale y 2\n");
 	fprintf(gnuplot_file, "set ticslevel 0\n");
 	fprintf(gnuplot_file, "set xlabel \"time (s)\"\n");
@@ -328,11 +330,13 @@ int WriteGnuplotScript(const char graph_title[], const char filename[])
 
 	//Input Graph Title
 	fprintf(gnuplot_file, "%s%s%s\n", "set title \"", graph_title, "\"");
+	
 	//Plot filename
 	// plot "DATA.log" matrix nonuniform with pm3d t ''
 	fprintf(gnuplot_file, "%s%s%s\n", "splot \"", filename, "\" matrix nonuniform with pm3d t ''");
 	fprintf(gnuplot_file, "pause -1 \"Hit Return to continue\"");
 
+	fclose(gnuplot_file);
 	return(0);
 }
 
@@ -350,19 +354,8 @@ RANGE GetRange(double* array, int size)
 {
 	RANGE r = {array[0], array[0]};
 
-
-	for (int i = 0; i < size; ++i)
-	{
-		if (array[i] > r.maximum)
-		{
-			r.maximum = array[i];
-		}
-
-		if (array[i] < r.minimum)
-		{
-			r.minimum = array[i];
-		}
-	}
+	r.minimum = gsl_stats_min(array, 1.0, size);
+	r.maximum = gsl_stats_max(array, 1.0, size);
 	return(r);
 }
 
@@ -381,7 +374,6 @@ void CalculateLog(double * array, int size)
 	for (int i = 0; i < size; ++i)
 	{
 		array[i] = log10(array[i]);
-
 	}
 }
 
@@ -407,12 +399,6 @@ COLOUR GetColour(double v, RANGE data_range)
    	v = data_range.minimum;
 
    double dv = data_range.maximum - data_range.minimum;
-
-
- //   // c.r = 1.0 - (v - data_range.minimum) / dv;
-	// c.g = 1.0 - (v - data_range.minimum) / dv;
-	// c.b = 1.0 - (v - data_range.minimum) / dv;
-   
 
 
    if (v < (data_range.minimum + 0.25 * dv)) 
@@ -443,28 +429,11 @@ COLOUR GetColour(double v, RANGE data_range)
 
 ARRAY_DATA Max(double * array, int size)
 {
-	double max = array[0];
-	int array_index = 0;
-
 	ARRAY_DATA out;
 
-	for (int i = 0; i < size; ++i)
-	{
-		if (array[i] > max)
-		{
-			max = array[i];
-			// if (max != max)
-			// {
-			// 	printf("Naan Alert!\n");
-			// }
-			array_index = i;
-		}
-	}
+	out.index = gsl_stats_max_index( array, 1.0, size);
+	out.value = gsl_stats_max(array, 1.0, size);
 
-	out.value = max;
-	out.index = array_index;
-
-	// printf("Max: Array[%d] = %.17f\n", array_index, array[array_index]);
 	return(out);
 }
 

@@ -4,6 +4,7 @@
 */
 #include "processEEG.h"
 #include <gsl/gsl_statistics.h>
+#include <gsl/gsl_math.h>
 
 int ERSP (double * raw_data, double* scales, const int sampling_frequency, const int n, 
 	const int J, int const trials, const int padding_type, 
@@ -172,7 +173,8 @@ int Generate_FFTW_Wisdom(int padded_size)
 	}
 
 	fftw_destroy_plan(plan_forward); fftw_destroy_plan(plan_backward);
-	fftw_free(data_in); fftw_free(fft_data); fftw_free(filter_convolution); fftw_free(fftw_result);
+	fftw_free(data_in); fftw_free(fft_data); 
+	fftw_free(filter_convolution); fftw_free(fftw_result);
 
 	return(success_flag);
 }
@@ -184,11 +186,15 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 {
 	int j; 
 	double value; 
+	
 	//Compute the Fourier Morlet at 0 and N/2
 	value = CompleteFourierMorlet(0.0, scale);
 
+
+
 	filter_convolution[0][0] = (fft_data[0][0]/data_size) * value;
 	filter_convolution[0][1] = (fft_data[0][1]/data_size) * value;
+		
 	
 	filter_convolution[data_size/2][0] = 0.0;
 	filter_convolution[data_size/2][1] = 0.0;
@@ -197,13 +203,17 @@ int FrequencyMultiply(const fftw_complex* fft_data,
 	for (j = 1; j < data_size/2 - 1; ++j)
 	{
 		value = CompleteFourierMorlet( j * dw , scale);
+
+
 		filter_convolution[j][0] = (fft_data[j][0]/data_size) * value;
 		filter_convolution[j][1] = (fft_data[j][1]/data_size) * value;
 
+
 		filter_convolution[data_size- j][0] = 0.0;
 		filter_convolution[data_size- j][1] = 0.0;
-	}
 
+
+	}
 	return(0);
 }
 

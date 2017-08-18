@@ -14,7 +14,7 @@
 typedef struct 
 {
 	double value;
-	int    index;
+	size_t    index;
 } ARRAY_DATA;
 
 //Global Constants
@@ -106,7 +106,7 @@ typedef struct
 */
 // #define S0 DT
 
-#define FREQ 128
+#define FREQ 16.0
 #define DATA_SIZE 6144
 
 //Plotting Constants
@@ -115,7 +115,8 @@ typedef struct
 	\brief The maximum frequency that will be analyzed
 */
 // #define MAX_FREQUENCY FS/2
-#define MAX_FREQUENCY 128.0	
+// #define MAX_FREQUENCY 128.0	
+#define MAX_FREQUENCY 1024	
 
 /**
 	\var MIN_FREQUENCY
@@ -145,7 +146,7 @@ typedef struct
 	\def MAGNITUDE(x, y)
 	\brief Computes the 2- norm or the x ^ 2 + y ^ 2, of \a x and \a y
 */
-#define MAGNITUDE(x,y) sqrt( (x * x) + (y * y) )
+#define MAGNITUDE(x,y) fabs( sqrt( (x * x) + (y * y) ) )
 
 /**
     \fn void FillData(double * data)
@@ -540,3 +541,7 @@ int WriteSTFTFile(const double *data, const int x, const int y, int sampling_fre
 double* FFT(double * raw_data, int n);
 
 int freq_to_scale(double frequency, double s_0);
+
+void Numerical_Experiment(int n, int J, double dt, double fs);
+
+void STFT_Timing_Test(void);
